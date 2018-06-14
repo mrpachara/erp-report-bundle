@@ -29,6 +29,7 @@ class PurchaseRequestReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
             ->select("{$alias}.code AS code")
+            ->addSelect("{$alias}.approved AS approved")
             ->addSelect("{$alias}_requester.code AS requester")
             ->addSelect("{$alias}_vendor.code AS vendor")
             ->addSelect("{$alias}_project.code AS project")
@@ -83,16 +84,22 @@ class PurchaseRequestReportQueryService implements QueryInterface
                 ->setParameter('vendor', $filter['vendor'])
             ;
         }
-        if(!empty($filter['projectname'])) {
+        if(!empty($filter['project'])) {
             $qb
-                ->andWhere('_entity_project.name = :projectname')
-                ->setParameter('projectname', $filter['projectname'])
+                ->andWhere('_entity_project = :project')
+                ->setParameter('project', $filter['project'])
             ;
         }
-        if(!empty($filter['projectCode'])) {
+        if(!empty($filter['boq'])) {
             $qb
-                ->andWhere('_entity_project.code = :projectCode')
-                ->setParameter('projectCode', $filter['projectCode'])
+                ->andWhere('_entity_boq = :boq')
+                ->setParameter('boq', $filter['boq'])
+            ;
+        }
+        if(!empty($filter['budgetType'])) {
+            $qb
+                ->andWhere('_entity_budgetType = :budgetType')
+                ->setParameter('budgetType', $filter['budgetType'])
             ;
         }
 

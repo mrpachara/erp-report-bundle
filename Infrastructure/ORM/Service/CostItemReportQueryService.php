@@ -29,6 +29,7 @@ class CostItemReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
             ->select("{$alias}_costItem.code AS code")
+            ->addSelect("{$alias}.approved AS approved")
             ->addSelect("{$alias}_costItem.type AS type")
             ->addSelect("{$alias}_thing.name AS name")
             ->addSelect("{$alias}_costItem.unit AS unit")
@@ -41,8 +42,6 @@ class CostItemReportQueryService implements QueryInterface
             ->addSelect("{$alias}_project.code AS project")
             ->addSelect("{$alias}_boq.name AS boq")
             ->addSelect("{$alias}_budgetType.name AS budgetType")
-
-            //->addSelect("{$alias}_budgetType.name AS budgetType")
             ->leftJoin("{$alias}.purchase","{$alias}_purchase")
             ->leftJoin("{$alias}.costItem","{$alias}_costItem")
             ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
@@ -86,10 +85,22 @@ class CostItemReportQueryService implements QueryInterface
            ;
         }
         if(!empty($filter['project'])) {
-           $qb
-               ->andWhere('_entity_project = :project')
-               ->setParameter('project', $filter['project'])
-           ;
+            $qb
+                ->andWhere('_entity_project = :project')
+                ->setParameter('project', $filter['project'])
+            ;
+        }
+        if(!empty($filter['boq'])) {
+            $qb
+                ->andWhere('_entity_boq = :boq')
+                ->setParameter('boq', $filter['boq'])
+            ;
+        }
+        if(!empty($filter['budgetType'])) {
+            $qb
+                ->andWhere('_entity_budgetType = :budgetType')
+                ->setParameter('budgetType', $filter['budgetType'])
+            ;
         }
 
 

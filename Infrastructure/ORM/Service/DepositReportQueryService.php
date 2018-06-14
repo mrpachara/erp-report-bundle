@@ -78,6 +78,18 @@ class DepositReportQueryService implements QueryInterface
                 ->setParameter('project', $filter['project'])
             ;
         }
+        if(!empty($filter['boq'])) {
+            $qb
+                ->andWhere('_entity_boq = :boq')
+                ->setParameter('boq', $filter['boq'])
+            ;
+        }
+        if(!empty($filter['budgetType'])) {
+            $qb
+                ->andWhere('_entity_budgetType = :budgetType')
+                ->setParameter('budgetType', $filter['budgetType'])
+            ;
+        }
 
         return $qb->getQuery()->getArrayResult();
 
