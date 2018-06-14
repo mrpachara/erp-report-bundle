@@ -12,10 +12,16 @@ class CostItemReportQueryService implements QueryInterface
     /** @var EntityRepository */
     protected $repository;
 
-    /** @required */
-    function setRepository(\symfony\Bridge\Doctrine\RegistryInterface $doctrine)
+    /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
+    protected $queryService;
+
+    function __construct(
+        \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
+        \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService $queryService
+    )
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:PurchaseOrderDetail');
+        $this->queryService = $queryService;
     }
 
     function costItemQueryBuilder($alias)
@@ -49,7 +55,7 @@ class CostItemReportQueryService implements QueryInterface
             //->groupBy("{$alias}")
         ;
 
-        return $qb;
+        return $this->queryService->assignActiveDocumentQuery($qb, "{$alias}_purchase");
     }
 
     function costItemSummary(array $filter = null)
@@ -67,30 +73,25 @@ class CostItemReportQueryService implements QueryInterface
                 ->setParameter('endDate', new \DateTimeImmutable($filter['end']))
             ;
         }
-        //if(!empty($filter['requester'])) {
-        //    $qb
-        //        ->andWhere('_entity_requester = :requester')
-        //        ->setParameter('requester', $filter['requester'])
-        //    ;
-        //}
-        //if(!empty($filter['vendor'])) {
-        //    $qb
-        //        ->andWhere('_entity_vendor = :vendor')
-        //        ->setParameter('vendor', $filter['vendor'])
-        //    ;
-        //}
-        //if(!empty($filter['projectname'])) {
-        //    $qb
-        //        ->andWhere('_entity_project.name = :projectname')
-         //       ->setParameter('projectname', $filter['projectname'])
-         //   ;
-        //}
-        //if(!empty($filter['projectCode'])) {
-        //    $qb
-        //        ->andWhere('_entity_project.code = :projectCode')
-        //        ->setParameter('projectCode', $filter['projectCode'])
-        //    ;
-        //}
+        if(!empty($filter['requester'])) {
+           $qb
+               ->andWhere('_entity_requester = :requester')
+               ->setParameter('requester', $filter['requester'])
+           ;
+        }
+        if(!empty($filter['vendor'])) {
+           $qb
+               ->andWhere('_entity_vendor = :vendor')
+               ->setParameter('vendor', $filter['vendor'])
+           ;
+        }
+        if(!empty($filter['project'])) {
+           $qb
+               ->andWhere('_entity_project = :project')
+               ->setParameter('project', $filter['project'])
+           ;
+        }
+
 
         return $qb->getQuery()->getArrayResult();
 

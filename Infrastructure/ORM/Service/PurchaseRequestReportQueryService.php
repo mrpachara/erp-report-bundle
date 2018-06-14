@@ -12,10 +12,16 @@ class PurchaseRequestReportQueryService implements QueryInterface
     /** @var EntityRepository */
     protected $repository;
 
-    /** @required */
-    function setRepository(\symfony\Bridge\Doctrine\RegistryInterface $doctrine)
+    /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
+    protected $queryService;
+
+    function __construct(
+        \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
+        \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService $queryService
+    )
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:PurchaseRequest');
+        $this->queryService = $queryService;
     }
 
     function purchaseRequestQueryBuilder($alias)
@@ -47,7 +53,7 @@ class PurchaseRequestReportQueryService implements QueryInterface
             ->groupBy("{$alias}")
         ;
 
-        return $qb;
+        return $this->queryService->assignActiveDocumentQuery($qb, $alias);
     }
 
     function purchaseRequestSummary(array $filter = null)

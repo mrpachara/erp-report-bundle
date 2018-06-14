@@ -4,9 +4,9 @@ namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use \Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use Erp\Bundle\ReportBundle\Domain\CQRS\RequesterReportQuery as QueryInterface;
+use Erp\Bundle\ReportBundle\Domain\CQRS\DepositReportQuery as QueryInterface;
 
-class RequesterReportQueryService implements QueryInterface
+class DepositReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
@@ -23,42 +23,31 @@ class RequesterReportQueryService implements QueryInterface
         $this->queryService = $queryService;
     }
 
-    function requesterQueryBuilder($alias)
+    function depositQueryBuilder($alias)
     {
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
-            ->select("{$alias}.code AS code")
-                ->addSelect("{$alias}.approved AS approved")
-                ->addSelect("{$alias}_requester.code AS requester")
-                ->addSelect("{$alias}_vendor.code AS vendor")
-                ->addSelect("{$alias}_projectThing.name AS project")
-                ->addSelect("{$alias}_boq.name AS boq")
-                ->addSelect("{$alias}_budgetType.name AS budgetType")
-                ->addSelect("{$alias}_thing.name AS costItemName")
-                ->addSelect("{$alias}_costItem.type AS type")
-                ->addSelect("{$alias}_costItem.unit AS unit")
-                ->addSelect("{$alias}_costItem.price AS price")
-                ->addSelect("{$alias}_details.quantity AS quantity")
-                ->addSelect("{$alias}_details.total AS total")
-
-            ->leftJoin("{$alias}.requester","{$alias}_requester")
-            ->leftJoin("{$alias}.vendor","{$alias}_vendor")
-            ->leftJoin("{$alias}.project","{$alias}_project")
-            ->leftJoin("{$alias}.boq","{$alias}_boq")
-            ->leftJoin("{$alias}.budgetType","{$alias}_budgetType")
-            ->leftJoin("{$alias}.details","{$alias}_details")
-            ->leftJoin("{$alias}_details.costItem","{$alias}_costItem")
-            ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
-            ->leftJoin("{$alias}_project.thing","{$alias}_projectThing")
-            ->groupBy("{$alias}")
+        ->select("{$alias}.code AS code")
+            ->addSelect("{$alias}.approved AS approved")
+            ->addSelect("{$alias}_requester.code AS requester")
+            ->addSelect("{$alias}_vendor.code AS vendor")
+            ->addSelect("{$alias}_project.code AS project")
+            ->addSelect("{$alias}_boq.name AS boq")
+            ->addSelect("{$alias}_budgetType.name AS budgetType")
+        ->leftJoin("{$alias}.project","{$alias}_project")
+        ->leftJoin("{$alias}.requester","{$alias}_requester")
+        ->leftJoin("{$alias}.vendor","{$alias}_vendor")
+        ->leftJoin("{$alias}.boq","{$alias}_boq")
+        ->leftJoin("{$alias}.budgetType","{$alias}_budgetType")
+        ->groupBy("{$alias}")
         ;
 
         return $this->queryService->assignActiveDocumentQuery($qb, $alias);
     }
 
-    function requesterSummary(array $filter = null)
+    function depositSummary(array $filter = null)
     {
-        $qb = $this->requesterQueryBuilder('_entity');
+        $qb = $this->depositQueryBuilder('_entity');
         if(!empty($filter['start'])) {
             $qb
                 ->andWhere('_entity.tstmp >= :startDate')
