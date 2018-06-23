@@ -29,45 +29,23 @@ class CostItemReportApiQueryController
     }
 
     /**
-     * @Rest\Get("")
+     * @Rest\Get("/group")
      */
-    public function costItemSummaryAction(ServerRequestInterface $request)
+    public function costItemGroupSummaryAction(ServerRequestInterface $request)
     {
         return [
-            'data' => $this->domainQuery->costItemSummary($request->getQueryParams()),
+            'data' => $this->domainQuery->costItemGroupSummary($request->getQueryParams()),
         ];
 
     }
 
     /**
-     * @Rest\Get("/group-price")
+     * @Rest\Get("/distribution")
      */
-    public function costItemGroupPriceSummaryAction(ServerRequestInterface $request)
+    public function costItemDistributionSummaryAction(ServerRequestInterface $request)
     {
         return [
-            'data' => $this->domainQuery->costItemGroupPriceSummary($request->getQueryParams()),
-        ];
-
-    }
-
-    /**
-     * @Rest\Get("/distribution-quantity")
-     */
-    public function costItemDistributionQuantitySummaryAction(ServerRequestInterface $request)
-    {
-        return [
-            'data' => $this->domainQuery->costItemDistributionQuantitySummary($request->getQueryParams()),
-        ];
-
-    }
-
-    /**
-     * @Rest\Get("/distribution-price")
-     */
-    public function costItemDistributionPriceSummaryAction(ServerRequestInterface $request)
-    {
-        return [
-            'data' => $this->domainQuery->costItemDistributionPriceSummary($request->getQueryParams()),
+            'data' => $this->domainQuery->costItemDistributionSummary($request->getQueryParams()),
         ];
 
     }
