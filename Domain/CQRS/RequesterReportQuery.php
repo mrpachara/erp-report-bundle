@@ -4,5 +4,6 @@ namespace Erp\Bundle\ReportBundle\Domain\CQRS;
 
 interface RequesterReportQuery
 {
-  function requesterSummary(array $filter = null);
+  function requesterGroupSummary(array $filter = null);
+  function requesterDistributionSummary(array $filter = null);
 }

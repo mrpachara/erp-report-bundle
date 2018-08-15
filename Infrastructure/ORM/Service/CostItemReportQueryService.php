@@ -29,28 +29,25 @@ class CostItemReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
             ->select("{$alias}_costItem.code AS code")
-            ->addSelect("{$alias}_purchase.approved AS approved")
-            ->addSelect("{$alias}_costItem.type AS type")
-            ->addSelect("{$alias}_thing.name AS name")
-            ->addSelect("{$alias}_costItem.unit AS unit")
-            ->addSelect("{$alias}_costItem.price AS price")
-            ->addSelect("{$alias}.quantity AS quantity")
-            ->addSelect("{$alias}.total AS total")
-            ->addSelect("{$alias}_purchase.code AS purchaseOrderCode")
-            ->addSelect("{$alias}_requester.code AS requester")
-            ->addSelect("{$alias}_vendor.code AS vendor")
-            ->addSelect("{$alias}_project.code AS project")
-            ->addSelect("{$alias}_boq.name AS boq")
-            ->addSelect("{$alias}_budgetType.name AS budgetType")
-            ->leftJoin("{$alias}.purchase","{$alias}_purchase")
-            ->leftJoin("{$alias}.costItem","{$alias}_costItem")
-            ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
-            ->leftJoin("{$alias}_purchase.requester","{$alias}_requester")
-            ->leftJoin("{$alias}_purchase.vendor","{$alias}_vendor")
-            ->leftJoin("{$alias}_purchase.project","{$alias}_project")
-            ->leftJoin("{$alias}_purchase.boq","{$alias}_boq")
-            ->leftJoin("{$alias}_purchase.budgetType","{$alias}_budgetType")
-            ->groupBy("{$alias}_costItem.id")
+                ->addSelect("{$alias}_purchase.approved AS approved")
+                ->addSelect("{$alias}_costItem.type AS type")
+                ->addSelect("{$alias}_thing.name AS name")
+                ->addSelect("{$alias}_costItem.unit AS unit")
+                ->addSelect("{$alias}_costItem.price AS price")
+                ->addSelect("SUM({$alias}.quantity) AS quantity")
+                ->addSelect("SUM({$alias}.total) AS total")
+                ->addSelect("{$alias}_purchase.id AS id")
+                ->addSelect("{$alias}_purchase.code AS purchaseOrderCode")
+                ->addSelect("{$alias}_project.code AS project")
+                ->addSelect("{$alias}_boq.name AS boq")
+                ->addSelect("{$alias}_budgetType.name AS budgetType")
+                ->leftJoin("{$alias}.purchase","{$alias}_purchase")
+                ->leftJoin("{$alias}.costItem","{$alias}_costItem")
+                ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
+                ->leftJoin("{$alias}_purchase.project","{$alias}_project")
+                ->leftJoin("{$alias}_purchase.boq","{$alias}_boq")
+                ->leftJoin("{$alias}_purchase.budgetType","{$alias}_budgetType")
+                ->groupBy("{$alias}_costItem.id")
         ;
 
         return $this->queryService->assignActiveDocumentQuery($qb, "{$alias}_purchase");
@@ -104,7 +101,7 @@ class CostItemReportQueryService implements QueryInterface
 
         if(!empty($filter['costItem'])) {
             $qb
-                ->andWhere('_entity_purchase = :costItem')
+                ->andWhere('_entity_costItem = :costItem')
                 ->setParameter('costItem', $filter['costItem'])
             ;
         }
@@ -120,27 +117,24 @@ class CostItemReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
             ->select("{$alias}_costItem.code AS code")
-            ->addSelect("{$alias}_purchase.approved AS approved")
-            ->addSelect("{$alias}_costItem.type AS type")
-            ->addSelect("{$alias}_thing.name AS name")
-            ->addSelect("{$alias}_costItem.unit AS unit")
-            ->addSelect("{$alias}_costItem.price AS price")
-            ->addSelect("{$alias}.quantity AS quantity")
-            ->addSelect("{$alias}.total AS total")
-            ->addSelect("{$alias}_purchase.code AS purchaseOrderCode")
-            ->addSelect("{$alias}_requester.code AS requester")
-            ->addSelect("{$alias}_vendor.code AS vendor")
-            ->addSelect("{$alias}_project.code AS project")
-            ->addSelect("{$alias}_boq.name AS boq")
-            ->addSelect("{$alias}_budgetType.name AS budgetType")
-            ->leftJoin("{$alias}.purchase","{$alias}_purchase")
-            ->leftJoin("{$alias}.costItem","{$alias}_costItem")
-            ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
-            ->leftJoin("{$alias}_purchase.requester","{$alias}_requester")
-            ->leftJoin("{$alias}_purchase.vendor","{$alias}_vendor")
-            ->leftJoin("{$alias}_purchase.project","{$alias}_project")
-            ->leftJoin("{$alias}_purchase.boq","{$alias}_boq")
-            ->leftJoin("{$alias}_purchase.budgetType","{$alias}_budgetType")
+                ->addSelect("{$alias}_purchase.approved AS approved")
+                ->addSelect("{$alias}_costItem.type AS type")
+                ->addSelect("{$alias}_thing.name AS name")
+                ->addSelect("{$alias}_costItem.unit AS unit")
+                ->addSelect("{$alias}_costItem.price AS price")
+                ->addSelect("{$alias}.quantity AS quantity")
+                ->addSelect("{$alias}.total AS total")
+                ->addSelect("{$alias}_purchase.id AS id")
+                ->addSelect("{$alias}_purchase.code AS purchaseOrderCode")
+                ->addSelect("{$alias}_project.code AS project")
+                ->addSelect("{$alias}_boq.name AS boq")
+                ->addSelect("{$alias}_budgetType.name AS budgetType")
+                ->leftJoin("{$alias}.purchase","{$alias}_purchase")
+                ->leftJoin("{$alias}.costItem","{$alias}_costItem")
+                ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
+                ->leftJoin("{$alias}_purchase.project","{$alias}_project")
+                ->leftJoin("{$alias}_purchase.boq","{$alias}_boq")
+                ->leftJoin("{$alias}_purchase.budgetType","{$alias}_budgetType")
 
             //->groupBy("{$alias}")
         ;
@@ -196,7 +190,7 @@ class CostItemReportQueryService implements QueryInterface
 
         if(!empty($filter['costItem'])) {
             $qb
-                ->andWhere('_entity_purchase = :costItem')
+                ->andWhere('_entity_costItem = :costItem')
                 ->setParameter('costItem', $filter['costItem'])
             ;
         }

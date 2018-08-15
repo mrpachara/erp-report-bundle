@@ -29,28 +29,20 @@ class PurchaseRequestReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
             ->select("{$alias}.code AS code")
+            ->addSelect("{$alias}.id AS id")
             ->addSelect("{$alias}.approved AS approved")
             ->addSelect("{$alias}_requester.code AS requester")
             ->addSelect("{$alias}_vendor.code AS vendor")
             ->addSelect("{$alias}_project.code AS project")
             ->addSelect("{$alias}_boq.name AS boq")
             ->addSelect("{$alias}_budgetType.name AS budgetType")
-            ->addSelect("{$alias}_costItem.code AS costItem")
-            ->addSelect("{$alias}_costItem.type AS type")
-            ->addSelect("{$alias}_thing.name AS name")
-            ->addSelect("{$alias}_costItem.unit AS unit")
-            ->addSelect("{$alias}_costItem.price AS price")
-            ->addSelect("{$alias}_details.quantity AS quantity")
-            ->addSelect("{$alias}_details.total AS total")
+
 
             ->leftJoin("{$alias}.project","{$alias}_project")
             ->leftJoin("{$alias}.requester","{$alias}_requester")
             ->leftJoin("{$alias}.vendor","{$alias}_vendor")
             ->leftJoin("{$alias}.boq","{$alias}_boq")
             ->leftJoin("{$alias}.budgetType","{$alias}_budgetType")
-            ->leftJoin("{$alias}.details","{$alias}_details")
-            ->leftJoin("{$alias}_details.costItem", "{$alias}_costItem")
-            ->leftJoin("{$alias}_costItem.thing", "{$alias}_thing")
             ->groupBy("{$alias}")
         ;
 

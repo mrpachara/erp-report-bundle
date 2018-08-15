@@ -28,6 +28,7 @@ class VatReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
         ->select("{$alias}.code AS code")
+        ->addSelect("{$alias}.id AS id")
             ->addSelect("{$alias}.approved AS approved")
             ->addSelect("{$alias}_requester.code AS requester")
             ->addSelect("{$alias}_vendor.code AS vendor")

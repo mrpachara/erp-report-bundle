@@ -28,6 +28,7 @@ class PurchaseOrderReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
             ->select("{$alias}.code AS code")
+                ->addSelect("{$alias}.id AS id")
                 ->addSelect("{$alias}.approved AS approved")
                 ->addSelect("{$alias}_requester.code AS requester")
                 ->addSelect("{$alias}_vendor.code AS vendor")
@@ -35,7 +36,9 @@ class PurchaseOrderReportQueryService implements QueryInterface
                 ->addSelect("{$alias}.vatCost AS vatCost")
                 ->addSelect("{$alias}.excludeVat AS excludeVat")
                 ->addSelect("{$alias}.docTotal AS total")
+                ->addSelect("{$alias}.tax AS tax")
                 ->addSelect("{$alias}.taxCost AS taxCost")
+                ->addSelect("{$alias}.taxFactor AS taxFactor")
                 ->addSelect("{$alias}.payTotal AS payTotal")
                 ->addSelect("{$alias}_boq.name AS boq")
                 ->addSelect("{$alias}_budgetType.name AS budgetType")

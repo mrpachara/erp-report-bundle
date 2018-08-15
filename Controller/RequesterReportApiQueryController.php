@@ -29,12 +29,23 @@ class RequesterReportApiQueryController
     }
 
     /**
-     * @Rest\Get("")
+     * @Rest\Get("/group")
      */
-    public function requesterSummaryAction(ServerRequestInterface $request)
+    public function requesterGroupSummaryAction(ServerRequestInterface $request)
     {
         return [
-            'data' => $this->domainQuery->requesterSummary($request->getQueryParams()),
+            'data' => $this->domainQuery->requesterGroupSummary($request->getQueryParams()),
+        ];
+
+    }
+
+    /**
+     * @Rest\Get("/distribution")
+     */
+    public function requesterDistributionSummaryAction(ServerRequestInterface $request)
+    {
+        return [
+            'data' => $this->domainQuery->requesterDistributionSummary($request->getQueryParams()),
         ];
 
     }

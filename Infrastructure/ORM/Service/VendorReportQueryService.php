@@ -42,9 +42,8 @@ class VendorReportQueryService implements QueryInterface
             ->addSelect("{$alias}_costItem.type AS type")
             ->addSelect("{$alias}_costItemthing.name AS costItemName")
             ->addSelect("{$alias}_costItem.unit AS costItemUnit")
-            ->addSelect("{$alias}_costItem.price AS costItemPrice")
-            ->addSelect("{$alias}_details.quantity AS costItemQuantity")
-            ->addSelect("{$alias}_details.total AS costItemTotal")
+            ->addSelect("SUM({$alias}_details.quantity) AS costItemQuantity")
+            ->addSelect("SUM({$alias}_details.total) AS costItemTotal")
         ->leftJoin("{$alias}.project","{$alias}_project")
         ->leftJoin("{$alias}.requester","{$alias}_requester")
         ->leftJoin("{$alias}.vendor","{$alias}_vendor")
@@ -54,7 +53,7 @@ class VendorReportQueryService implements QueryInterface
         ->leftJoin("{$alias}.details","{$alias}_details")
         ->leftJoin("{$alias}_details.costItem","{$alias}_costItem")
         ->leftJoin("{$alias}_costItem.thing","{$alias}_costItemthing")
-        ->groupBy("{$alias}_costItem.id")
+        ->groupBy("{$alias}_vendor.id, {$alias}_costItem.id")
         ;
 
         return $this->queryService->assignActiveDocumentQuery($qb,  $alias);
@@ -103,6 +102,13 @@ class VendorReportQueryService implements QueryInterface
             $qb
                 ->andWhere('_entity_budgetType = :budgetType')
                 ->setParameter('budgetType', $filter['budgetType'])
+            ;
+        }
+
+        if(!empty($filter['costItem'])) {
+            $qb
+                ->andWhere('_entity_costItem = :costItem')
+                ->setParameter('costItem', $filter['costItem'])
             ;
         }
 
@@ -195,6 +201,12 @@ class VendorReportQueryService implements QueryInterface
           ;
       }
 
+      if(!empty($filter['costItem'])) {
+          $qb
+              ->andWhere('_entity_costItem = :costItem')
+              ->setParameter('costItem', $filter['costItem'])
+          ;
+      }
       return $qb->getQuery()->getArrayResult();
     }
 

@@ -28,6 +28,7 @@ class DepositReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
         ->select("{$alias}.code AS code")
+            ->addSelect("{$alias}.id AS id")
             ->addSelect("{$alias}.approved AS approved")
             ->addSelect("{$alias}_requester.code AS requester")
             ->addSelect("{$alias}_vendor.code AS vendor")
@@ -36,6 +37,7 @@ class DepositReportQueryService implements QueryInterface
             ->addSelect("{$alias}_budgetType.name AS budgetType")
             ->addSelect("{$alias}.payTerm AS payTerm")
             ->addSelect("{$alias}.docTotal AS docTotal")
+            ->addSelect("{$alias}.payTotal AS payTotal")
             ->addSelect("{$alias}.payDeposit AS payDeposit")
         ->leftJoin("{$alias}.project","{$alias}_project")
         ->leftJoin("{$alias}.requester","{$alias}_requester")
