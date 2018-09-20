@@ -3,9 +3,7 @@
 namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use \Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseOrderReportQuery as QueryInterface;
-use Erp\Bundle\DocumentBundle\Entity\Purchase;
 class PurchaseOrderReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */

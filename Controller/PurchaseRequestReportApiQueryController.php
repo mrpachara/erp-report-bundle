@@ -18,7 +18,7 @@ class PurchaseRequestReportApiQueryController
 
     /** @var \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseRequestReportQuery */
     private $domainQuery;
-
+    
     /**
      * PurchaseRequestReportApiQueryController constructor.
      * @param \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseRequestReportQuery $domainQuery
@@ -36,7 +36,7 @@ class PurchaseRequestReportApiQueryController
         return [
             'data' => $this->domainQuery->purchaseRequestSummary($request->getQueryParams()),
         ];
-
+        
     }
 
 }

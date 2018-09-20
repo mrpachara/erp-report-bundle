@@ -3,7 +3,6 @@
 namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use \Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Erp\Bundle\ReportBundle\Domain\CQRS\RequesterReportQuery as QueryInterface;
 
 class RequesterReportQueryService implements QueryInterface
@@ -39,6 +38,7 @@ class RequesterReportQueryService implements QueryInterface
                 ->addSelect("{$alias}_costItem.type AS type")
                 ->addSelect("{$alias}_costItem.unit AS unit")
                 ->addSelect("SUM({$alias}_details.quantity) AS quantity")
+                ->addSelect("SUM({$alias}_details.total) AS total")
 
             ->leftJoin("{$alias}.requester","{$alias}_requester")
             ->leftJoin("{$alias}.vendor","{$alias}_vendor")
@@ -129,6 +129,7 @@ class RequesterReportQueryService implements QueryInterface
             ->addSelect("{$alias}_costItem.type AS type")
             ->addSelect("{$alias}_costItem.unit AS unit")
             ->addSelect("{$alias}_details.quantity AS quantity")
+            ->addSelect("{$alias}_details.total AS total")
 
         ->leftJoin("{$alias}.requester","{$alias}_requester")
         ->leftJoin("{$alias}.vendor","{$alias}_vendor")
@@ -139,7 +140,7 @@ class RequesterReportQueryService implements QueryInterface
         ->leftJoin("{$alias}_details.costItem","{$alias}_costItem")
         ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
         ->leftJoin("{$alias}_project.thing","{$alias}_projectThing")
-        ->groupBy("{$alias}")
+        //->groupBy("{$alias}") 
         ;
 
         return $this->queryService->assignActiveDocumentQuery($qb, $alias);
