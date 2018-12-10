@@ -30,25 +30,32 @@ class VatReportApiQueryController
     protected $fileQuery = null;
     
     /**
+     * 
+     * @var \Twig_Environment
+     */
+    protected $templating;
+    
+    /**
      * @var \Erp\Bundle\DocumentBundle\Service\PDFService
      */
     protected $pdfService = null;
     
     /**
-     * TaxReportQueryController constructor.
+     * VatReportQueryController constructor.
      * @param \Erp\Bundle\ReportBundle\Domain\CQRS\VatReportQuery $domainQuery
      */
     public function __construct(
         \Erp\Bundle\ReportBundle\Domain\CQRS\VatReportQuery $domainQuery,
         \Erp\Bundle\SettingBundle\Domain\CQRS\SettingQuery $settingQuery,
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
+        \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService
-        
     )
     {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
         $this->fileQuery = $fileQuery;
+        $this->templating = $templating;
         $this->pdfService = $pdfService;
     }
 
@@ -66,9 +73,10 @@ class VatReportApiQueryController
     /**
      * @Rest\Get("/export.{format}")
      */
-    public function vatSummaryAction(ServerRequestInterface $request)
+    public function vatSummaryExportAction(ServerRequestInterface $request)
     {
-        $responseData = $this->vatSummaryAction($request);
+        $filterDetail = [];
+        $data = $this->domainQuery->vatSummary($request->getQueryParams(), $filterDetail);
         
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         
@@ -77,12 +85,13 @@ class VatReportApiQueryController
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
         
-        $view = $this->render('@ErpReport/pdf/vat-report.pdf.twig', [
+        $view = $this->templating->render('@ErpReport/pdf/vat-report.pdf.twig', [
             'profile' => $profile,
-            'model' => $responseData['data'],
+            'model' => $data,
+            'filterDetail' => $filterDetail,
         ]);
         
-        $output = $this->get(\Erp\Bundle\DocumentBundle\Service\PDFService::class)->generatePdf($view, ['format' => 'A4'], function($mpdf) use ($logo) {
+        $output = $this->pdfService->generatePdf($view, ['format' => 'A4'], function($mpdf) use ($logo) {
             $mpdf->imageVars['logo'] = $logo;
         });
         

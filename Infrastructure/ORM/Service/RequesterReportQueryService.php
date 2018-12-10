@@ -9,7 +9,25 @@ class RequesterReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-
+    
+    /** @var EntityRepository */
+    protected $employeeRepos;
+    
+    /** @var EntityRepository */
+    protected $vendorRepos;
+    
+    /** @var EntityRepository */
+    protected $projectRepos;
+    
+    /** @var EntityRepository */
+    protected $boqRepos;
+    
+    /** @var EntityRepository */
+    protected $budgetTypeRepos;
+    
+    /** @var EntityRepository */
+    protected $costItemRepos;
+    
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
 
@@ -20,6 +38,13 @@ class RequesterReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:PurchaseOrder');
         $this->queryService = $queryService;
+        
+        $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
+        $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
+        $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
+        $this->boqRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoq');
+        $this->budgetTypeRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoqBudgetType');
+        $this->costItemRepos = $doctrine->getRepository('ErpMasterBundle:CostItem');
     }
 
     function requesterGroupQueryBuilder($alias)
@@ -55,50 +80,65 @@ class RequesterReportQueryService implements QueryInterface
         return $this->queryService->assignActiveDocumentQuery($qb, $alias);
     }
 
-    function requesterGroupSummary(array $filter = null)
+    function requesterGroupSummary(array $filter = null, array &$filterDetail = null)
     {
+        $filterDetail = [];
         $qb = $this->requesterGroupQueryBuilder('_entity');
         if(!empty($filter['start'])) {
             $qb
                 ->andWhere('_entity.tstmp >= :startDate')
                 ->setParameter('startDate', new \DateTimeImmutable($filter['start']))
             ;
+            $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
         }
         if(!empty($filter['end'])) {
             $qb
                 ->andWhere('_entity.tstmp <= :endDate')
                 ->setParameter('endDate', new \DateTimeImmutable($filter['end']))
             ;
+            $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
+        }
+        if(array_key_exists('approved', $filter)) {
+            $qb
+            ->andWhere('_entity.approved = :approved')
+            ->setParameter('approved', $filter['approved'])
+            ;
+            $filterDetail['approved'] = $filter['approved'];
         }
         if(!empty($filter['requester'])) {
             $qb
                 ->andWhere('_entity_requester = :requester')
                 ->setParameter('requester', $filter['requester'])
             ;
+            $filterDetail['requester'] = $this->employeeRepos->find($filter['requester']);
         }
         if(!empty($filter['vendor'])) {
             $qb
                 ->andWhere('_entity_vendor = :vendor')
                 ->setParameter('vendor', $filter['vendor'])
             ;
+            $filterDetail['vendor'] = $this->vendorRepos->find($filter['vendor']);
         }
         if(!empty($filter['project'])) {
             $qb
                 ->andWhere('_entity_project = :project')
                 ->setParameter('project', $filter['project'])
             ;
+            $filterDetail['project'] = $this->projectRepos->find($filter['project']);
         }
         if(!empty($filter['boq'])) {
             $qb
                 ->andWhere('_entity_boq = :boq')
                 ->setParameter('boq', $filter['boq'])
             ;
+            $filterDetail['boq'] = $this->boqRepos->find($filter['boq']);
         }
         if(!empty($filter['budgetType'])) {
             $qb
                 ->andWhere('_entity_budgetType = :budgetType')
                 ->setParameter('budgetType', $filter['budgetType'])
             ;
+            $filterDetail['budgetType'] = $this->budgetTypeRepos->find($filter['budgetType']);
         }
 
         if(!empty($filter['costItem'])) {
@@ -106,6 +146,7 @@ class RequesterReportQueryService implements QueryInterface
                 ->andWhere('_entity_costItem = :costItem')
                 ->setParameter('costItem', $filter['costItem'])
             ;
+            $filterDetail['costItem'] = $this->costItemRepos->find($filter['costItem']);
         }
 
         return $qb->getQuery()->getArrayResult();
@@ -146,50 +187,65 @@ class RequesterReportQueryService implements QueryInterface
         return $this->queryService->assignActiveDocumentQuery($qb, $alias);
     }
 
-    function requesterDistributionSummary(array $filter = null)
+    function requesterDistributionSummary(array $filter = null, array &$filterDetail = null)
     {
+        $filterDetail = [];
         $qb = $this->requesterDistributionQueryBuilder('_entity');
         if(!empty($filter['start'])) {
             $qb
                 ->andWhere('_entity.tstmp >= :startDate')
                 ->setParameter('startDate', new \DateTimeImmutable($filter['start']))
             ;
+            $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
         }
         if(!empty($filter['end'])) {
             $qb
                 ->andWhere('_entity.tstmp <= :endDate')
                 ->setParameter('endDate', new \DateTimeImmutable($filter['end']))
             ;
+            $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
+        }
+        if(array_key_exists('approved', $filter)) {
+            $qb
+            ->andWhere('_entity.approved = :approved')
+            ->setParameter('approved', $filter['approved'])
+            ;
+            $filterDetail['approved'] = $filter['approved'];
         }
         if(!empty($filter['requester'])) {
             $qb
                 ->andWhere('_entity_requester = :requester')
                 ->setParameter('requester', $filter['requester'])
             ;
+            $filterDetail['requester'] = $this->employeeRepos->find($filter['requester']);
         }
         if(!empty($filter['vendor'])) {
             $qb
                 ->andWhere('_entity_vendor = :vendor')
                 ->setParameter('vendor', $filter['vendor'])
             ;
+            $filterDetail['vendor'] = $this->vendorRepos->find($filter['vendor']);
         }
         if(!empty($filter['project'])) {
             $qb
                 ->andWhere('_entity_project = :project')
                 ->setParameter('project', $filter['project'])
             ;
+            $filterDetail['project'] = $this->projectRepos->find($filter['project']);
         }
         if(!empty($filter['boq'])) {
             $qb
                 ->andWhere('_entity_boq = :boq')
                 ->setParameter('boq', $filter['boq'])
             ;
+            $filterDetail['boq'] = $this->boqRepos->find($filter['boq']);
         }
         if(!empty($filter['budgetType'])) {
             $qb
                 ->andWhere('_entity_budgetType = :budgetType')
                 ->setParameter('budgetType', $filter['budgetType'])
             ;
+            $filterDetail['budgetType'] = $this->budgetTypeRepos->find($filter['budgetType']);
         }
 
         if(!empty($filter['costItem'])) {
@@ -197,6 +253,7 @@ class RequesterReportQueryService implements QueryInterface
                 ->andWhere('_entity_costItem = :costItem')
                 ->setParameter('costItem', $filter['costItem'])
             ;
+            $filterDetail['costItem'] = $this->costItemRepos->find($filter['costItem']);
         }
 
         return $qb->getQuery()->getArrayResult();

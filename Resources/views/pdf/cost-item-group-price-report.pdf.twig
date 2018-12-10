@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+@page {
+  size: auto;
+  header: html_DefaultHeader;
+  footer: html_DefaultFooter;
+}
+
+body {
+  font-family: thsarabun;
+}
+
+.cl-title {
+  text-align: center;
+}
+
+.cl-header {
+  text-align: right;
+  border-bottom: 1px solid #000000;
+  font-weight: bold;
+  font-size: 10pt;
+}
+
+.cl-logo {
+  width: 120px;
+}
+
+table.data-list {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.data-list th,
+table.data-list td {
+  border: 1px solid black;
+}
+
+.cl-code,
+.cl-number {
+  font-family: monospace;
+  font-size: 0.60em;
+}
+
+.cl-number {
+  text-align: right;
+}
+
+.cl-layout-cell {
+  margin: 0;
+  padding: 0;
+}
+
+table.cl-collapse,
+table.cl-layout-cell {
+  border-collapse: collapse;
+}
+
+.cl-labeled-cell {
+  text-align: right;
+  font-weight: normal;
+}
+
+.cl-bordered-cell {
+  border: 1px solid black;
+}
+
+.cl-strong {
+  font-weight: bold;
+}
+    </style>
+  </head>
+  <body>
+      <htmlpageheader name="DefaultHeader">
+        <div class="cl-header cl-code">
+          <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+            <tr>
+              <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
+              <td style="text-align: center; font-weight: bold;">Group Quantity (PO) Report</td>
+              <td style="width: 33%; text-align: right;"></td>
+            </tr>
+          </table>
+        </div>
+      </htmlpageheader>
+
+      <htmlpagefooter name="DefaultFooter" class="cl-footer">
+          <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+              <tr>
+                  <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
+                  <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
+                  <td style="width: 33%; text-align: right;">GROUP QUANTITY (PO)-REPORT-rev1.0</td>
+              </tr>
+          </table>
+      </htmlpagefooter>
+
+      <h1 class="cl-title">รายงานสินค้า P0 (ราคาตามกลุ่มสินค้า)</h1>
+      <table style="width: 100%;">
+        <tr>
+          <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
+        </tr>
+      </table>
+      <table style="width: 100%;">
+        <tr>
+          <td style="width: 50%; vertical-align: top;">
+            <table style="width: 100%;text-align: left;">
+              <tr>
+                <td style="font-weight: bold; text-align: left;">โครงการ :</td>
+                <td style="text-align: left;width: 35%">
+                  {% if filterDetail.project is not defined %}
+                    <span>ทั้งหมด</span>
+                  {% else %}
+                    <span>[{{ filterDetail.project.code }}] {{ filterDetail.project.name }}</span>
+                  {% endif %}
+                </td>
+                <td style="font-weight: bold; text-align: left;">งบประมาณ :</td>
+                <td style="text-align: left;width: 25%">
+                {% if filterDetail.boq is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.boq.name }}</span>
+                {% endif %}</td>
+                <td style="font-weight: bold; text-align: left;">ประเภทงบประมาณ :</td>
+                <td>
+                {% if filterDetail.budgetType is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.budgetType.name }}</span>
+                {% endif %}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; text-align: left;">ผู้ต้องการ :</td>
+                <td>
+                {% if filterDetail.requester is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>[{{ filterDetail.requester.code }}] {{ filterDetail.requester.name }}</span>
+                {% endif %}
+				</td>
+				<td style="font-weight: bold; text-align: left;">ผู้จำหน่าย :</td>
+                <td>
+                {% if filterDetail.vendor is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>[{{ filterDetail.vendor.code }}] {{ filterDetail.vendor.name }}</span>
+                {% endif %}
+				</td>
+				<td></td>
+                <td></td>
+              </tr>
+              <tr>
+              <td style="font-weight: bold; text-align: left;">สถานะเอกสาร :</td>
+              <td>
+                {% if filterDetail.approved is not defined %}
+                    <span>ทั้งหมด</span>
+                {% elseif filterDetail.approved == 1 %}
+                    <span>อนุมัติ</span>
+                {% elseif filterDetail.approved == 0 %}
+                    <span>รออนุมัติ</span>
+                {% endif %}
+              </td>
+              <td style="font-weight: bold; text-align: left;">วันที่เริ่มต้น :</td>
+              <td>
+                {% if filterDetail.start is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.start|date('d/m/Y') }}</span>
+                {% endif %}
+				</td>
+				<td style="font-weight: bold; text-align: left;">วันที่สิ้นสุด :</td>
+              <td>
+                {% if filterDetail.end is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.end|date('d/m/Y') }}</span>
+                {% endif %}
+				</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <table class="data-list">
+        <thead>
+          <tr style="background-color: #C0C0C0">
+            <th rowspan="1" style="font-weight: bold;text-align: center;">ลำดับ</th>
+            <th colspan="5" style="font-weight: bold;text-align: center;">ข้อมูลสินค้า</th>
+          </tr>
+          <tr style="background-color: #C0C0C0">
+            <th style="width: 2em;"></th>
+            <th style="width: 4em;">รหัสสินค้า</th>
+            <th style="width: 2em;">ประเภท</th>
+            <th style="width: 5em;">รายการสินค้า</th>
+            <th style="width: 3em;">หน่วย</th>
+            <th style="width: 4em;">รวมราคา</th>
+          </tr>
+        </thead>
+        <tbody>
+{% for data in model %}
+          <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td style="text-align: center;">{{ data.code }}</td>
+            <td style="text-align: center;">{{ data.type }}</td>
+            <td style="text-align: center;">{{ data.name }}</td>
+            <td style="text-align: center;">{{ data.unit }}</td>
+            <td class="cl-number">{{ data.total|number_format(2) }}</td>
+          </tr>
+{% endfor %}
+		  <tr style="background-color: #E0E0E0">
+		    <td></td>
+		    <td></td>
+		    <td></td>
+		    <td></td>
+		    <td></td>
+		    <td class="cl-number">{{ model|asum('total')|number_format(2) }}</td>
+		  </tr>
+        </tbody>
+      </table>
+      <div style="position: fixed; bottom: 0px;">
+      </div>
+  </body>
+</html>

@@ -69,6 +69,10 @@ table.cl-layout-cell {
 .cl-strong {
   font-weight: bold;
 }
+
+.filter-text {
+  text-align: left !important;
+}
     </style>
   </head>
   <body>
@@ -77,8 +81,8 @@ table.cl-layout-cell {
           <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
             <tr>
               <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
-              <td style="text-align: center; font-weight: bold;">Vat Report</td>
-              <td style="width: 33%; text-align: right;"><span class="cl-code">xxxx</span></td>
+              <td style="text-align: center; font-weight: bold;">VAT Report</td>
+              <td style="width: 33%; text-align: right;"></td>
             </tr>
           </table>
         </div>
@@ -94,95 +98,95 @@ table.cl-layout-cell {
           </table>
       </htmlpagefooter>
 
-      <h1 class="cl-title">Vat Report</h1>
+      <h1 class="cl-title">รายงานภาษีมูลค่าเพิ่ม</h1>
       <table style="width: 100%;">
         <tr>
-          <td style="width: 100px;">
-{% if profile.logo %}
-            <img class="cl-logo" src="var:logo" />
-{% endif %}
-          </td>
-          <td>
-            <table>
-              <tr>
-                <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: bold;">ที่อยู่ :</span> {{
-                  [
-                    profile.profileData.address.address ?? false,
-                    (profile.profileData.address.subdistrict ?? false)|sformat('ต.%s'),
-                    (profile.profileData.address.district ?? false)|sformat('อ.%s'),
-                    (profile.profileData.address.province ?? false)|sformat('จ.%s'),
-                    profile.profileData.address.postalcode ?? false,
-                  ]|vfilter(false, true)|join(' ')
-                }}</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: bold;">โทรศัพท์ :</span> {{ profile.phone }} <span style="font-weight: bold;">โทรสาร :</span> {{ profile.fax }}</td>
-              </tr>
-              <tr>
-                <td><span style="font-weight: bold;">เลขประจำตัวผู้เสียภาษีอากร :</span> {{ profile.profileData.code }}</td>
-              </tr>
-            </table>
-          </td>
-          <td style="width: 180px;">
-            <table style="width: 100%;">
-              <tr>
-                <td class="cl-labeled-cell cl-strong">เลขที่เอกสาร :</td>
-                <td class="cl-code">xxxx</td>
-              </tr>
-              <tr>
-                <td class="cl-labeled-cell cl-strong">วัน/เดือน/ปี :</td>
-                <td class="cl-code">xxxx</td>
-              </tr>
-              <tr>
-                <td class="cl-labeled-cell cl-strong">กำหนดส่งสินค้า :</td>
-                <td class="cl-code">xxxxx</td>
-              </tr>
-            </table>
-          </td>
+          <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
         </tr>
       </table>
       <table style="width: 100%;">
         <tr>
           <td style="width: 50%; vertical-align: top;">
-            <table style="width: 100%;">
+            <table style="width: 100%;text-align: left;">
               <tr>
-                <td style="font-weight: bold; text-align: right;">อ้างอิง :</td>
-                <td>xxxxx</td>
+                <td style="font-weight: bold; text-align: left;">โครงการ :</td>
+                <td style="text-align: left;width: 35%">
+                  {% if filterDetail.project is not defined %}
+                    <span>ทั้งหมด</span>
+                  {% else %}
+                    <span>[{{ filterDetail.project.code }}] {{ filterDetail.project.name }}</span>
+                  {% endif %}
+                </td>
+                <td style="font-weight: bold; text-align: left;">งบประมาณ :</td>
+                <td style="text-align: left;width: 25%">
+                {% if filterDetail.boq is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.boq.name }}</span>
+                {% endif %}</td>
+                <td style="font-weight: bold; text-align: left;">ประเภทงบประมาณ :</td>
+                <td>
+                {% if filterDetail.budgetType is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.budgetType.name }}</span>
+                {% endif %}</td>
               </tr>
               <tr>
-                <td style="font-weight: bold; text-align: right;">โครงการ :</td>
-                <td>xxxxx</td>
+                <td style="font-weight: bold; text-align: left;">ผู้ต้องการ :</td>
+                <td>
+                {% if filterDetail.requester is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>[{{ filterDetail.requester.code }}] {{ filterDetail.requester.name }}</span>
+                {% endif %}
+				</td>
+				<td style="font-weight: bold; text-align: left;">ผู้จำหน่าย :</td>
+                <td>
+                {% if filterDetail.vendor is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>[{{ filterDetail.vendor.code }}] {{ filterDetail.vendor.name }}</span>
+                {% endif %}
+				</td>
+				<td style="font-weight: bold; text-align: left;">สถานะ VAT :</td>
+                <td>
+                {% if filterDetail.vatFactor is not defined %}
+                    <span>ทั้งหมด</span>
+                {% elseif filterDetail.vatFactor == 1 %}
+                    <span>มี</span>
+                {% elseif filterDetail.vatFactor == 0 %}
+                    <span>ไม่มี</span>
+                {% endif %}
+				</td>
               </tr>
               <tr>
-                <td style="font-weight: bold; text-align: right;">ที่อยู่จัดส่ง :</td>
-                <td>xxxxx</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold; text-align: right;">ผู้ติดต่อ :</td>
-                <td>xxxxx</td>
-              </tr>
-            </table>
-          </td>
-          <td style="width: 50%; vertical-align: top;">
-            <table style="width: 100%;">
-              <tr>
-                <td style="font-weight: bold; text-align: right;">อ้างอิง :</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold; text-align: right;">ผู้ขาย :</td>
-                <td>xxxxx</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold; text-align: right;">ที่อยู่ผู้ขาย :</td>
-                <td>xxxxxx</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold; text-align: right;">ผู้ติดต่อ :</td>
-                <td>xxxxxx</td>
+              <td style="font-weight: bold; text-align: left;">สถานะเอกสาร :</td>
+              <td>
+                {% if filterDetail.approved is not defined %}
+                    <span>ทั้งหมด</span>
+                {% elseif filterDetail.approved == 1 %}
+                    <span>อนุมัติ</span>
+                {% elseif filterDetail.approved == 0 %}
+                    <span>รออนุมัติ</span>
+                {% endif %}
+              </td>
+              <td style="font-weight: bold; text-align: left;">วันที่เริ่มต้น :</td>
+              <td>
+                {% if filterDetail.start is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.start|date('d/m/Y') }}</span>
+                {% endif %}
+				</td>
+				<td style="font-weight: bold; text-align: left;">วันที่สิ้นสุด :</td>
+              <td>
+                {% if filterDetail.end is not defined %}
+                    <span>ทั้งหมด</span>
+                {% else %}
+                    <span>{{ filterDetail.end|date('d/m/Y') }}</span>
+                {% endif %}
+				</td>
               </tr>
             </table>
           </td>
@@ -190,43 +194,63 @@ table.cl-layout-cell {
       </table>
       <table class="data-list">
         <thead>
-          <tr>
-            <td colspan="5" style="border: none;"></td>
-            <th style="border: none; width: 6em;">(ราคา : บาท)</td>
+          <tr style="background-color: #C0C0C0">
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
+            <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
+            <th colspan="3" style="font-weight: bold;text-align: center;">โครงการ</th>
+            <th colspan="2" style="font-weight: bold;text-align: center;">รหัส</th>
+            <th colspan="4" style="font-weight: bold;text-align: center;">ภาษีมูลค่าเพิ่ม VAT</th>
           </tr>
-          <tr>
-            <th style="width: 2em;">ลำดับ</th>
-            <th>รายการ</th>
-            <th style="width: 4em;">หน่วย</th>
-            <th style="width: 5em;">ราคา/หน่วย</th>
-            <th style="width: 5em;">ปริมาณ</th>
-            <th style="width: 6em;">ราคารวม</th>
+          <tr style="background-color: #C0C0C0">
+          	<th></th>
+            <th style="width: 6em;">เลขที่เอกสาร</th>
+            <th style="width: 3em;">สถานะ</th>
+            <th style="width: 3em;">รหัส</th>
+            <th style="width: 4em;">งบประมาณ</th>
+            <th style="width: 3em;">ประเภท</th>
+            <th style="width: 3em;">ผู้ต้องการ</th>
+            <th style="width: 3em;">ผู้จำหน่าย</th>
+            <th style="width: 2em;">สถานะ</th>
+            <th style="width: 5em;">มูลค่าVAT</th>
+            <th style="width: 5em;">มูลค่าไม่รวมVAT</th>
+            <th style="width: 5em;">มูลค่ารวมสุทธิ</th>
           </tr>
         </thead>
         <tbody>
 {% for data in model %}
           <tr>
             <td style="text-align: center;">{{ loop.index }}</td>
-            <td>{{ data.code }}</td>
-            <td>{{ data.requester }}</td>
-            <td class="cl-number">{{ data.docTotal|number_format(2) }}</td>
-            <td class="cl-number">{{ data.excludeVat|number_format(2) }}</td>
+            <td style="text-align: center;">{{ data.code }}</td>
+            <td style="text-align: center;">{{ (data.approved)? 'อนุมัติ' :'รออนุมัติ' }}</td>
+            <td style="text-align: center;">{{ data.project }}</td>
+            <td>{{ data.boq }}</td>
+            <td style="text-align: center;">{{ data.budgetType }}</td>
+            <td style="text-align: center;">{{ data.requester }}</td>
+            <td style="text-align: center;">{{ data.vendor }}</td>
+            <td style="text-align: center;">{{ (data.vatFactor)? 'มี':'ไม่มี' }}</td>
             <td class="cl-number">{{ data.vatCost|number_format(2) }}</td>
+            <td class="cl-number">{{ data.excludeVat|number_format(2) }}</td>
+            <td class="cl-number">{{ data.docTotal|number_format(2) }}</td>
+            
           </tr>
 {% endfor %}
+		  <tr style="background-color: #E0E0E0" >
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td class="cl-number">{{ model|asum('vatCost')|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('excludeVat')|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('docTotal')|number_format(2) }}</td>
+		  </tr>
         </tbody>
       </table>
       <div style="position: fixed; bottom: 0px;">
-        <table class="cl-layout-cell" style="width: 100%;">
-          <tr>
-            <td class="cl-layout-cell" style="width: 50%; text-align: center">
-              xxxx
-            </td>
-            <td class="cl-layout-cell" style="width: 50%; text-align: center">
-              xxxx
-            </td>
-          </tr>
-        </table>
       </div>
   </body>
 </html>
