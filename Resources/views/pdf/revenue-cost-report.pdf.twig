@@ -94,7 +94,7 @@ table.cl-layout-cell {
           </table>
       </htmlpagefooter>
 
-      <h1 class="cl-title">รายงานมูลค่าทำรับ</h1>
+      <h1 class="cl-title">รายงานมูลค่าการรับเงิน</h1>
       <table style="width: 100%;">
         <tr>
           <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
@@ -169,7 +169,7 @@ table.cl-layout-cell {
             <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
             <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
             <th colspan="2" style="font-weight: bold;text-align: center;">โครงการ</th>
-            <th colspan="6" style="font-weight: bold;text-align: center;">มูลค่าทำรับ</th>
+            <th colspan="5" style="font-weight: bold;text-align: center;">มูลค่าการรับเงิน</th>
           </tr>
           <tr style="background-color: #C0C0C0">
             <th></th>
@@ -179,7 +179,6 @@ table.cl-layout-cell {
             <th style="width: 4em;">งบประมาณ</th>
             <th style="width: 3em;">VAT</th>
             <th style="width: 3em;">ไม่รวมVAT</th>
-            <th style="width: 3em;">% TAX</th>
             <th style="width: 3em;">TAX</th>
             <th style="width: 4em;">รวมชำระ</th>
             <th style="width: 4em;">รวมสุทธิ</th>
@@ -195,7 +194,6 @@ table.cl-layout-cell {
             <td>{{ data.boq }}</td>
             <td class="cl-number">{{ data.vatCost|number_format(2) }}</td>
             <td class="cl-number">{{ data.excludeVat|number_format(2) }}</td>
-            <td class="cl-number">{{ (data.taxFactor * data.taxCost)|number_format(2) }}</td>
             <td class="cl-number">{{ data.taxCost|number_format(2) }}</td>
             <td class="cl-number">{{ data.payTotal|number_format(2) }}</td>
             <td class="cl-number">{{ data.total|number_format(2) }}</td>
@@ -209,7 +207,6 @@ table.cl-layout-cell {
 		  <td></td>
 		  <td class="cl-number">{{ model|asum('vatCost')|number_format(2) }}</td>
 		  <td class="cl-number">{{ model|asum('excludeVat')|number_format(2) }}</td>
-		  <td></td>
 		  <td class="cl-number">{{ model|asum('taxCost')|number_format(2) }}</td>
 		  <td class="cl-number">{{ model|asum('payTotal')|number_format(2) }}</td>
 		  <td class="cl-number">{{ model|asum('total')|number_format(2) }}</td>

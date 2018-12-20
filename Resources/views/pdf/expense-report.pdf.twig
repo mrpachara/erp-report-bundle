@@ -94,7 +94,7 @@ table.cl-layout-cell {
           </table>
       </htmlpagefooter>
 
-      <h1 class="cl-title">รายงานเอกสารทำจ่าย</h1>
+      <h1 class="cl-title">รายงานเอกสารใบจ่ายเงิน</h1>
       <table style="width: 100%;">
         <tr>
           <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
@@ -186,7 +186,7 @@ table.cl-layout-cell {
             <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
             <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
             <th colspan="3" style="font-weight: bold;text-align: center;">โครงการ</th>
-            <th colspan="1" style="font-weight: bold;text-align: center;">ผู้จำหน่าย</th>
+            <th colspan="2" style="font-weight: bold;text-align: center;">รหัส</th>
           </tr>
           <tr style="background-color: #C0C0C0">
             <th></th>
@@ -195,7 +195,8 @@ table.cl-layout-cell {
             <th style="width: 3em;">รหัส</th>
             <th style="width: 4em;">งบประมาณ</th>
             <th style="width: 3em;">ประเภท</th>
-            <th style="width: 3em;"></th>
+            <th style="width: 3em;">ผู้ต้องการ</th>
+            <th style="width: 3em;">ผู้จำหน่าย</th>
           </tr>
         </thead>
         <tbody>
@@ -208,6 +209,7 @@ table.cl-layout-cell {
             <td>{{ data.boq }}</td>
             <td style="text-align: center;">{{ data.budgetType }}</td>
             <td style="text-align: center;">{{ data.vendor }}</td>
+            <td style="text-align: center;">{{ data.requester }}</td>
           </tr>
 {% endfor %}
         </tbody>

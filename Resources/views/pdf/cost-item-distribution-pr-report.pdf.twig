@@ -77,7 +77,7 @@ table.cl-layout-cell {
           <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
             <tr>
               <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
-              <td style="text-align: center; font-weight: bold;">Distribution Quantity (PR) Report</td>
+              <td style="text-align: center; font-weight: bold;">Cost Item Quantity (PR) Report</td>
               <td style="width: 33%; text-align: right;"></td>
             </tr>
           </table>
@@ -89,12 +89,12 @@ table.cl-layout-cell {
               <tr>
                   <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
                   <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
-                  <td style="width: 33%; text-align: right;">DISTRIBUTION QUANTITY (PR)-REPORT-rev1.0</td>
+                  <td style="width: 33%; text-align: right;">COST ITEM QUANTITY (PR)-REPORT-rev1.0</td>
               </tr>
           </table>
       </htmlpagefooter>
 
-      <h1 class="cl-title">รายงานสินค้า  PR (ปริมาณตามการแจกแจงสินค้า)</h1>
+      <h1 class="cl-title">รายงานปริมาณสินค้าแบบแจกแจงตามการขอซื้อ</h1>
       <table style="width: 100%;">
         <tr>
           <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
@@ -103,6 +103,20 @@ table.cl-layout-cell {
       <table style="width: 100%;">
         <tr>
           <td style="width: 50%; vertical-align: top;">
+            <table style="width: 100%;text-align: left;">
+          		<tr>
+          			<td style="font-weight: bold; text-align: left;">รายการสินค้า :</td>
+                    <td style="text-align: left;width: 85%">
+                    {% if filterDetail.costItem is not defined %}
+                        <span>ทั้งหมด</span>
+                    {% else %}
+                        <span>[{{ filterDetail.costItem.code }}] {{ filterDetail.costItem.name }}</span>
+                    {% endif %}
+    				</td>
+    				<td></td>
+    				<td></td>
+          		</tr>
+          	</table>
             <table style="width: 100%;text-align: left;">
               <tr>
                 <td style="font-weight: bold; text-align: left;">โครงการ :</td>
@@ -147,18 +161,6 @@ table.cl-layout-cell {
 				</td>
 				<td></td><td></td>
 				</tr>
-				<tr>
-				<td style="font-weight: bold; text-align: left;">รายการสินค้า :</td>
-                <td>
-                {% if filterDetail.costItem is not defined %}
-                    <span>ทั้งหมด</span>
-                {% else %}
-                    <span>[{{ filterDetail.costItem.code }}] {{ filterDetail.costItem.name }}</span>
-                {% endif %}
-				</td>
-				<td></td><td></td>
-                <td></td><td></td>
-              </tr>
               <tr>
               <td style="font-weight: bold; text-align: left;">สถานะเอกสาร :</td>
               <td>
@@ -196,16 +198,12 @@ table.cl-layout-cell {
           <tr style="background-color: #C0C0C0">
             <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
             <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
-            <th colspan="3" style="font-weight: bold;text-align: center;">โครงการ</th>
             <th colspan="5" style="font-weight: bold;text-align: center;">ข้อมูลสินค้า</th>
           </tr>
           <tr style="background-color: #C0C0C0">
             <th></th>
             <th style="width: 6em;">เลขที่เอกสาร</th>
             <th style="width: 3em;">สถานะ</th>
-            <th style="width: 3em;">รหัส</th>
-            <th style="width: 4em;">งบประมาณ</th>
-            <th style="width: 3em;">ประเภท</th>
             <th style="width: 5em;">รหัสสินค้า</th>
             <th style="width: 3em;">ประเภท</th>
             <th style="width: 10em;">รายการสินค้า</th>
@@ -217,22 +215,16 @@ table.cl-layout-cell {
 {% for data in model %}
           <tr>
             <td style="text-align: center;">{{ loop.index }}</td>
-            <td style="text-align: center;">{{ data.code }}</td>
+            <td style="text-align: center;">{{ data.purchaseRequestCode }}</td>
             <td style="text-align: center;">{{ (data.approved)? 'อนุมัติ' :'รออนุมัติ' }}</td>
-            <td style="text-align: center;">{{ data.project }}</td>
-            <td>{{ data.boq }}</td>
-            <td style="text-align: center;">{{ data.budgetType }}</td>
-            <td style="text-align: center;">{{ data.costItemCode }}</td>
+            <td style="text-align: center;">{{ data.code }}</td>
             <td style="text-align: center;">{{ data.type }}</td>
-            <td style="text-align: center;">{{ data.costItemName }}</td>
+            <td style="text-align: center;">{{ data.name }}</td>
             <td style="text-align: center;">{{ data.unit }}</td>
             <td class="cl-number">{{ data.quantity|number_format(2) }}</td>
           </tr>
 {% endfor %}
 		  <tr  style="background-color: #E0E0E0">
-		  <td></td>
-		  <td></td>
-		  <td></td>
 		  <td></td>
 		  <td></td>
 		  <td></td>

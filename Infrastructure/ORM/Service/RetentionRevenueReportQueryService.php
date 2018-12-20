@@ -57,6 +57,7 @@ class RetentionRevenueReportQueryService implements QueryInterface
             ->addSelect("{$alias}.retention AS retention")
             ->addSelect("{$alias}.retentionCost AS retentionCost")
             ->addSelect("{$alias}.retentionPayTotal AS retentionPayTotal")
+            ->addSelect("{$alias}.docTotal AS docTotal")
         ->leftJoin("{$alias}.project","{$alias}_project")
         ->leftJoin("{$alias}.requester","{$alias}_requester")
         ->leftJoin("{$alias}.boq","{$alias}_boq")
@@ -112,12 +113,12 @@ class RetentionRevenueReportQueryService implements QueryInterface
             ;
             $filterDetail['boq'] = $this->boqRepos->find($filter['boq']);
         }
-        if(array_key_exists('vatFactor', $filter)) {
+        if(array_key_exists('retentionFactor', $filter)) {
             $qb
-            ->andWhere('_entity.vatFactor = :vatFactor')
-            ->setParameter('vatFactor', $filter['vatFactor'])
+            ->andWhere('_entity.retentionFactor = :retentionFactor')
+            ->setParameter('retentionFactor', $filter['retentionFactor'])
             ;
-            $filterDetail['vatFactor'] = $filter['vatFactor'];
+            $filterDetail['retentionFactor'] = $filter['retentionFactor'];
         }
 
         return $qb->getQuery()->getArrayResult();

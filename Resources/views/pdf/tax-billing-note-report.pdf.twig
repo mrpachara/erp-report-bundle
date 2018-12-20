@@ -77,7 +77,7 @@ table.cl-layout-cell {
           <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
             <tr>
               <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
-              <td style="text-align: center; font-weight: bold;">TAX Report</td>
+              <td style="text-align: center; font-weight: bold;">TAX (BN) Report</td>
               <td style="width: 33%; text-align: right;"></td>
             </tr>
           </table>
@@ -89,12 +89,12 @@ table.cl-layout-cell {
               <tr>
                   <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
                   <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
-                  <td style="width: 33%; text-align: right;">TAX-REPORT-rev1.0</td>
+                  <td style="width: 33%; text-align: right;">TAX (BN)-REPORT-rev1.0</td>
               </tr>
           </table>
       </htmlpagefooter>
 
-      <h1 class="cl-title">รายงานเอกสารวางบิล/แจ้งหนี้</h1>
+      <h1 class="cl-title">รายงานภาษีหัก ณ ที่จ่ายจากการวางบิล/แจ้งหนี้</h1>
       <table style="width: 100%;">
         <tr>
           <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
@@ -120,31 +120,6 @@ table.cl-layout-cell {
                 {% else %}
                     <span>{{ filterDetail.boq.name }}</span>
                 {% endif %}</td>
-                <td style="font-weight: bold; text-align: left;">ประเภทงบประมาณ :</td>
-                <td>
-                {% if filterDetail.budgetType is not defined %}
-                    <span>ทั้งหมด</span>
-                {% else %}
-                    <span>{{ filterDetail.budgetType.name }}</span>
-                {% endif %}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold; text-align: left;">ผู้ต้องการ :</td>
-                <td>
-                {% if filterDetail.requester is not defined %}
-                    <span>ทั้งหมด</span>
-                {% else %}
-                    <span>[{{ filterDetail.requester.code }}] {{ filterDetail.requester.name }}</span>
-                {% endif %}
-				</td>
-				<td style="font-weight: bold; text-align: left;">ผู้จำหน่าย :</td>
-                <td>
-                {% if filterDetail.vendor is not defined %}
-                    <span>ทั้งหมด</span>
-                {% else %}
-                    <span>[{{ filterDetail.vendor.code }}] {{ filterDetail.vendor.name }}</span>
-                {% endif %}
-				</td>
 				<td style="font-weight: bold; text-align: left;">สถานะ TAX :</td>
                 <td>
                 {% if filterDetail.taxFactor is not defined %}
@@ -193,24 +168,22 @@ table.cl-layout-cell {
           <tr style="background-color: #C0C0C0">
             <th rowspan="1" style="font-weight: bold;text-align: center;">ลำดับ</th>
             <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
-            <th colspan="3" style="font-weight: bold;text-align: center;">โครงการ</th>
-            <th colspan="2" style="font-weight: bold;text-align: center;">รหัส</th>
-            <th colspan="5" style="font-weight: bold;text-align: center;">ภาษีหัก ณ ที่จ่าย TAX</th>
+            <th colspan="2" style="font-weight: bold;text-align: center;">โครงการ</th>
+            <th colspan="3" style="font-weight: bold;text-align: center;">ภาษีหัก ณ ที่จ่าย</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;">มูลค่ารวมชำระ</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;">มูลค่ารวมสุทธิ</th>
           </tr>
           <tr style="background-color: #C0C0C0">
-            <th></th>
+            <th style="width: 2em;"></th>
             <th style="width: 6em;">เลขที่เอกสาร</th>
             <th style="width: 3em;">สถานะ</th>
             <th style="width: 3em;">รหัส</th>
             <th style="width: 4em;">งบประมาณ</th>
-            <th style="width: 3em;">ประเภท</th>
-            <th style="width: 3em;">ผู้ต้องการ</th>
-            <th style="width: 3em;">ผู้จำหน่าย</th>
-            <th style="width: 2em;">สถานะ</th>
-            <th style="width: 2em;">%</th>
+            <th style="width: 2em;">สถานะTAX</th>
+            <th style="width: 3em;">%TAX</th>
             <th style="width: 4em;">มูลค่าTAX</th>
-            <th style="width: 5em;">มูลค่ารวมชำระ</th>
-            <th style="width: 6em;">มูลค่ารวมสุทธิ</th>
+            <th style="width: 5em;"></th>
+            <th style="width: 5em;"></th>
           </tr>
         </thead>
         <tbody>
@@ -221,9 +194,6 @@ table.cl-layout-cell {
             <td style="text-align: center;">{{ (data.approved)? 'อนุมัติ' :'รออนุมัติ' }}</td>
             <td style="text-align: center;">{{ data.project }}</td>
             <td>{{ data.boq }}</td>
-            <td style="text-align: center;">{{ data.budgetType }}</td>
-            <td style="text-align: center;">{{ data.requester }}</td>
-            <td style="text-align: center;">{{ data.vendor }}</td>
             <td style="text-align: center;">{{ (data.taxFactor)? 'มี':'ไม่มี' }}</td>
             <td class="cl-number">{{ (data.taxFactor * data.tax)|number_format(2) }}</td>
             <td class="cl-number">{{ data.taxCost|number_format(2) }}</td>
@@ -232,9 +202,6 @@ table.cl-layout-cell {
           </tr>
 {% endfor %}
 		  <tr style="background-color: #E0E0E0">
-		  <td></td>
-		  <td></td>
-		  <td></td>
 		  <td></td>
 		  <td></td>
 		  <td></td>

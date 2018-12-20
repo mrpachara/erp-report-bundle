@@ -77,7 +77,7 @@ table.cl-layout-cell {
           <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
             <tr>
               <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
-              <td style="text-align: center; font-weight: bold;">Deposit Report</td>
+              <td style="text-align: center; font-weight: bold;">Deposit (EP) Report</td>
               <td style="width: 33%; text-align: right;"></td>
             </tr>
           </table>
@@ -89,12 +89,12 @@ table.cl-layout-cell {
               <tr>
                   <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
                   <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
-                  <td style="width: 33%; text-align: right;">DEPOSIT-REPORT-rev1.0</td>
+                  <td style="width: 33%; text-align: right;">DEPOSIT (EP)-REPORT-rev1.0</td>
               </tr>
           </table>
       </htmlpagefooter>
 
-      <h1 class="cl-title">รายงานค่ามัดจำสินค้า EP</h1>
+      <h1 class="cl-title">รายงานค่ามัดจำสินค้าจากการจ่ายเงิน</h1>
       <table style="width: 100%;">
         <tr>
           <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
@@ -145,7 +145,7 @@ table.cl-layout-cell {
                     <span>[{{ filterDetail.vendor.code }}] {{ filterDetail.vendor.name }}</span>
                 {% endif %}
 				</td>
-				<td style="font-weight: bold; text-align: left;">สถานะ TAX :</td>
+				<td style="font-weight: bold; text-align: left;">สถานะมัดจำสินค้า :</td>
                 <td>
                 {% if filterDetail.payTerm is not defined %}
                     <span>ทั้งหมด</span>
@@ -194,8 +194,9 @@ table.cl-layout-cell {
             <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
             <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
             <th colspan="3" style="font-weight: bold;text-align: center;">โครงการ</th>
-            <th colspan="2" style="font-weight: bold;text-align: center;">รหัส</th>
-            <th colspan="4" style="font-weight: bold;text-align: center;">มัดจำสินค้า DEPOSIT</th>
+            <th colspan="2" style="font-weight: bold;text-align: center;">มัดจำสินค้า</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;">มูลค่าค้างชำระ</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;">มูลค่ารวมสุทธิ</th>
           </tr>
           <tr style="background-color: #C0C0C0">
             <th></th>
@@ -204,12 +205,10 @@ table.cl-layout-cell {
             <th style="width: 3em;">รหัส</th>
             <th style="width: 4em;">งบประมาณ</th>
             <th style="width: 3em;">ประเภท</th>
-            <th style="width: 3em;">ผู้ต้องการ</th>
-            <th style="width: 3em;">ผู้จำหน่าย</th>
-            <th style="width: 2em;">สถานะ</th>
-            <th style="width: 5em;">มูลค่ารวมสุทธิ</th>
-            <th style="width: 5em;">มูลค่ามัดจำ</th>
-            <th style="width: 5em;">มูลค่าค้างชำระ</th>
+            <th style="width: 3em;">สถานะ</th>
+            <th style="width: 5em;">มูลค่า</th>
+            <th style="width: 5em;"></th>
+            <th style="width: 5em;"></th>
           </tr>
         </thead>
         <tbody>
@@ -221,12 +220,10 @@ table.cl-layout-cell {
             <td style="text-align: center;">{{ data.project }}</td>
             <td>{{ data.boq }}</td>
             <td style="text-align: center;">{{ data.budgetType }}</td>
-            <td style="text-align: center;">{{ data.requester }}</td>
-            <td style="text-align: center;">{{ data.vendor }}</td>
             <td style="text-align: center;">{{ (data.payTerm)? 'มี':'ไม่มี' }}</td>
-            <td class="cl-number">{{ data.docTotal|number_format(2) }}</td>
             <td class="cl-number">{{ data.payDeposit|number_format(2) }}</td>
             <td class="cl-number">{{ (data.docTotal-data.payDeposit)|number_format(2) }}</td>
+            <td class="cl-number">{{ data.docTotal|number_format(2) }}</td>
           </tr>
 {% endfor %}
 		  <tr style="background-color: #E0E0E0">
@@ -237,11 +234,9 @@ table.cl-layout-cell {
 		  <td></td>
 		  <td></td>
 		  <td></td>
-		  <td></td>
-		  <td></td>
-		  <td class="cl-number">{{ model|asum('docTotal')|number_format(2) }}</td>
 		  <td class="cl-number">{{ model|asum('payDeposit')|number_format(2) }}</td>
 		  <td class="cl-number">{{ (model|asum('docTotal') - model|asum('payDeposit'))|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('docTotal')|number_format(2) }}</td>
 		  </tr>
         </tbody>
       </table>

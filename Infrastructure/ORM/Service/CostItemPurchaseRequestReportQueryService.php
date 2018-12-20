@@ -3,9 +3,7 @@
 namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use \Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Erp\Bundle\ReportBundle\Domain\CQRS\CostItemPurchaseRequestReportQuery as QueryInterface;
-use Erp\Bundle\DocumentBundle\Entity\PurchaseDetail;
 
 class CostItemPurchaseRequestReportQueryService implements QueryInterface
 {
@@ -53,20 +51,24 @@ class CostItemPurchaseRequestReportQueryService implements QueryInterface
     {
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
-            ->select("{$alias}.name AS costItemName")
+            ->select("{$alias}.name AS name")
                 ->addSelect("{$alias}_purchase.id AS id")
-                ->addSelect("{$alias}_purchase.code AS code")
+                ->addSelect("{$alias}_purchase.code AS purchaseRequestCode")
                 ->addSelect("{$alias}_purchase.approved AS approved")
                 ->addSelect("{$alias}_costItem.type AS type")
                 ->addSelect("{$alias}_costItem.unit AS unit")
                 ->addSelect("{$alias}_costItem.price AS price")
                 ->addSelect("{$alias}.quantity AS quantity")
                 ->addSelect("{$alias}.total AS total")
-                ->addSelect("{$alias}_costItem.code AS costItemCode")
+                ->addSelect("{$alias}_costItem.code AS code")
                 ->addSelect("{$alias}_project.code AS project")
                 ->addSelect("{$alias}_boq.name AS boq")
                 ->addSelect("{$alias}_budgetType.name AS budgetType")
+                ->addSelect("{$alias}_requester.code AS requester")
+                ->addSelect("{$alias}_vendor.code AS vendor")
                 ->leftJoin("{$alias}.purchase","{$alias}_purchase")
+                ->leftJoin("{$alias}_purchase.requester","{$alias}_requester")
+                ->leftJoin("{$alias}_purchase.vendor","{$alias}_vendor")
                 ->leftJoin("{$alias}.costItem","{$alias}_costItem")
                 ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
                 ->leftJoin("{$alias}_purchase.project","{$alias}_project")
@@ -85,14 +87,14 @@ class CostItemPurchaseRequestReportQueryService implements QueryInterface
         $qb = $this->costItemDistributionPurchaseRequestQueryBuilder('_entity');
         if(!empty($filter['start'])) {
             $qb
-                ->andWhere('_entity.tstmp >= :startDate')
+                ->andWhere('_entity_purchase.tstmp >= :startDate')
                 ->setParameter('startDate', new \DateTimeImmutable($filter['start']))
             ;
             $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
         }
         if(!empty($filter['end'])) {
             $qb
-                ->andWhere('_entity.tstmp <= :endDate')
+                ->andWhere('_entity_purchase.tstmp <= :endDate')
                 ->setParameter('endDate', new \DateTimeImmutable($filter['end']))
             ;
             $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
@@ -148,6 +150,13 @@ class CostItemPurchaseRequestReportQueryService implements QueryInterface
             $filterDetail['costItem'] = $this->costItemRepos->find($filter['costItem']);
         }
 
+        if(!empty($filter['type'])) {
+            $qb
+            ->andWhere('_entity_costItem.type = :type')
+            ->setParameter('type', $filter['type'])
+            ;
+            $filterDetail['type'] = $this->costItemRepos->find($filter['type']);
+        }
 
         return $qb->getQuery()->getArrayResult();
 

@@ -94,7 +94,7 @@ table.cl-layout-cell {
           </table>
       </htmlpagefooter>
 
-      <h1 class="cl-title">รายงานมูลค่าสั่งซื้อ</h1>
+      <h1 class="cl-title">รายงานมูลค่าการสั่งซื้อ</h1>
       <table style="width: 100%;">
         <tr>
           <td style="font-weight: bold;">{{ profile.profileData.name }}</td>
@@ -186,8 +186,7 @@ table.cl-layout-cell {
             <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
             <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
             <th colspan="3" style="font-weight: bold;text-align: center;">โครงการ</th>
-            <th colspan="2" style="font-weight: bold;text-align: center;">รหัส</th>
-            <th colspan="6" style="font-weight: bold;text-align: center;">มูลค่าสั่งซื้อ</th>
+            <th colspan="5" style="font-weight: bold;text-align: center;">มูลค่าการสั่งซื้อ</th>
           </tr>
           <tr style="background-color: #C0C0C0">
             <th></th>
@@ -196,11 +195,8 @@ table.cl-layout-cell {
             <th style="width: 3em;">รหัส</th>
             <th style="width: 4em;">งบประมาณ</th>
             <th style="width: 3em;">ประเภท</th>
-            <th style="width: 3em;">ผู้ต้องการ</th>
-            <th style="width: 3em;">ผู้จำหน่าย</th>
             <th style="width: 3em;">VAT</th>
             <th style="width: 3em;">ไม่รวมVAT</th>
-            <th style="width: 3em;">% TAX</th>
             <th style="width: 3em;">TAX</th>
             <th style="width: 4em;">รวมชำระ</th>
             <th style="width: 4em;">รวมสุทธิ</th>
@@ -215,11 +211,8 @@ table.cl-layout-cell {
             <td style="text-align: center;">{{ data.project }}</td>
             <td>{{ data.boq }}</td>
             <td style="text-align: center;">{{ data.budgetType }}</td>
-            <td style="text-align: center;">{{ data.requester }}</td>
-            <td style="text-align: center;">{{ data.vendor }}</td>
             <td class="cl-number">{{ data.vatCost|number_format(2) }}</td>
             <td class="cl-number">{{ data.excludeVat|number_format(2) }}</td>
-            <td class="cl-number">{{ (data.taxFactor * data.taxCost)|number_format(2) }}</td>
             <td class="cl-number">{{ data.taxCost|number_format(2) }}</td>
             <td class="cl-number">{{ data.payTotal|number_format(2) }}</td>
             <td class="cl-number">{{ data.total|number_format(2) }}</td>
@@ -232,11 +225,8 @@ table.cl-layout-cell {
 		  <td></td>
 		  <td></td>
 		  <td></td>
-		  <td></td>
-		  <td></td>
 		  <td class="cl-number">{{ model|asum('vatCost')|number_format(2) }}</td>
 		  <td class="cl-number">{{ model|asum('excludeVat')|number_format(2) }}</td>
-		  <td></td>
 		  <td class="cl-number">{{ model|asum('taxCost')|number_format(2) }}</td>
 		  <td class="cl-number">{{ model|asum('payTotal')|number_format(2) }}</td>
 		  <td class="cl-number">{{ model|asum('total')|number_format(2) }}</td>
