@@ -92,21 +92,28 @@ class ProjectBoqReportQueryService implements QueryInterface
                 }
                 $result['cost']['data'][] = $costData;
                 
-                if(count($boq->getChildren()) > 0) $numbers[] = 0;
-                $number = array_pop($numbers) + 1;
-                if($number <= count($boq->getChildren())) {
-                    $numbers[] = $number;
-                    $boq = $boq->getChildren()[$number - 1];
+                if(count($boq->getChildren()) > 0) {
+                    $numbers[] = 1;
+                    $boq = $boq->getChildren()[0];
                 } else {
                     $boq = $boq->getParent();
+                    while($boq !== null) {
+                        $number = array_pop($numbers) + 1;
+                        if($number <= count($boq->getChildren())) {
+                            $numbers[] = $number;
+                            $boq = $boq->getChildren()[$number - 1];
+                            break;
+                        }
+                        
+                        $boq = $boq->getParent();
+                    }
                 }
             }
             
             $results[] = $result;
         }
-        dump($results);
+        
         return $results;
-
     }
 
 }
