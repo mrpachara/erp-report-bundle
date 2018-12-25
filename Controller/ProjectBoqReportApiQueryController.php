@@ -68,23 +68,18 @@ class ProjectBoqReportApiQueryController
      */
     public function projectBoqSummaryAction(ServerRequestInterface $request, $id)
     {
-        /** @var Project */
-        $project = $this->domainQuery->find($id);
-        
-        if(empty($project)) throw new NotFoundHttpException();
         return [
-            'data' => $this->domainQuery->boqSummary($project->getId()),
+            'data' => $this->domainQuery->projectBoqSummary($id),
         ];
 
     }
 
     /**
-     * @Rest\Get("/export.{format}")
+     * @Rest\Get("/{id}/export.{format}")
      */
-    public function projectBoqSummaryExportAction(ServerRequestInterface $request)
+    public function projectBoqSummaryExportAction(ServerRequestInterface $request, $id)
     {
-        $filterDetail = [];
-        $data = $this->domainQuery->projectBoqSummary($request->getQueryParams(), $filterDetail);
+        $data = $this->domainQuery->projectBoqSummary($id);
         
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         
@@ -96,7 +91,6 @@ class ProjectBoqReportApiQueryController
         $view = $this->templating->render('@ErpReport/pdf/project-boq-report.pdf.twig', [
             'profile' => $profile,
             'model' => $data,
-            'filterDetail' => $filterDetail,
         ]);
         
         $output = $this->pdfService->generatePdf($view, ['format' => 'A4'], function($mpdf) use ($logo) {

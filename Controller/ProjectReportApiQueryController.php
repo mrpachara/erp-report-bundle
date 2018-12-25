@@ -39,7 +39,7 @@ class ProjectReportApiQueryController
     /**
      * @Rest\Get("/{id}/boq")
      */
-    public function purchaseOrderSummaryAction(ServerRequestInterface $request, $id)
+    public function projectBoqAction(ServerRequestInterface $request, $id)
     {
         /** @var Project */
         $project = $this->domainQuery->find($id);

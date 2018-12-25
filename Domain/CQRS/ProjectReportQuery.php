@@ -4,5 +4,5 @@ namespace Erp\Bundle\ReportBundle\Domain\CQRS;
 
 interface ProjectReportQuery
 {
-    function boqSummary(string $idProject);
+    function projectBoqSummary(array $filter = null, array &$filterDetail = null);
 }
