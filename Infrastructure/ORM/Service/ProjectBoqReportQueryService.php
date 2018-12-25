@@ -76,19 +76,31 @@ class ProjectBoqReportQueryService implements QueryInterface
                 ];
             }
             
-            $costData = [
-                'number' => null,
-                'name' => null,
-                'costs' => [],
-            ];
-            foreach($result['cost']['columns'] as $column) {
-                $costData['costs'][] = [
-                    'budget' => (double)$boq->getBudgets()[$column['id']]->getBudget(),
-                    'cost' => (double)$boq->getBudgets()[$column['id']]->cost['expense']['approved'],
-                    'remain' => (double)($boq->getBudgets()[$column['id']]->getBudget() - $boq->getBudgets()[$column['id']]->cost['expense']['approved']),
+            $numbers = [];
+            while($boq !== null) {
+                $costData = [
+                    'number' => implode('.', $numbers),
+                    'name' => $boq->getName(),
+                    'costs' => [],
                 ];
+                foreach($result['cost']['columns'] as $column) {
+                    $costData['costs'][] = [
+                        'budget' => (double)$boq->getBudgets()[$column['id']]->getBudget(),
+                        'cost' => (double)$boq->getBudgets()[$column['id']]->cost['expense']['approved'],
+                        'remain' => (double)($boq->getBudgets()[$column['id']]->getBudget() - $boq->getBudgets()[$column['id']]->cost['expense']['approved']),
+                    ];
+                }
+                $result['cost']['data'][] = $costData;
+                
+                $number = array_pop($numbers) + 1;
+                if($number <= count($boq->getChildren())) {
+                    $numbers[] = $number;
+                    $boq = $boq->getChildren()[$number - 1];
+                } else {
+                    $boq = $boq->getParent();
+                }
             }
-            $result['cost']['data'][] = $costData;
+            
             
             $results[] = $result;
         }
