@@ -81,6 +81,7 @@ class ProjectBoqReportQueryService implements QueryInterface
                 $costData = [
                     'number' => implode('.', $numbers),
                     'name' => $boq->getName(),
+                    'isTotal' => false,
                     'costs' => [],
                 ];
                 foreach($result['cost']['columns'] as $column) {
@@ -89,6 +90,9 @@ class ProjectBoqReportQueryService implements QueryInterface
                         'cost' => (double)$boq->getBudgets()[$column['id']]->cost['expense']['approved'],
                         'remain' => (double)($boq->getBudgets()[$column['id']]->getBudget() - $boq->getBudgets()[$column['id']]->cost['expense']['approved']),
                     ];
+                }
+                if(count($boq->getChildren()) > 0) {
+                    $costData['isTotal'] = true;
                 }
                 $result['cost']['data'][] = $costData;
                 

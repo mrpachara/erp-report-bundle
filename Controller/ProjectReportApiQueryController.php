@@ -16,9 +16,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ProjectReportApiQueryController
 {
 
-    /** @var \Erp\Bundle\MasterBundle\Domain\CQRS\ProjectQuery */
-    private $domainQuery;
-
     /** @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectReportQuery */
     private $summaryQuery;
 
@@ -28,27 +25,19 @@ class ProjectReportApiQueryController
      * @param \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectReportQuery $summaryQuery
      */
     public function __construct(
-        \Erp\Bundle\MasterBundle\Domain\CQRS\ProjectQuery $domainQuery,
         \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectReportQuery $summaryQuery
     )
     {
-        $this->domainQuery = $domainQuery;
         $this->summaryQuery = $summaryQuery;
     }
 
     /**
-     * @Rest\Get("/{id}/boq")
+     * @Rest\Get("/{id}")
      */
-    public function projectBoqAction(ServerRequestInterface $request, $id)
+    public function projectReportAction(ServerRequestInterface $request, $id)
     {
-        /** @var Project */
-        $project = $this->domainQuery->find($id);
-
-        if(empty($project)) throw new NotFoundHttpException();
-
         return [
-            'project' => $project,
-            'data' => $this->summaryQuery->boqSummary($project->getId()),
+            'data' => $this->summaryQuery->projectSummary($id),
         ];
 
     }
