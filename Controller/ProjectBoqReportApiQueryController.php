@@ -75,6 +75,17 @@ class ProjectBoqReportApiQueryController
     }
 
     /**
+     * @Rest\Get("/{id}/{idBoq}")
+     */
+    public function projectBoqSummaryEachAction(ServerRequestInterface $request, $id, $idBoq)
+    {
+        return [
+            'data' => $this->domainQuery->projectBoqSummaryEach($id, $idBoq),
+        ];
+        
+    }
+    
+    /**
      * @Rest\Get("/{id}/export.{format}")
      */
     public function projectBoqSummaryExportAction(ServerRequestInterface $request, $id)

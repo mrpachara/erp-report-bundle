@@ -47,6 +47,17 @@ class ProjectBoqReportQueryService implements QueryInterface
     {
         $boqs = $this->queryService->getAllProjectBoq($idProject);
         
+        return $this->prepareResult($boqs);
+    }
+
+    function projectBoqSummaryEach(string $idProject, string $id) {
+        $boq = $this->queryService->getProjectBoq($idProject, $id);
+        
+        return $this->prepareResult([$boq]);
+    }
+    
+    function prepareResult(array $boqs)
+    {
         $results = [];
         
         /**
@@ -75,7 +86,10 @@ class ProjectBoqReportQueryService implements QueryInterface
                     'name' => $budgetType->getName(),
                 ];
             }
-            
+            $result['cost']['columns'][] = [
+                'id' => null,
+                'name' => 'total',
+            ];
             $numbers = [];
             while($boq !== null) {
                 $costData = [
@@ -85,12 +99,29 @@ class ProjectBoqReportQueryService implements QueryInterface
                     'costs' => [],
                 ];
                 foreach($result['cost']['columns'] as $column) {
-                    $costData['costs'][] = [
-                        'budget' => (double)$boq->getBudgets()[$column['id']]->getBudget(),
-                        'cost' => (double)$boq->getBudgets()[$column['id']]->cost['expense']['approved'],
-                        'remain' => (double)($boq->getBudgets()[$column['id']]->getBudget() - $boq->getBudgets()[$column['id']]->cost['expense']['approved']),
-                    ];
+                    if($column['id'] !== null) {
+                        $costData['costs'][] = [
+                            'budget' => (double)$boq->getBudgets()[$column['id']]->getBudget(),
+                            'cost' => (double)$boq->getBudgets()[$column['id']]->cost['expense']['approved'],
+                            'remain' => (double)($boq->getBudgets()[$column['id']]->getBudget() - $boq->getBudgets()[$column['id']]->cost['expense']['approved']),
+                        ];
+                    }
                 }
+                
+                $totalCost = [];
+                if(!empty($costData['costs'][0])) {
+                    foreach($costData['costs'][0] as $costType => $value) {
+                        $totalCost[$costType] = 0;
+                    }
+                    
+                    foreach($costData['costs'] as $cost) {
+                        foreach($cost as $costType => $value) {
+                            $totalCost[$costType] += $value;
+                        }
+                    }
+                }
+                $costData['costs'][] = $totalCost;
+                
                 if(count($boq->getChildren()) > 0) {
                     $costData['isTotal'] = true;
                 }
@@ -119,5 +150,4 @@ class ProjectBoqReportQueryService implements QueryInterface
         
         return $results;
     }
-
 }

@@ -4,7 +4,6 @@ namespace Erp\Bundle\ReportBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Project Report Api Controller

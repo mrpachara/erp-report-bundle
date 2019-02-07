@@ -217,9 +217,9 @@ table.cl-layout-cell {
             <td style="text-align: center;">{{ loop.index }}</td>
             <td style="text-align: center;">{{ data.purchaseOrderCode }}</td>
             <td style="text-align: center;">{{ (data.approved)? 'อนุมัติ' :'รออนุมัติ' }}</td>
-            <td style="text-align: center;">{{ data.code }}</td>
+            <td>{{ data.code }}</td>
             <td style="text-align: center;">{{ data.type }}</td>
-            <td style="text-align: center;">{{ data.name }}</td>
+            <td>{{ data.name }}</td>
             <td style="text-align: center;">{{ data.unit }}</td>
             <td class="cl-number">{{ data.total|number_format(2) }}</td>
           </tr>
