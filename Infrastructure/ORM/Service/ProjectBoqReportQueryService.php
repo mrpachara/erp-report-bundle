@@ -60,11 +60,14 @@ class ProjectBoqReportQueryService implements QueryInterface
     {
         $results = [];
         
+        
         /**
          * @var $boq ProjectBoq
          */
         foreach($boqs as $inx => $boq) {
             $result = [
+                'projectCode' => $boq->getProject()->getCode(),
+                'projectName' => $boq->getProject()->getName(),
                 'name' => $boq->getName(),
                 'value' => [
                     'contract' => (double)$boq->getBoqContract(),

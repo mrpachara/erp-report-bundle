@@ -6,20 +6,20 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Project Boq Report Api Controller
+ * Project Boq Purchase Request Report Api Controller
  *
  * @Rest\Version("1.0")
- * @Rest\Route("/api/report/project-boq")
+ * @Rest\Route("/api/report/project-boq-pr")
  * @Rest\View(serializerEnableMaxDepthChecks=true)
  */
-class ProjectBoqReportApiQueryController
+class ProjectBoqPurchaseRequestReportApiQueryController
 {
 /*
 2_2d6m1egnbuhw0cgk888owwskk0w4c0wg0oksow8ogg4www0co8
 26ijx5m68clc4kcs08ckcckwo8k4ow8og4cow4wcwgoowwk40k
  */
 
-/** @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqReportQuery */
+/** @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery */
     private $domainQuery;
     
     /**
@@ -44,11 +44,11 @@ class ProjectBoqReportApiQueryController
     protected $pdfService = null;
 
     /**
-     * ProjectBoqReportApiQueryController constructor.
-     * @param \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqReportQuery $domainQuery
+     * ProjectBoqPurchaseRequestReportApiQueryController constructor.
+     * @param \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery $domainQuery
      */
     public function __construct(
-        \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqReportQuery $domainQuery,
+        \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery $domainQuery,
         \Erp\Bundle\SettingBundle\Domain\CQRS\SettingQuery $settingQuery,
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
@@ -65,10 +65,10 @@ class ProjectBoqReportApiQueryController
     /**
      * @Rest\Get("/{id}")
      */
-    public function projectBoqSummaryAction(ServerRequestInterface $request, $id)
+    public function projectBoqPRSummaryAction(ServerRequestInterface $request, $id)
     {
         return [
-            'data' => $this->domainQuery->projectBoqSummary($id),
+            'data' => $this->domainQuery->projectBoqPRSummary($id),
         ];
 
     }
@@ -76,10 +76,10 @@ class ProjectBoqReportApiQueryController
     /**
      * @Rest\Get("/{id}/{idBoq}")
      */
-    public function projectBoqSummaryEachAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectBoqPRSummaryEachAction(ServerRequestInterface $request, $id, $idBoq)
     {
         return [
-            'data' => $this->domainQuery->projectBoqSummaryEach($id, $idBoq),
+            'data' => $this->domainQuery->projectBoqPRSummaryEach($id, $idBoq),
         ];
         
     }
@@ -87,9 +87,9 @@ class ProjectBoqReportApiQueryController
     /**
      * @Rest\Get("/{id}/{idBoq}/export.{format}")
      */
-    public function projectBoqSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectBoqPRSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
     {
-        $data = $this->domainQuery->projectBoqSummaryEach($id, $idBoq);
+        $data = $this->domainQuery->projectBoqPRSummaryEach($id, $idBoq);
         
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         
@@ -98,7 +98,7 @@ class ProjectBoqReportApiQueryController
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
         
-        $view = $this->templating->render('@ErpReport/pdf/project-boq-report.pdf.twig', [
+        $view = $this->templating->render('@ErpReport/pdf/project-boq-pr-report.pdf.twig', [
             'profile' => $profile,
             'model' => $data,
         ]);

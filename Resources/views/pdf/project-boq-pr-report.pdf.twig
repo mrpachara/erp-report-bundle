@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+@page {
+  size: auto;
+  header: html_DefaultHeader;
+  footer: html_DefaultFooter;
+}
+
+body {
+  font-family: thsarabun;
+}
+
+.cl-title {
+  text-align: center;
+}
+
+.cl-header {
+  text-align: right;
+  border-bottom: 1px solid #000000;
+  font-weight: bold;
+  font-size: 10pt;
+}
+
+.cl-logo {
+  width: 120px;
+}
+
+table.data-list {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.data-list th,
+table.data-list td {
+  border: 1px solid black;
+}
+
+.cl-code,
+.cl-number {
+  font-family: monospace;
+  font-size: 0.60em;
+}
+
+.cl-number {
+  text-align: right;
+  width: 7%;
+}
+
+.cl-layout-cell {
+  margin: 0;
+  padding: 0;
+}
+
+table.cl-collapse,
+table.cl-layout-cell {
+  border-collapse: collapse;
+}
+
+.cl-labeled-cell {
+  text-align: right;
+  font-weight: normal;
+}
+
+.cl-bordered-cell {
+  border: 1px solid black;
+}
+
+.cl-strong {
+  font-weight: bold;
+}
+    </style>
+  </head>
+  <body>
+      <htmlpageheader name="DefaultHeader">
+        <div class="cl-header cl-code">
+          <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+            <tr>
+              <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
+              <td style="text-align: center; font-weight: bold;">Project BOQ PR Report</td>
+              <td style="width: 33%; text-align: right;"></td>
+            </tr>
+          </table>
+        </div>
+      </htmlpageheader>
+
+      <htmlpagefooter name="DefaultFooter" class="cl-footer">
+          <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+              <tr>
+                  <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
+                  <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
+                  <td style="width: 33%; text-align: right;">PROJECT BOQ PR-REPORT-rev1.0</td>
+              </tr>
+          </table>
+      </htmlpagefooter>
+
+{% for data in model %}
+      <h1 class="cl-title">รายงานประมาณการขอซื้อ</h1>
+      <table style="width: 100%;">
+        <tr>
+          <td style="font-weight: bold;" width="8%">โครงการ : </td>
+          <td style="font-weight: bold;">{{ data.projectCode }} {{ data.projectName }}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" width="8%">BOQ : </td>
+          <td style="font-weight: bold;">{{ data.name }}</td>
+        </tr>
+      </table>
+{% endfor %}
+      <table class="data-list">
+        <thead>
+          <tr style="background-color: #C0C0C0">
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;">รายการ</th>
+{% for data in model %}
+	{% for column in data.cost.columns %}
+            <th colspan="3" style="font-weight: bold;text-align: center;">{{ (column.name == 'total')? 'รวม' : column.name }}</th>
+    {% endfor %}
+{% endfor %}
+          </tr>
+          <tr style="background-color: #C0C0C0">
+            <th></th>
+            <th></th>
+{% for data in model %}
+	{% for column in data.cost.columns %}
+			<th>ที่มี</th>
+            <th>ใช้ไป</th>
+            <th>คงเหลือ</th>
+    {% endfor %}
+{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+{% for data in model %}
+	{% for boq in data.cost.data %}
+	    {% if boq.number != '' %}
+          <tr style="(boq.isTotal)? {'font-weight': 'bold'} : {}">
+            <td style="text-align: center;">{{ boq.number }}</td>
+            <td>{{ boq.name }}</td>
+	    {% for column in data.cost.columns %}
+	    {% set i = loop.index0 %}
+	    <td class="cl-number">{{ boq.costs[i].budget |number_format }}</td>
+	    <td class="cl-number">{{ boq.costs[i].cost |number_format }}</td>
+	    <td class="cl-number">{{ boq.costs[i].remain |number_format }}</td>
+	    {% endfor %}
+          </tr>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+{% for data in model %}
+	{% for boq in data.cost.data %}
+	    {% if boq.number == '' %}
+          <tr style="background-color: #E0E0E0">
+            <td style="text-align: center;"></td>
+            <td style="text-align: center;"></td>
+	    {% for column in data.cost.columns %}
+	    {% set i = loop.index0 %}
+	    <td class="cl-number">{{ boq.costs[i].budget |number_format }}</td>
+	    <td class="cl-number">{{ boq.costs[i].cost |number_format }}</td>
+	    <td class="cl-number">{{ boq.costs[i].remain |number_format }}</td>
+	    {% endfor %}
+	    
+          </tr>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+        </tbody>
+      </table>
+      <div style="position: fixed; bottom: 0px;">
+      </div>
+  </body>
+</html>
