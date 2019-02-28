@@ -45,7 +45,7 @@ table.data-list td {
 
 .cl-number {
   text-align: right;
-  width: 7%;
+  /* width: 7%; */
 }
 
 .cl-layout-cell {
@@ -70,6 +70,11 @@ table.cl-layout-cell {
 .cl-strong {
   font-weight: bold;
 }
+
+.cl-total,
+tr.cl-total * {
+  font-weight: bold;
+}
     </style>
   </head>
   <body>
@@ -78,7 +83,7 @@ table.cl-layout-cell {
           <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
             <tr>
               <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
-              <td style="text-align: center; font-weight: bold;">Project BOQ Report</td>
+              <td style="text-align: center; font-weight: bold;">Project Budget Report</td>
               <td style="width: 33%; text-align: right;"></td>
             </tr>
           </table>
@@ -90,10 +95,11 @@ table.cl-layout-cell {
               <tr>
                   <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
                   <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
-                  <td style="width: 33%; text-align: right;">PROJECT BOQ-REPORT-rev1.0</td>
+                  <td style="width: 33%; text-align: right;">PROJECT BUDGET-REPORT-rev1.0</td>
               </tr>
           </table>
       </htmlpagefooter>
+      
 {% for data in model %}
       <h1 class="cl-title">รายงานสรุปจ่าย</h1>
       <table style="width: 100%;">
@@ -102,7 +108,7 @@ table.cl-layout-cell {
           <td style="font-weight: bold;">{{ data.projectCode }} {{ data.projectName }}</td>
         </tr>
         <tr>
-          <td style="font-weight: bold;" width="8%">BOQ : </td>
+          <td style="font-weight: bold;" width="8%">Budget : </td>
           <td style="font-weight: bold;">{{ data.name }}</td>
         </tr>
       </table>
@@ -134,14 +140,14 @@ table.cl-layout-cell {
 {% for data in model %}
 	{% for boq in data.cost.data %}
 	    {% if boq.number != '' %}
-          <tr style="(boq.isTotal)? {'font-weight': 'bold'} : {}">
-            <td style="text-align: center;">{{ boq.number }}</td>
-            <td>{{ boq.name }}</td>
+          <tr>
+            <td class="{{ (boq.isTotal)? 'cl-total' : '' }}" style="text-align: center;">{{ boq.number }}</td>
+            <td class="{{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.name }}</td>
 	    {% for column in data.cost.columns %}
 	    {% set i = loop.index0 %}
-	    <td class="cl-number">{{ boq.costs[i].budget |number_format }}</td>
-	    <td class="cl-number">{{ boq.costs[i].cost |number_format }}</td>
-	    <td class="cl-number">{{ boq.costs[i].remain |number_format }}</td>
+	    <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].budget |number_format }}</td>
+	    <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].cost |number_format }}</td>
+	    <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].remain |number_format }}</td>
 	    {% endfor %}
           </tr>
         {% endif %}
