@@ -31,6 +31,7 @@ class ProjectContractReportQueryService implements QueryInterface
     function __construct(
         \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
         \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\ProjectBoqWithSummaryQueryService $queryService
+        
     )
     {
         $this->repository = $doctrine->getRepository('ErpMasterBundle:ProjectBoq');
@@ -51,9 +52,7 @@ class ProjectContractReportQueryService implements QueryInterface
     }
 
     function projectContractSummaryEach(string $idProject, string $id) {
-        $boq = $this->queryService->getProjectBoq($idProject, $id);
-        
-        return $this->prepareResult([$boq]);
+        return $this->queryService->getAllProjectContractByBoq($idProject, $id);
     }
     
     function prepareResult(array $boqs)

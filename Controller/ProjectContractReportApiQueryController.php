@@ -67,8 +67,10 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractSummaryAction(ServerRequestInterface $request, $id)
     {
+        $query = $request->getQueryParams();
+        $excepts = (empty($query['excepts']))? null : $query['excepts'];
         return [
-            'data' => $this->domainQuery->projectContractSummary($id),
+            'data' => $this->domainQuery->projectContractSummary($id , $excepts),
         ];
 
     }
