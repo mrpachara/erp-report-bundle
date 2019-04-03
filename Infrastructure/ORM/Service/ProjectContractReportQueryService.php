@@ -5,8 +5,17 @@ namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 use \Doctrine\ORM\EntityRepository;
 use Erp\Bundle\ReportBundle\Domain\CQRS\ProjectContractReportQuery as QueryInterface;
 use Erp\Bundle\DocumentBundle\Entity\IncomeDetail;
+use Erp\Bundle\DocumentBundle\Entity\BillingNote;
+use Erp\Bundle\DocumentBundle\Entity\TaxInvoice;
+use Erp\Bundle\DocumentBundle\Entity\Revenue;
+use Erp\Bundle\MasterBundle\Entity\ProjectBoq;
+use Doctrine\ORM\EntityManager;
+use Erp\Bundle\DocumentBundle\Entity\DeliveryNote;
 class ProjectContractReportQueryService implements QueryInterface
 {
+    /** @var EntityManager */
+    protected $em;
+    
     /** @var EntityRepository */
     protected $repository;
     
@@ -28,13 +37,15 @@ class ProjectContractReportQueryService implements QueryInterface
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\ProjectBoqWithSummaryQueryService */
     protected $queryService;
 
+    
     function __construct(
         \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
         \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\ProjectBoqWithSummaryQueryService $queryService
         
     )
     {
-        $this->repository = $doctrine->getRepository('ErpMasterBundle:ProjectBoq');
+        $this->em = $doctrine->getEntityManagerForClass('ErpDocumentBundle:Income');
+        $this->repository = $doctrine->getRepository('ErpDocumentBundle:Income');
         $this->queryService = $queryService;
         
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
@@ -52,101 +63,71 @@ class ProjectContractReportQueryService implements QueryInterface
     }
 
     function projectContractSummaryEach(string $idProject, string $id) {
-        return $this->queryService->getAllProjectContractByBoq($idProject, $id);
+        $contract = $this->queryService->getAllProjectContractByBoq($idProject, $id);
+        return $this->prepareResult($contract);
     }
     
-    function prepareResult(array $boqs)
+    function prepareResult(array $incomes)
     {
         $results = [];
         
-        
         /**
-         * @var $boq ProjectBoq
+         * @var $incomeDetail IncomeDetail
          */
-        foreach($boqs as $inx => $boq) {
+        foreach($incomes as $inx => $income) {
+            $project = $income->getProject();
+            $boq = $income->getBoq();
+            
+            if(!$income->updatable()) continue;
+            
+            
             $result = [
-                'projectCode' => $boq->getProject()->getCode(),
-                'projectName' => $boq->getProject()->getName(),
-                'name' => $boq->getName(),
-                'value' => [
-                    'contract' => (double)$boq->getBoqContract(),
-                    'revenue' => (double)$boq->value['revenue']['approved'],
-                    'remain' => (double) ($boq->getBoqContract() - $boq->value['revenue']['approved']),
-                ],
-                'cost' => [
-                    'columns' => [],
-                    'data' => [],
-                ]
+                'approved' => $income->getApproved(),
+                'projectCode' => $project->getCode(),
+                'projectName' => $project->getName(),
+                'budgetName' => $boq->getName(),
+                'dtype' => $this->em->getClassMetadata(get_class($income))->discriminatorValue,
+                'docCode' => $income->getCode(),
+                'detailText' => implode(', ', array_reduce($income->getDetails(), function($carry, $detail) {
+                    $carry[] = $detail->getName();
+                    return $carry;
+                }, [])),
+                'contract' => 0,
+                'vatCost' => 0,
+                'excludeVat' => 0,
+                'taxCost' => 0,
+                'payTotal' => 0,
+                'retention' => 0,
+                'retentionCost' => 0,
+                'retentionPayTotal' => 0,
+                'paymentDate' => null,
             ];
             
-            /**
-             * @var $budgetType ProjectBoqBudgetType
-             */
-            foreach($boq->getBudgetTypes() as $budgetType) {
-                $result['cost']['columns'][] = [
-                    'id' => $budgetType->getId(),
-                    'name' => $budgetType->getName(),
-                ];
-            }
-            $result['cost']['columns'][] = [
-                'id' => null,
-                'name' => 'total',
-            ];
-
-            $numbers = [];
-            while($boq !== null) {
-                $costData = [
-                    'number' => implode('.', $numbers),
-                    'name' => $boq->getName(),
-                    'isTotal' => false,
-                    'costs' => [],
-                ];
-                foreach($result['cost']['columns'] as $column) {
-                    if($column['id'] !== null) {
-                        $costData['costs'][] = [
-                            'budget' => (double)$boq->getBudgets()[$column['id']]->getBudget(),
-                            'cost' => (double)$boq->getBudgets()[$column['id']]->cost['expense']['approved'],
-                            'remain' => (double)($boq->getBudgets()[$column['id']]->getBudget() - $boq->getBudgets()[$column['id']]->cost['expense']['approved']),
-                        ];
-                    }
-                }
-                
-                $totalCost = [];
-                if(!empty($costData['costs'][0])) {
-                    foreach($costData['costs'][0] as $costType => $value) {
-                        $totalCost[$costType] = 0;
-                    }
-                    
-                    foreach($costData['costs'] as $cost) {
-                        foreach($cost as $costType => $value) {
-                            $totalCost[$costType] += $value;
-                        }
-                    }
-                }
-                $costData['costs'][] = $totalCost;
-                
-                if(count($boq->getChildren()) > 0) {
-                    $costData['isTotal'] = true;
-                }
-                $result['cost']['data'][] = $costData;
-                
-                if(count($boq->getChildren()) > 0) {
-                    $numbers[] = 1;
-                    $boq = $boq->getChildren()[0];
+            if(
+                ($income instanceof DeliveryNote)
+                ) {
+                    $result['contract'] = $income->getTotal();
+                    $result['vatCost'] = 0;
+                    $result['excludeVat'] = $income->getTotal();
+                    $result['taxCost'] = 0;
+                    $result['payTotal'] = $income->getTotal();
+                    $result['retention'] = 0;
+                    $result['retentionCost'] = 0;
+                    $result['retentionPayTotal'] = $income->getTotal();
+                    $result['paymentDate'] = null;
                 } else {
-                    $boq = $boq->getParent();
-                    while($boq !== null) {
-                        $number = array_pop($numbers) + 1;
-                        if($number <= count($boq->getChildren())) {
-                            $numbers[] = $number;
-                            $boq = $boq->getChildren()[$number - 1];
-                            break;
-                        }
-                        
-                        $boq = $boq->getParent();
-                    }
+                    $result['contract'] = $income->getDocTotal();
+                    $result['vatCost'] = $income->getVatCost();
+                    $result['excludeVat'] = $income->getExcludeVat();
+                    $result['taxCost'] = $income->getTaxCost();
+                    $result['payTotal'] = $income->getPayTotal();
+                    $result['retention'] = $income->getRetention();
+                    $result['retentionCost'] = $income->getRetentionCost();
+                    $result['retentionPayTotal'] = $income->getRetentionPayTotal();
+                    $result['paymentDate'] = $income->getPaymentDate();
                 }
-            }
+                
+                
             
             $results[] = $result;
         }

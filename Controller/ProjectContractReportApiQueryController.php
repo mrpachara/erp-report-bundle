@@ -87,9 +87,9 @@ class ProjectContractReportApiQueryController
     }
     
     /**
-     * @Rest\Get("/{id}/{idBoq}/export.{format}")
+     * @Rest\Get("/{id}/{idBoq}/delivery-note/export.{format}")
      */
-    public function projectContractSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectContractDeliverySummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
     {
         $data = $this->domainQuery->projectContractSummaryEach($id, $idBoq);
         
@@ -100,7 +100,7 @@ class ProjectContractReportApiQueryController
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
         
-        $view = $this->templating->render('@ErpReport/pdf/project-contract-report.pdf.twig', [
+        $view = $this->templating->render('@ErpReport/pdf/project-contract-delivery-note-report.pdf.twig', [
             'profile' => $profile,
             'model' => $data,
         ]);
@@ -110,5 +110,127 @@ class ProjectContractReportApiQueryController
         });
             
             return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+    }
+    
+    /**
+     * @Rest\Get("/{id}/{idBoq}/billing-note/export.{format}")
+     */
+    public function projectContractBillingSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    {
+        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+            return 'billingnote' === $item['dtype'] || 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
+        });
+        
+        $profile = $this->settingQuery->findOneByCode('profile')->getValue();
+        
+        $logo = null;
+        if(!empty($profile['logo'])) {
+            $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
+        }
+        
+        $view = $this->templating->render('@ErpReport/pdf/project-contract-billing-note-report.pdf.twig', [
+            'profile' => $profile,
+            'model' => $data,
+        ]);
+        
+        $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
+            $mpdf->imageVars['logo'] = $logo;
+        });
+            
+            return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+    }
+    
+    /**
+     * @Rest\Get("/{id}/{idBoq}/tax-invoice/export.{format}")
+     */
+    public function projectContractTaxInvoiceSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    {
+        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+            return 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
+        });
+        
+        $profile = $this->settingQuery->findOneByCode('profile')->getValue();
+        
+        $logo = null;
+        if(!empty($profile['logo'])) {
+            $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
+        }
+        
+        $view = $this->templating->render('@ErpReport/pdf/project-contract-tax-invoice-report.pdf.twig', [
+            'profile' => $profile,
+            'model' => $data,
+        ]);
+        
+        $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
+            $mpdf->imageVars['logo'] = $logo;
+        });
+            
+            return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+    }
+    
+    /**
+     * @Rest\Get("/{id}/{idBoq}/revenue/export.{format}")
+     */
+    public function projectContractRevenueSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    {
+        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+            return 'revenue' === $item['dtype'];
+        });
+        
+//         $filtereds = [];
+//         foreach($data as $item) {
+//             if('revenue' === $item['dtype']) $filtereds[] = item;
+//         }
+        
+        $profile = $this->settingQuery->findOneByCode('profile')->getValue();
+        
+        $logo = null;
+        if(!empty($profile['logo'])) {
+            $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
+        }
+        
+        $view = $this->templating->render('@ErpReport/pdf/project-contract-revenue-report.pdf.twig', [
+            'profile' => $profile,
+            'model' => $data,
+        ]);
+        
+        $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
+            $mpdf->imageVars['logo'] = $logo;
+        });
+            
+            return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+    }
+    
+    /**
+     * @Rest\Get("/{id}/{idBoq}/contract/export.{format}")
+     */
+    public function projectContractProjectSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    {
+        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+            return 'revenue' === $item['dtype'] && $item['approved'] === 1;
+        });
+            
+            //         $filtereds = [];
+            //         foreach($data as $item) {
+            //             if('revenue' === $item['dtype']) $filtereds[] = item;
+            //         }
+            
+            $profile = $this->settingQuery->findOneByCode('profile')->getValue();
+            
+            $logo = null;
+            if(!empty($profile['logo'])) {
+                $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
+            }
+            
+            $view = $this->templating->render('@ErpReport/pdf/project-contract-report.pdf.twig', [
+                'profile' => $profile,
+                'model' => $data,
+            ]);
+            
+            $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
+                $mpdf->imageVars['logo'] = $logo;
+            });
+                
+                return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
     }
 }

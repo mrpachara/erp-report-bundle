@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+@page {
+  size: auto;
+  header: html_DefaultHeader;
+  footer: html_DefaultFooter;
+}
+
+body {
+  font-family: thsarabun;
+}
+
+.cl-title {
+  text-align: center;
+}
+
+.cl-header {
+  text-align: right;
+  border-bottom: 1px solid #000000;
+  font-weight: bold;
+  font-size: 10pt;
+}
+
+.cl-logo {
+  width: 120px;
+}
+
+table.data-list {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.data-list th,
+table.data-list td {
+  border: 1px solid black;
+}
+
+.cl-code,
+.cl-number {
+  font-family: monospace;
+  font-size: 0.60em;
+}
+
+.cl-number {
+  text-align: right;
+  /* width: 6%; */
+}
+
+.cl-layout-cell {
+  margin: 0;
+  padding: 0;
+}
+
+table.cl-collapse,
+table.cl-layout-cell {
+  border-collapse: collapse;
+}
+
+.cl-labeled-cell {
+  text-align: right;
+  font-weight: normal;
+}
+
+.cl-bordered-cell {
+  border: 1px solid black;
+}
+
+.cl-strong {
+  font-weight: bold;
+}
+
+.cl-total,
+tr.cl-total * {
+  font-weight: bold;
+}
+    </style>
+  </head>
+  <body>
+      <htmlpageheader name="DefaultHeader">
+        <div class="cl-header cl-code">
+          <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+            <tr>
+              <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
+              <td style="text-align: center; font-weight: bold;">Project Budget TI Report</td>
+              <td style="width: 33%; text-align: right;"></td>
+            </tr>
+          </table>
+        </div>
+      </htmlpageheader>
+
+      <htmlpagefooter name="DefaultFooter" class="cl-footer">
+          <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+              <tr>
+                  <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
+                  <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
+                  <td style="width: 33%; text-align: right;">PROJECT BUDGET TI-REPORT-rev1.0</td>
+              </tr>
+          </table>
+      </htmlpagefooter>
+
+
+      <h1 class="cl-title">รายงานประมาณการใบเสร็จรับเงิน/ใบกำกับภาษี</h1>
+      <table style="width: 100%;">
+        <tr>
+          <td style="font-weight: bold;" width="8%">โครงการ : </td>
+          <td style="font-weight: bold;">{{ (model is empty)? '' : model[0].projectCode }} {{ (model is empty)? '' : model[0].projectName }}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;" width="8%">Budget : </td>
+          <td style="font-weight: bold;">{{ (model is empty)? '' : model[0].budgetName }}</td>
+        </tr>
+      </table>
+      <table class="data-list">
+        <thead>
+          <tr style="background-color: #C0C0C0">
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 5em;">เลขที่เอกสาร</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 5em;">สถานะ</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">วันที่รับเงิน</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">มูลค่าการตั้งเบิก</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">VAT</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">ไม่รวมVAT</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">TAX</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">รวมชำระ</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">%ประกันผลงาน</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">มูลค่าประกันผลงาน</th>
+            <th rowspan="1" style="font-weight: bold;text-align: center;width: 3em;">มูลค่ารวมชำระสุทธิ</th>
+          </tr>
+        </thead>
+        <tbody>
+{% for data in model %}
+          <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ data.docCode }}</td>
+            <td style="text-align: center;">{{ (data.approved)? 'อนุมัติ' : 'รออนุมัติ' }}</td>
+    	    <td style="text-align: center;">{{ data.paymentDate |date('d/m/Y') }}</td>
+    	    <td class="cl-number">{{ data.contract |number_format }}</td>
+    	    <td class="cl-number">{{ data.vatCost |number_format }}</td>    	    
+    	    <td class="cl-number">{{ data.excludeVat |number_format }}</td>
+    	    <td class="cl-number">{{ data.taxCost |number_format }}</td>
+    	    <td class="cl-number">{{ data.payTotal |number_format }}</td>
+    	    <td class="cl-number">{{ data.retention }}</td>
+    	    <td class="cl-number">{{ data.retentionCost |number_format }}</td>
+    	    <td class="cl-number">{{ data.retentionPayTotal |number_format }}</td>
+          </tr>
+{% endfor %}
+		  <tr style="background-color: #E0E0E0">
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td class="cl-number">{{ model|asum('contract')|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('vatCost')|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('excludeVat')|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('taxCost')|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('payTotal')|number_format(2) }}</td>
+		  <td></td>
+		  <td class="cl-number">{{ model|asum('retentionCost')|number_format(2) }}</td>
+		  <td class="cl-number">{{ model|asum('retentionPayTotal')|number_format(2) }}</td>
+		  </tr>
+        </tbody>
+      </table>
+      <div style="position: fixed; bottom: 0px;">
+      </div>
+  </body>
+</html>
