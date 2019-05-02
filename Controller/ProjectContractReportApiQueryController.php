@@ -117,9 +117,9 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractBillingSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
     {
-        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+        $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
             return 'billingnote' === $item['dtype'] || 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
-        });
+        }));
         
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         
@@ -145,9 +145,9 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractTaxInvoiceSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
     {
-        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+        $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
             return 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
-        });
+        }));
         
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         
@@ -173,9 +173,9 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractRevenueSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
     {
-        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+        $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
             return 'revenue' === $item['dtype'];
-        });
+        }));
         
 //         $filtereds = [];
 //         foreach($data as $item) {
@@ -206,9 +206,9 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractProjectSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
     {
-        $data = array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
-            return 'revenue' === $item['dtype'] && $item['approved'] === 1;
-        });
+        $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
+            return 'revenue' === $item['dtype'] && $item['approved'] == 1;
+        }));
             
             //         $filtereds = [];
             //         foreach($data as $item) {
