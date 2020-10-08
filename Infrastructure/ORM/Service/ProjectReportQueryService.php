@@ -3,6 +3,7 @@
 namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use Erp\Bundle\ReportBundle\Domain\CQRS\ProjectReportQuery as QueryInterface;
+use Erp\Bundle\MasterBundle\Entity\Project;
 
 class ProjectReportQueryService implements QueryInterface
 {

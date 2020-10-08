@@ -4,6 +4,8 @@ namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use \Doctrine\ORM\EntityRepository;
 use Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseOrderReportQuery as QueryInterface;
+use Erp\Bundle\MasterBundle\Entity\ProjectBoq;
+use Erp\Bundle\MasterBundle\Entity\ProjectBoqBudgetType;
 class ProjectBoqPurchaseOrderReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
