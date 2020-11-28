@@ -69,14 +69,14 @@ class PayMethodTaxInvoiceReportQueryService implements QueryInterface
         $qb = $this->payMethodTaxInvoiceQueryBuilder('_entity');
         if(!empty($filter['start'])) {
             $qb
-                ->andWhere('_entity.dueDate >= :startDate')
+                ->andWhere('_entity.deliveryDate >= :startDate')
                 ->setParameter('startDate', new \DateTimeImmutable($filter['start']))
             ;
             $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
         }
         if(!empty($filter['end'])) {
             $qb
-                ->andWhere('_entity.dueDate <= :endDate')
+                ->andWhere('_entity.deliveryDate <= :endDate')
                 ->setParameter('endDate', new \DateTimeImmutable($filter['end']))
             ;
             $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
