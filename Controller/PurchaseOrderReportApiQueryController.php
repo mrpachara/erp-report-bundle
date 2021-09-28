@@ -104,16 +104,17 @@ class PurchaseOrderReportApiQueryController
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
 				$sheet->mergeCells("A1:H1");
-                $sheet->mergeCells("C2:H2");
-                $sheet->mergeCells("C3:H3");
-                $sheet->mergeCells("C4:H4");
-                $sheet->mergeCells("C5:H5");
-                $sheet->mergeCells("C6:H6");
                 $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal('center');
-                $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('G7:G8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('H7:H8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
                 $sheet->setCellValue('A1', 'รายงานเอกสารใบสั่งซื้อ (PO-DC)');
+                $sheet->mergeCells("C2:F2");
+                $sheet->mergeCells("C3:F3");
+                $sheet->mergeCells("C4:F4");
+                $sheet->mergeCells("C5:F5");
+                $sheet->mergeCells("C6:F6");
+                $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('right');
+                $sheet->getStyle('C2:C8')->getAlignment()->setHorizontal('left');
+                $sheet->getStyle('E7:E8')->getAlignment()->setHorizontal('right');
+                $sheet->getStyle('F7:F8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
                 $sheet->setCellValue('B2', 'โครงการ : ');
                 $sheet->setCellValue('B3', 'งบประมาณ : ');
                 $sheet->setCellValue('B4', 'ประเภท : ');
@@ -121,8 +122,8 @@ class PurchaseOrderReportApiQueryController
                 $sheet->setCellValue('B6', 'ผู้จำหน่าย : ');
                 $sheet->setCellValue('B7', 'สถานะเอกสาร : ');
                 // $sheet->setCellValue('B8', 'สถานะVAT : ');
-                $sheet->setCellValue('G7', 'วันที่เริ่มต้น : ');
-                $sheet->setCellValue('G8', 'วันที่สิ้นสุด : ');
+                $sheet->setCellValue('E7', 'วันที่เริ่มต้น : ');
+                $sheet->setCellValue('E8', 'วันที่สิ้นสุด : ');
                 $sheet->setCellValue('C2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
                 $sheet->setCellValue('C3', (!isset($filterDetail['boq']))? 'ทั้งหมด' : "{$filterDetail['boq']->getName()}");
                 $sheet->setCellValue('C4', (!isset($filterDetail['budgetType']))? 'ทั้งหมด' : "{$filterDetail['budgetType']->getName()}");
@@ -130,8 +131,9 @@ class PurchaseOrderReportApiQueryController
                 $sheet->setCellValue('C6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
                 $sheet->setCellValue('C7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
                 // $sheet->setCellValue('C8', (!isset($filterDetail['vatFactor']))? 'ทั้งหมด' : ($filterDetail['vatFactor']? 'มีVAT' : 'ไม่มีVAT'));
-                $sheet->setCellValue('H7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
-                $sheet->setCellValue('H8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
+                $sheet->setCellValue('F7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
+                $sheet->setCellValue('F8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
+
                 $sheet->mergeCells('A9:A10');
                 $sheet->mergeCells('B9:C9');
                 $sheet->mergeCells('D9:F9');
@@ -172,7 +174,7 @@ class PurchaseOrderReportApiQueryController
                 }
 				
                 $writer = new Xlsx($spreadsheet);
-                $fileName = 'RP-DC-PU-PO_rev2.1.0_'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-DC-PU-PO_rev.2.1.0_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 $writer->save($temp_file);
                 $response = new BinaryFileResponse($temp_file);
@@ -212,17 +214,18 @@ class PurchaseOrderReportApiQueryController
 
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
-                $sheet->mergeCells("A1:K1");
-                $sheet->mergeCells("C2:K2");
-                $sheet->mergeCells("C3:K3");
-                $sheet->mergeCells("C4:K4");
-                $sheet->mergeCells("C5:K5");
-                $sheet->mergeCells("C6:K6");
-                $sheet->getStyle('A1:K1')->getAlignment()->setHorizontal('center');
+                $sheet->mergeCells("A1:M1");
+                $sheet->getStyle('A1:M1')->getAlignment()->setHorizontal('center');
+                $sheet->setCellValue('A1', 'รายงานการเงินใบสั่งซื้อ (PO-FI)');
+                $sheet->mergeCells("C2:F2");
+                $sheet->mergeCells("C3:F3");
+                $sheet->mergeCells("C4:F4");
+                $sheet->mergeCells("C5:F5");
+                $sheet->mergeCells("C6:F6");
                 $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('J7:J8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('K7:K8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-                $sheet->setCellValue('A1', 'รายงานมูลค่าใบสั่งซื้อ (PO-FI)');
+                $sheet->getStyle('C2:C8')->getAlignment()->setHorizontal('left');
+                $sheet->getStyle('E7:E8')->getAlignment()->setHorizontal('right');
+                $sheet->getStyle('F7:F8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
                 $sheet->setCellValue('B2', 'โครงการ : ');
                 $sheet->setCellValue('B3', 'งบประมาณ : ');
                 $sheet->setCellValue('B4', 'ประเภท : ');
@@ -230,8 +233,8 @@ class PurchaseOrderReportApiQueryController
                 $sheet->setCellValue('B6', 'ผู้จำหน่าย : ');
                 $sheet->setCellValue('B7', 'สถานะเอกสาร : ');
                 // $sheet->setCellValue('B8', 'สถานะVAT : ');
-                $sheet->setCellValue('J7', 'วันที่เริ่มต้น : ');
-                $sheet->setCellValue('J8', 'วันที่สิ้นสุด : ');
+                $sheet->setCellValue('E7', 'วันที่เริ่มต้น : ');
+                $sheet->setCellValue('E8', 'วันที่สิ้นสุด : ');
                 $sheet->setCellValue('C2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
                 $sheet->setCellValue('C3', (!isset($filterDetail['boq']))? 'ทั้งหมด' : "{$filterDetail['boq']->getName()}");
                 $sheet->setCellValue('C4', (!isset($filterDetail['budgetType']))? 'ทั้งหมด' : "{$filterDetail['budgetType']->getName()}");
@@ -239,17 +242,20 @@ class PurchaseOrderReportApiQueryController
                 $sheet->setCellValue('C6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
                 $sheet->setCellValue('C7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
                 // $sheet->setCellValue('C8', (!isset($filterDetail['vatFactor']))? 'ทั้งหมด' : ($filterDetail['vatFactor']? 'มีVAT' : 'ไม่มีVAT'));
-                $sheet->setCellValue('K7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
-                $sheet->setCellValue('K8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
-                $sheet->getStyle('A9:K10')->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                $sheet->getStyle('A9:K10')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
-                $sheet->getStyle('A9:K10')->getFill()->getStartColor()->setRGB('DCDCDC');
-				$sheet->getStyle('A9:K10')->getAlignment()->setHorizontal('center');
-                $sheet->getStyle('A9:K10')->getAlignment()->setVertical('center');
+                $sheet->setCellValue('F7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
+                $sheet->setCellValue('F8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
+
                 $sheet->mergeCells('A9:A10');
                 $sheet->mergeCells('B9:C9');
                 $sheet->mergeCells('D9:F9');
-                $sheet->mergeCells('G9:K9');
+                $sheet->mergeCells('G9:G10');
+                $sheet->mergeCells('H9:H10');
+                $sheet->mergeCells('I9:M9');
+                $sheet->getStyle('A9:M10')->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $sheet->getStyle('A9:M10')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+                $sheet->getStyle('A9:M10')->getFill()->getStartColor()->setRGB('DCDCDC');
+				$sheet->getStyle('A9:M10')->getAlignment()->setHorizontal('center');
+                $sheet->getStyle('A9:M10')->getAlignment()->setVertical('center');
                 $sheet->setCellValue('A9', 'ลำดับ');
                 $sheet->setCellValue('B9', 'เอกสาร');
                 $sheet->setCellValue('B10', 'เลขที่');
@@ -257,53 +263,56 @@ class PurchaseOrderReportApiQueryController
                 $sheet->setCellValue('D9', 'โครงการ');
                 $sheet->setCellValue('D10', 'รหัส');
                 $sheet->setCellValue('E10', 'งบประมาณ');
-                $sheet->setCellValue('F10', 'ประเภท');
-                $sheet->setCellValue('G9', 'มูลค่าการสั่งซื้อ');
-                $sheet->setCellValue('G10', 'VAT');
-                $sheet->setCellValue('H10', 'ไม่รวมVAT');
-                $sheet->setCellValue('I10', 'TAX');
-                $sheet->setCellValue('J10', 'รวมชำระ');
-                $sheet->setCellValue('K10', 'รวมสุทธิ');
+                $sheet->setCellValue('G9', 'ผู้ต้องการ');
+                $sheet->setCellValue('H9', 'ผู้จำหน่าย');
+                $sheet->setCellValue('I9', 'มูลค่า (บาท)');
+                $sheet->setCellValue('I10', 'VAT');
+                $sheet->setCellValue('J10', 'ไม่รวมVAT');
+                $sheet->setCellValue('K10', 'TAX');
+                $sheet->setCellValue('L10', 'รวมชำระ');
+                $sheet->setCellValue('M10', 'รวมสุทธิ');
 
                 $row = 11;
                 $count = 1;
                 $itemStartRow = $row;
                 foreach($data as $item) {
-                    $sheet->getStyle('A')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('C:D')->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle('A:D')->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle('F:H')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['code']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
                     $sheet->setCellValue('D'.$row, $item['project']);
                     $sheet->setCellValue('E'.$row, $item['boq']);
                     $sheet->setCellValue('F'.$row, $item['budgetType']);
-                    $sheet->setCellValue('G'.$row, $item['vatCost']);
-                    $sheet->setCellValue('H'.$row, $item['excludeVat']);
-                    $sheet->setCellValue('I'.$row, $item['taxCost']);
-                    $sheet->setCellValue('J'.$row, $item['payTotal']);
-                    $sheet->setCellValue('K'.$row, $item['total']);
+                    $sheet->setCellValue('G'.$row, $item['requester']);
+                    $sheet->setCellValue('H'.$row, $item['vendor']);
+                    $sheet->setCellValue('I'.$row, $item['vatCost']);
+                    $sheet->setCellValue('J'.$row, $item['excludeVat']);
+                    $sheet->setCellValue('K'.$row, $item['taxCost']);
+                    $sheet->setCellValue('L'.$row, $item['payTotal']);
+                    $sheet->setCellValue('M'.$row, $item['total']);
                     $row++;
                     $count++;
                 }
                 $itemEndRow = $row - 1;
 
-                foreach(range('G', 'K') as $colName) {
+                foreach(range('I', 'M') as $colName) {
                     $sheet->setCellValue("{$colName}{$row}", "=SUM({$colName}:{$colName} {$itemStartRow}:{$itemEndRow})");
                 }
                 $row++;
 
                 $tableEndRow = $row - 1;
 
-                $sheet->getStyle("A{$itemStartRow}:K{$tableEndRow}")->getBorders()
+                $sheet->getStyle("A{$itemStartRow}:M{$tableEndRow}")->getBorders()
                     ->getAllBorders()
                         ->setBorderStyle(Border::BORDER_THIN)
                 ;
 
-                $sheet->getStyle("G{$itemStartRow}:K{$tableEndRow}")->getNumberFormat()
+                $sheet->getStyle("I{$itemStartRow}:M{$tableEndRow}")->getNumberFormat()
                     ->setFormatCode($costFormat)
                 ;
 
-                $itemFooterStyle = $sheet->getStyle("A{$tableEndRow}:K{$tableEndRow}");
+                $itemFooterStyle = $sheet->getStyle("A{$tableEndRow}:M{$tableEndRow}");
                 $itemFooterStyle->getFill()
                     ->setFillType(Fill::FILL_SOLID)
                     ->getStartColor()
@@ -313,7 +322,7 @@ class PurchaseOrderReportApiQueryController
                     ->setBold(true)
                 ;
 
-                $sheet->getStyle("G{$tableEndRow}:K{$tableEndRow}")->getFont()
+                $sheet->getStyle("I{$tableEndRow}:M{$tableEndRow}")->getFont()
                     ->setUnderline(Font::UNDERLINE_DOUBLEACCOUNTING)
                 ;
 
@@ -322,7 +331,7 @@ class PurchaseOrderReportApiQueryController
                 $writer->setPreCalculateFormulas(false);
 
                 // Create a Temporary file in the system
-                $fileName = 'RP-FI-PU-PO_rev2.1.0_'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-FI-PU-PO_rev.2.1.0_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 
                 // Create the excel file in the tmp directory of the system

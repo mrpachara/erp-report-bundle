@@ -24,12 +24,9 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ProjectBoqPurchaseRequestReportApiQueryController
 {
-/*
-2_2d6m1egnbuhw0cgk888owwskk0w4c0wg0oksow8ogg4www0co8
-26ijx5m68clc4kcs08ckcckwo8k4ow8og4cow4wcwgoowwk40k
- */
-
-/** @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery */
+    /** 
+     * @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery
+     */
     private $domainQuery;
     
     /**
@@ -43,7 +40,6 @@ class ProjectBoqPurchaseRequestReportApiQueryController
     protected $fileQuery = null;
     
     /**
-     *
      * @var \Twig_Environment
      */
     protected $templating;
@@ -55,7 +51,6 @@ class ProjectBoqPurchaseRequestReportApiQueryController
 
     /**
      * ProjectBoqPurchaseRequestReportApiQueryController constructor.
-     * @param \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery $domainQuery
      */
     public function __construct(
         \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery $domainQuery,
@@ -80,7 +75,6 @@ class ProjectBoqPurchaseRequestReportApiQueryController
         return [
             'data' => $this->domainQuery->projectBoqPRSummary($id),
         ];
-
     }
 
     /**
@@ -90,8 +84,7 @@ class ProjectBoqPurchaseRequestReportApiQueryController
     {
         return [
             'data' => $this->domainQuery->projectBoqPRSummaryEach($id, $idBoq),
-        ];
-        
+        ]; 
     }
     
     /**
@@ -100,31 +93,28 @@ class ProjectBoqPurchaseRequestReportApiQueryController
     public function projectBoqPRSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, string $format)
     {
         $data = $this->domainQuery->projectBoqPRSummaryEach($id, $idBoq);
-        
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
-        
         $logo = null;
         if(!empty($profile['logo'])) {
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
-
         switch(strtolower($format)) {
             case 'pdf':
                 $view = $this->templating->render('@ErpReport/pdf/project-boq-pr-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
                 ]);
-                
                 $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
                     $mpdf->imageVars['logo'] = $logo;
                 });
-                    
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            break;
             case 'xlsx':
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
 
                 // START: write data
+
                 $qs = $request->getQueryParams();
                 $withFormular = empty($qs['raw']);
                 $costFormat = '#,##0.00_-;[Red]-#,##0.00_-;??"-"??_-;[Green]@_-';
@@ -137,13 +127,13 @@ class ProjectBoqPurchaseRequestReportApiQueryController
                 $row = 1;
                 foreach($data as $item) {
                     $itemStartRow = $row;
-                    $sheet->setCellValue("A{$row}", 'รายงานประมาณการขอซื้อ');
+                    $sheet->setCellValue("A{$row}", 'รายงานโครงการ โดย ใบขอซื้อ (PJ by PR)');
                     $row++;
                     $labelRow = $row;
                     $sheet->setCellValue("A{$row}", 'โครงการ : ');
                     $sheet->setCellValue("B{$row}", "{$item['projectCode']} {$item['projectName']}");
                     $row++;
-                    $sheet->setCellValue("A{$row}", 'Budget : ');
+                    $sheet->setCellValue("A{$row}", 'งบประมาณ : ');
                     $sheet->setCellValue("B{$row}", $item['name']);
                     $row++;
 
@@ -189,7 +179,7 @@ class ProjectBoqPurchaseRequestReportApiQueryController
                         ->setVertical(Alignment::VERTICAL_CENTER)
                     ;
                     $titleStyle->getFont()
-                        ->setSize(24)
+                        ->setSize(16)
                         ->setBold(true)
                     ;
 
@@ -289,18 +279,18 @@ class ProjectBoqPurchaseRequestReportApiQueryController
                     ;
 
                 }
-                // END: write data
 
+                // END: write data
 
                 $writer = new Xlsx($spreadsheet);
                 $writer->setPreCalculateFormulas(false);
-                $fileName = 'project-boq-pr-report-'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-MT-PJ-PU-PR_'."{$item['projectCode']}-{$item['name']}".'_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 $writer->save($temp_file);
                 $response = new BinaryFileResponse($temp_file);
                 $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
-        }
-        
+            break;
+        }  
     }
 }

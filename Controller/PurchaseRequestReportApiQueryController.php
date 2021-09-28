@@ -6,8 +6,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-
-
+//
+//
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -103,35 +103,37 @@ class PurchaseRequestReportApiQueryController
             case 'xlsx':
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
-				$sheet->mergeCells("A1:H1");
-                $sheet->mergeCells("C2:H2");
-                $sheet->mergeCells("C3:H3");
-                $sheet->mergeCells("C4:H4");
-                $sheet->mergeCells("C5:H5");
-                $sheet->mergeCells("C6:H6");
+                $sheet->mergeCells("A1:H1");
                 $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal('center');
-                $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('G7:G8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('H7:H8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
                 $sheet->setCellValue('A1', 'รายงานเอกสารใบขอซื้อ (PR-DC)');
+                $sheet->mergeCells("C2:F2");
+                $sheet->mergeCells("C3:F3");
+                $sheet->mergeCells("C4:F4");
+                $sheet->mergeCells("C5:F5");
+                $sheet->mergeCells("C6:F6");
+                $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('right');
+                $sheet->getStyle('C2:C8')->getAlignment()->setHorizontal('left');
+                $sheet->getStyle('E7:E8')->getAlignment()->setHorizontal('right');
+                $sheet->getStyle('F7:F8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
                 $sheet->setCellValue('B2', 'โครงการ : ');
                 $sheet->setCellValue('B3', 'งบประมาณ : ');
                 $sheet->setCellValue('B4', 'ประเภท : ');
                 $sheet->setCellValue('B5', 'ผู้ต้องการ : ');
                 $sheet->setCellValue('B6', 'ผู้จำหน่าย : ');
                 $sheet->setCellValue('B7', 'สถานะเอกสาร : ');
-                // $sheet->setCellValue('B8', 'สถานะVAT : ');
-                $sheet->setCellValue('G7', 'วันที่เริ่มต้น : ');
-                $sheet->setCellValue('G8', 'วันที่สิ้นสุด : ');
+                //
+                $sheet->setCellValue('E7', 'วันที่เริ่มต้น : ');
+                $sheet->setCellValue('E8', 'วันที่สิ้นสุด : ');
                 $sheet->setCellValue('C2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
                 $sheet->setCellValue('C3', (!isset($filterDetail['boq']))? 'ทั้งหมด' : "{$filterDetail['boq']->getName()}");
                 $sheet->setCellValue('C4', (!isset($filterDetail['budgetType']))? 'ทั้งหมด' : "{$filterDetail['budgetType']->getName()}");
                 $sheet->setCellValue('C5', (!isset($filterDetail['requester']))? 'ทั้งหมด' : "[{$filterDetail['requester']->getCode()}] {$filterDetail['requester']->getName()}");
                 $sheet->setCellValue('C6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
                 $sheet->setCellValue('C7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
-                // $sheet->setCellValue('C8', (!isset($filterDetail['vatFactor']))? 'ทั้งหมด' : ($filterDetail['vatFactor']? 'มีVAT' : 'ไม่มีVAT'));
-                $sheet->setCellValue('H7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
-                $sheet->setCellValue('H8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
+                //
+                $sheet->setCellValue('F7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
+                $sheet->setCellValue('F8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
+
                 $sheet->mergeCells('A9:A10');
                 $sheet->mergeCells('B9:C9');
                 $sheet->mergeCells('D9:F9');
@@ -172,7 +174,7 @@ class PurchaseRequestReportApiQueryController
                 }
 				
                 $writer = new Xlsx($spreadsheet);
-                $fileName = 'RP-DC-PU-PR_rev2.1.0_'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-DC-PU-PR_rev.2.1.0_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 $writer->save($temp_file);
                 $response = new BinaryFileResponse($temp_file);

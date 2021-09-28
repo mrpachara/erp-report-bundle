@@ -14,6 +14,8 @@ body {
 
 .cl-title {
   text-align: center;
+  margin: 0px;
+  padding: 0px;
 }
 
 .cl-header {
@@ -72,6 +74,7 @@ table.cl-layout-cell {
     </style>
   </head>
   <body>
+
     <htmlpageheader name="DefaultHeader">
       <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
         <tr>
@@ -85,9 +88,9 @@ table.cl-layout-cell {
     <htmlpagefooter name="DefaultFooter" class="cl-footer">
       <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
         <tr>
-          <td style="width: 25%; text-align: left;"><span style="font-weight: bold;">RP-FI-PU-PO_rev2.1.0</span></td>
+          <td style="width: 25%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
           <td style="text-align: center; font-weight: bold;">หน้าที่ {PAGENO}/{nbpg}</td>
-          <td style="width: 25%; text-align: right;">{{ "now"|date('d/m/Y H:i:s') }}</td>
+          <td style="width: 25%; text-align: right;">RP-FI-PU-PO_rev.2.1.0</td>
         </tr>
       </table>
     </htmlpagefooter>
@@ -188,17 +191,19 @@ table.cl-layout-cell {
           <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
           <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
           <th colspan="3" style="font-weight: bold;text-align: center;">โครงการ</th>
-          <th colspan="5" style="font-weight: bold;text-align: center;">มูลค่าการสั่งซื้อ</th>
+          <th rowspan="2" style="font-weight: bold;text-align: center;width: 3em;">ผู้ต้องการ</th>
+          <th rowspan="2" style="font-weight: bold;text-align: center;width: 3em;">ผู้จำหน่าย</th>
+          <th colspan="5" style="font-weight: bold;text-align: center;">มูลค่า (บาท)</th>
         </tr>
         <tr style="background-color: #C0C0C0">
           <th></th>
-          <th style="width: 4em;">เลขที่เอกสาร</th>
-          <th style="width: 3em;">สถานะ</th>
+          <th style="width: 5em;">เลขที่เอกสาร</th>
+          <th style="width: 4em;">สถานะ</th>
           <th style="width: 3em;">รหัส</th>
-          <th style="width: 4em;">งบประมาณ</th>
-          <th style="width: 3em;">ประเภท</th>
+          <th style="width: 8em;">งบประมาณ</th>
+          <th style="width: 6em;">ประเภท</th>
           <th style="width: 3em;">VAT</th>
-          <th style="width: 3em;">ไม่รวมVAT</th>
+          <th style="width: 4em;">ไม่รวมVAT</th>
           <th style="width: 3em;">TAX</th>
           <th style="width: 4em;">รวมชำระ</th>
           <th style="width: 4em;">รวมสุทธิ</th>
@@ -213,6 +218,8 @@ table.cl-layout-cell {
             <td style="text-align: center;">{{ data.project }}</td>
             <td>{{ data.boq }}</td>
             <td style="text-align: center;">{{ data.budgetType }}</td>
+            <td style="text-align: center;">{{ data.requester }}</td>
+            <td style="text-align: center;">{{ data.vendor }}</td>
             <td class="cl-number">{{ data.vatCost|number_format(2) }}</td>
             <td class="cl-number">{{ data.excludeVat|number_format(2) }}</td>
             <td class="cl-number">{{ data.taxCost|number_format(2) }}</td>
@@ -221,6 +228,8 @@ table.cl-layout-cell {
           </tr>
         {% endfor %}
         <tr style="background-color: #E0E0E0">
+          <td></td>
+          <td></td>
           <td></td>
           <td></td>
           <td></td>
