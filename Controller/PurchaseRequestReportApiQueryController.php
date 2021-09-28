@@ -5,6 +5,7 @@ namespace Erp\Bundle\ReportBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 //
 //
@@ -104,7 +105,8 @@ class PurchaseRequestReportApiQueryController
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
                 $sheet->mergeCells("A1:H1");
-                $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal('center');
+                $sheet->getStyle('A1:L1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('A1:L1')->getFont()->setSize(16)->setBold(true);
                 $sheet->setCellValue('A1', 'รายงานเอกสารใบขอซื้อ (PR-DC)');
                 $sheet->mergeCells("C2:F2");
                 $sheet->mergeCells("C3:F3");
@@ -121,7 +123,7 @@ class PurchaseRequestReportApiQueryController
                 $sheet->setCellValue('B5', 'ผู้ต้องการ : ');
                 $sheet->setCellValue('B6', 'ผู้จำหน่าย : ');
                 $sheet->setCellValue('B7', 'สถานะเอกสาร : ');
-                //
+                // $sheet->setCellValue('B8', 'XXXXX : ');
                 $sheet->setCellValue('E7', 'วันที่เริ่มต้น : ');
                 $sheet->setCellValue('E8', 'วันที่สิ้นสุด : ');
                 $sheet->setCellValue('C2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
@@ -130,7 +132,7 @@ class PurchaseRequestReportApiQueryController
                 $sheet->setCellValue('C5', (!isset($filterDetail['requester']))? 'ทั้งหมด' : "[{$filterDetail['requester']->getCode()}] {$filterDetail['requester']->getName()}");
                 $sheet->setCellValue('C6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
                 $sheet->setCellValue('C7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
-                //
+                // $sheet->setCellValue('C8', (!isset($filterDetail['xxxXxxxx']))? 'xxxxx' : ($filterDetail['xxxXxxxx']? 'XXX' : 'XXX'));
                 $sheet->setCellValue('F7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
                 $sheet->setCellValue('F8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
 

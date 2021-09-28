@@ -5,6 +5,7 @@ namespace Erp\Bundle\ReportBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Font;
@@ -104,7 +105,8 @@ class ExpenseReportApiQueryController
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
 				$sheet->mergeCells("A1:H1");
-                $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal('center');
+                $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('A1:H1')->getFont()->setSize(16)->setBold(true);
                 $sheet->setCellValue('A1', 'รายงานเอกสารใบจ่ายเงิน (EP-DC)');
                 $sheet->mergeCells("C2:F2");
                 $sheet->mergeCells("C3:F3");
@@ -121,7 +123,7 @@ class ExpenseReportApiQueryController
                 $sheet->setCellValue('B5', 'ผู้ต้องการ : ');
                 $sheet->setCellValue('B6', 'ผู้จำหน่าย : ');
                 $sheet->setCellValue('B7', 'สถานะเอกสาร : ');
-                //
+                // $sheet->setCellValue('B8', 'XXXXX : ');
                 $sheet->setCellValue('E7', 'วันที่เริ่มต้น : ');
                 $sheet->setCellValue('E8', 'วันที่สิ้นสุด : ');
                 $sheet->setCellValue('C2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
@@ -130,7 +132,7 @@ class ExpenseReportApiQueryController
                 $sheet->setCellValue('C5', (!isset($filterDetail['requester']))? 'ทั้งหมด' : "[{$filterDetail['requester']->getCode()}] {$filterDetail['requester']->getName()}");
                 $sheet->setCellValue('C6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
                 $sheet->setCellValue('C7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
-                //
+                // $sheet->setCellValue('C8', (!isset($filterDetail['xxxXxxxx']))? 'xxxxx' : ($filterDetail['xxxXxxxx']? 'XXX' : 'XXX'));
                 $sheet->setCellValue('F7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
                 $sheet->setCellValue('F8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
 
@@ -199,7 +201,7 @@ class ExpenseReportApiQueryController
             
             switch(strtolower($format)) {
                 case 'pdf':
-                    $view = $this->templating->render('@ErpReport/pdf/purchase-order-cost-report.pdf.twig', [
+                    $view = $this->templating->render('@ErpReport/pdf/expense-cost-report.pdf.twig', [
                         'profile' => $profile,
                         'model' => $data,
                         'filterDetail' => $filterDetail,
@@ -215,7 +217,8 @@ class ExpenseReportApiQueryController
                     $spreadsheet = new Spreadsheet();
                     $sheet = $spreadsheet->getActiveSheet();
                     $sheet->mergeCells("A1:M1");
-                    $sheet->getStyle('A1:M1')->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('A1:H1')->getFont()->setSize(16)->setBold(true);
                     $sheet->setCellValue('A1', 'รายงานการเงินใบจ่ายเงิน (EP-FI)');
                     $sheet->mergeCells("C2:F2");
                     $sheet->mergeCells("C3:F3");
@@ -232,7 +235,7 @@ class ExpenseReportApiQueryController
                     $sheet->setCellValue('B5', 'ผู้ต้องการ : ');
                     $sheet->setCellValue('B6', 'ผู้จำหน่าย : ');
                     $sheet->setCellValue('B7', 'สถานะเอกสาร : ');
-                    // $sheet->setCellValue('B8', 'สถานะVAT : ');
+                    // $sheet->setCellValue('B8', 'XXXXX : ');
                     $sheet->setCellValue('E7', 'วันที่เริ่มต้น : ');
                     $sheet->setCellValue('E8', 'วันที่สิ้นสุด : ');
                     $sheet->setCellValue('C2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
@@ -241,7 +244,7 @@ class ExpenseReportApiQueryController
                     $sheet->setCellValue('C5', (!isset($filterDetail['requester']))? 'ทั้งหมด' : "[{$filterDetail['requester']->getCode()}] {$filterDetail['requester']->getName()}");
                     $sheet->setCellValue('C6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
                     $sheet->setCellValue('C7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
-                    // $sheet->setCellValue('C8', (!isset($filterDetail['vatFactor']))? 'ทั้งหมด' : ($filterDetail['vatFactor']? 'มีVAT' : 'ไม่มีVAT'));
+                    // $sheet->setCellValue('C8', (!isset($filterDetail['xxxXxxxx']))? 'xxxxx' : ($filterDetail['xxxXxxxx']? 'XXX' : 'XXX'));
                     $sheet->setCellValue('F7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
                     $sheet->setCellValue('F8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
     
@@ -263,6 +266,7 @@ class ExpenseReportApiQueryController
                     $sheet->setCellValue('D9', 'โครงการ');
                     $sheet->setCellValue('D10', 'รหัส');
                     $sheet->setCellValue('E10', 'งบประมาณ');
+                    $sheet->setCellValue('F10', 'ประเภท');
                     $sheet->setCellValue('G9', 'ผู้ต้องการ');
                     $sheet->setCellValue('H9', 'ผู้จำหน่าย');
                     $sheet->setCellValue('I9', 'มูลค่า (บาท)');

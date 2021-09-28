@@ -232,6 +232,7 @@ class ProjectBoqPurchaseRequestReportApiQueryController
 
                     $sheet->mergeCells("A{$row}:B{$row}");
                     $sheet->setCellValue("A{$row}", 'รวม');
+                    $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $column = $costStartColumn;
                     foreach($item['cost']['columns'] as $i => $costColumn) {
                         foreach(array_keys($fieldMap) as $field) {

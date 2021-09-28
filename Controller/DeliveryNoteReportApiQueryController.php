@@ -5,6 +5,7 @@ namespace Erp\Bundle\ReportBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 //
 //
@@ -104,7 +105,8 @@ class DeliveryNoteReportApiQueryController
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
                 $sheet->mergeCells("A1:F1");
-                $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal('center');
+                $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('A1:F1')->getFont()->setSize(16)->setBold(true);
                 $sheet->setCellValue('A1', 'รายงานเอกสารใบส่งมอบงาน (DN-DC)');
                 $sheet->mergeCells("C2:F2");
                 $sheet->mergeCells("C3:F3");
