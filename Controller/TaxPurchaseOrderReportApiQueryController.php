@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class TaxPurchaseOrderReportApiQueryController
 {
-    /** 
+    /**
      * @var \Erp\Bundle\ReportBundle\Domain\CQRS\TaxPurchaseOrderReportQuery
      */
     private $domainQuery;

@@ -232,11 +232,11 @@ class BillingNoteReportApiQueryController
                 $sheet->mergeCells('D9:E9');
                 $sheet->mergeCells('F9:F10');
                 $sheet->mergeCells('G9:K9');
-                $sheet->getStyle('A9:F10')->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                $sheet->getStyle('A9:F10')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
-                $sheet->getStyle('A9:F10')->getFill()->getStartColor()->setRGB('DCDCDC');
-                $sheet->getStyle('A9:F10')->getAlignment()->setHorizontal('center');
-                $sheet->getStyle('A9:F10')->getAlignment()->setVertical('center');
+                $sheet->getStyle('A9:K10')->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $sheet->getStyle('A9:K10')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+                $sheet->getStyle('A9:K10')->getFill()->getStartColor()->setRGB('DCDCDC');
+                $sheet->getStyle('A9:K10')->getAlignment()->setHorizontal('center');
+                $sheet->getStyle('A9:K10')->getAlignment()->setVertical('center');
                 $sheet->setCellValue('A9', 'ลำดับ');
                 $sheet->setCellValue('B9', 'เอกสาร');
                 $sheet->setCellValue('B10', 'เลขที่');
