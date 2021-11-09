@@ -9,25 +9,25 @@ class RequesterReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
-    
+
     /** @var EntityRepository */
     protected $costItemRepos;
-    
+
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
 
@@ -38,7 +38,7 @@ class RequesterReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:PurchaseOrder');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
@@ -77,7 +77,7 @@ class RequesterReportQueryService implements QueryInterface
             ->groupBy("{$alias}_requester.id,{$alias}_costItem.id")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, $alias);
+        return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
 
     function requesterGroupSummary(array $filter = null, array &$filterDetail = null)
@@ -181,10 +181,10 @@ class RequesterReportQueryService implements QueryInterface
         ->leftJoin("{$alias}_details.costItem","{$alias}_costItem")
         ->leftJoin("{$alias}_costItem.thing","{$alias}_thing")
         ->leftJoin("{$alias}_project.thing","{$alias}_projectThing")
-        //->groupBy("{$alias}") 
+        //->groupBy("{$alias}")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, $alias);
+        return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
 
     function requesterDistributionSummary(array $filter = null, array &$filterDetail = null)

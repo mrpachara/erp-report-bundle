@@ -9,25 +9,25 @@ class CostItemExpenseReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
-    
+
     /** @var EntityRepository */
     protected $costItemRepos;
-    
+
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
 
@@ -38,7 +38,7 @@ class CostItemExpenseReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:ExpenseDetail');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
@@ -73,7 +73,7 @@ class CostItemExpenseReportQueryService implements QueryInterface
                 ->groupBy("{$alias}_costItem.id")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, "{$alias}_purchase");
+        return $this->queryService->assignAliveDocumentQuery($qb, "{$alias}_purchase");
     }
 
     function costItemGroupExpenseSummary(array $filter = null, array &$filterDetail = null)
@@ -152,7 +152,7 @@ class CostItemExpenseReportQueryService implements QueryInterface
             ;
             $filterDetail['type'] = $this->costItemRepos->find($filter['type']);
         }
-        
+
         return $qb->getQuery()->getArrayResult();
 
     }
@@ -189,7 +189,7 @@ class CostItemExpenseReportQueryService implements QueryInterface
             //->groupBy("{$alias}")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, "{$alias}_purchase");
+        return $this->queryService->assignAliveDocumentQuery($qb, "{$alias}_purchase");
     }
 
     function costItemDistributionExpenseSummary(array $filter = null, array &$filterDetail = null)
@@ -268,7 +268,7 @@ class CostItemExpenseReportQueryService implements QueryInterface
             ;
             $filterDetail['type'] = $this->costItemRepos->find($filter['type']);
         }
-        
+
         return $qb->getQuery()->getArrayResult();
 
     }

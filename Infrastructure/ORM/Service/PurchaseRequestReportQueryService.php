@@ -9,25 +9,25 @@ class PurchaseRequestReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
-    
+
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
-    
+
     function __construct(
         \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
         \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService $queryService
@@ -35,14 +35,14 @@ class PurchaseRequestReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:PurchaseRequest');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
         $this->boqRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoq');
         $this->budgetTypeRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoqBudgetType');
     }
-    
+
     function purchaseRequestQueryBuilder($alias)
     {
         $qb = $this->repository->createQueryBuilder($alias);
@@ -55,8 +55,8 @@ class PurchaseRequestReportQueryService implements QueryInterface
         ->addSelect("{$alias}_project.code AS project")
         ->addSelect("{$alias}_boq.name AS boq")
         ->addSelect("{$alias}_budgetType.name AS budgetType")
-        
-        
+
+
         ->leftJoin("{$alias}.project","{$alias}_project")
         ->leftJoin("{$alias}.requester","{$alias}_requester")
         ->leftJoin("{$alias}.vendor","{$alias}_vendor")
@@ -64,10 +64,10 @@ class PurchaseRequestReportQueryService implements QueryInterface
         ->leftJoin("{$alias}.budgetType","{$alias}_budgetType")
         ->groupBy("{$alias}")
         ;
-        
-        return $this->queryService->assignActiveDocumentQuery($qb, $alias);
+
+        return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
-    
+
     function purchaseRequestSummary(array $filter = null, array &$filterDetail = null)
     {
         $filterDetail = [];
@@ -128,9 +128,9 @@ class PurchaseRequestReportQueryService implements QueryInterface
             ;
             $filterDetail['budgetType'] = $this->budgetTypeRepos->find($filter['budgetType']);
         }
-        
+
         return $qb->getQuery()->getArrayResult();
-        
+
     }
-    
+
 }

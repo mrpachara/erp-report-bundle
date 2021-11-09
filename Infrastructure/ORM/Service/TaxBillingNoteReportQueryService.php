@@ -9,25 +9,25 @@ class TaxBillingNoteReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
-    
+
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
-    
+
     function __construct(
         \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
         \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService $queryService
@@ -35,14 +35,14 @@ class TaxBillingNoteReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:BillingNote');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
         $this->boqRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoq');
         $this->budgetTypeRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoqBudgetType');
     }
-    
+
     function taxBillingNoteQueryBuilder($alias)
     {
         $qb = $this->repository->createQueryBuilder($alias);
@@ -61,13 +61,13 @@ class TaxBillingNoteReportQueryService implements QueryInterface
         ->leftJoin("{$alias}.project","{$alias}_project")
         ->leftJoin("{$alias}.requester","{$alias}_requester")
         ->leftJoin("{$alias}.boq","{$alias}_boq")
-        
+
         ->groupBy("{$alias}")
         ;
-        
-        return $this->queryService->assignActiveDocumentQuery($qb, $alias);
+
+        return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
-    
+
     function taxBillingNoteSummary(array $filter = null, array &$filterDetail = null)
     {
         $filterDetail = [];
@@ -121,9 +121,9 @@ class TaxBillingNoteReportQueryService implements QueryInterface
             ;
             $filterDetail['taxFactor'] = $filter['taxFactor'];
         }
-        
+
         return $qb->getQuery()->getArrayResult();
-        
+
     }
-    
+
 }

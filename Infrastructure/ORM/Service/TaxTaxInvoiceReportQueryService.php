@@ -9,19 +9,19 @@ class TaxTaxInvoiceReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
 
@@ -35,7 +35,7 @@ class TaxTaxInvoiceReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:TaxInvoice');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
@@ -65,7 +65,7 @@ class TaxTaxInvoiceReportQueryService implements QueryInterface
         ->groupBy("{$alias}")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, $alias);
+        return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
 
     function taxTaxInvoiceSummary(array $filter = null, array &$filterDetail = null)

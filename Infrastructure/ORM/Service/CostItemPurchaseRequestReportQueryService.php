@@ -9,25 +9,25 @@ class CostItemPurchaseRequestReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
-    
+
     /** @var EntityRepository */
     protected $costItemRepos;
-    
+
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
 
@@ -38,7 +38,7 @@ class CostItemPurchaseRequestReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:PurchaseRequestDetail');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
@@ -78,7 +78,7 @@ class CostItemPurchaseRequestReportQueryService implements QueryInterface
             //->groupBy("{$alias}")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, "{$alias}_purchase");
+        return $this->queryService->assignAliveDocumentQuery($qb, "{$alias}_purchase");
     }
 
     function costItemDistributionPurchaseRequestSummary(array $filter = null, array &$filterDetail = null)

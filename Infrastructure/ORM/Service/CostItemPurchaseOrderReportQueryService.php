@@ -9,25 +9,25 @@ class CostItemPurchaseOrderReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
-    
+
     /** @var EntityRepository */
     protected $costItemRepos;
-    
+
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
 
@@ -38,7 +38,7 @@ class CostItemPurchaseOrderReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:PurchaseOrderDetail');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
@@ -73,7 +73,7 @@ class CostItemPurchaseOrderReportQueryService implements QueryInterface
                 ->groupBy("{$alias}_costItem.id")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, "{$alias}_purchase");
+        return $this->queryService->assignAliveDocumentQuery($qb, "{$alias}_purchase");
     }
 
     function costItemGroupPurchaseOrderSummary(array $filter = null, array &$filterDetail = null)
@@ -144,7 +144,7 @@ class CostItemPurchaseOrderReportQueryService implements QueryInterface
             ;
             $filterDetail['costItem'] = $this->costItemRepos->find($filter['costItem']);
         }
-        
+
         if(!empty($filter['type'])) {
             $qb
             ->andWhere('_entity_costItem.type = :type')
@@ -189,7 +189,7 @@ class CostItemPurchaseOrderReportQueryService implements QueryInterface
             //->groupBy("{$alias}")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, "{$alias}_purchase");
+        return $this->queryService->assignAliveDocumentQuery($qb, "{$alias}_purchase");
     }
 
     function costItemDistributionPurchaseOrderSummary(array $filter = null, array &$filterDetail = null)
@@ -268,7 +268,7 @@ class CostItemPurchaseOrderReportQueryService implements QueryInterface
             ;
             $filterDetail['type'] = $this->costItemRepos->find($filter['type']);
         }
-        
+
         return $qb->getQuery()->getArrayResult();
 
     }

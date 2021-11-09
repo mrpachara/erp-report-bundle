@@ -8,22 +8,22 @@ class PayMethodBillingNoteReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
     protected $repository;
-    
+
     /** @var EntityRepository */
     protected $employeeRepos;
-    
+
     /** @var EntityRepository */
     protected $vendorRepos;
-    
+
     /** @var EntityRepository */
     protected $projectRepos;
-    
+
     /** @var EntityRepository */
     protected $boqRepos;
-    
+
     /** @var EntityRepository */
     protected $budgetTypeRepos;
-    
+
     /** @var \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService */
     protected $queryService;
 
@@ -34,7 +34,7 @@ class PayMethodBillingNoteReportQueryService implements QueryInterface
     {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:BillingNote');
         $this->queryService = $queryService;
-        
+
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
         $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
@@ -60,7 +60,7 @@ class PayMethodBillingNoteReportQueryService implements QueryInterface
             ->groupBy("{$alias}")
         ;
 
-        return $this->queryService->assignActiveDocumentQuery($qb, $alias);
+        return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
 
     function payMethodBillingNoteSummary(array $filter = null, array &$filterDetail = null)
@@ -116,7 +116,7 @@ class PayMethodBillingNoteReportQueryService implements QueryInterface
             ;
             $filterDetail['paymentDate'] = $filter['paymentDate'];
         }
-        
+
         return $qb->getQuery()->getArrayResult();
 
     }
