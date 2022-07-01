@@ -24,12 +24,9 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ProjectBoqPurchaseOrderReportApiQueryController
 {
-/*
-2_2d6m1egnbuhw0cgk888owwskk0w4c0wg0oksow8ogg4www0co8
-26ijx5m68clc4kcs08ckcckwo8k4ow8og4cow4wcwgoowwk40k
- */
-
-/** @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseOrderReportQuery */
+    /** 
+     * @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseOrderReportQuery
+     */
     private $domainQuery;
     
     /**
@@ -43,7 +40,6 @@ class ProjectBoqPurchaseOrderReportApiQueryController
     protected $fileQuery = null;
     
     /**
-     *
      * @var \Twig_Environment
      */
     protected $templating;
@@ -80,7 +76,6 @@ class ProjectBoqPurchaseOrderReportApiQueryController
         return [
             'data' => $this->domainQuery->projectBoqPOSummary($id),
         ];
-
     }
 
     /**
@@ -91,7 +86,6 @@ class ProjectBoqPurchaseOrderReportApiQueryController
         return [
             'data' => $this->domainQuery->projectBoqPOSummaryEach($id, $idBoq),
         ];
-        
     }
     
     /**
@@ -100,9 +94,7 @@ class ProjectBoqPurchaseOrderReportApiQueryController
     public function projectBoqPOSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, string $format)
     {
         $data = $this->domainQuery->projectBoqPOSummaryEach($id, $idBoq);
-        
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
-        
         $logo = null;
         if(!empty($profile['logo'])) {
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
@@ -114,17 +106,17 @@ class ProjectBoqPurchaseOrderReportApiQueryController
                     'profile' => $profile,
                     'model' => $data,
                 ]);
-                
                 $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
                     $mpdf->imageVars['logo'] = $logo;
                 });
-                    
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            break;
             case 'xlsx':
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
 
                 // START: write data
+
                 $qs = $request->getQueryParams();
                 $withFormular = empty($qs['raw']);
                 $costFormat = '#,##0.00_-;[Red]-#,##0.00_-;??"-"??_-;[Green]@_-';
@@ -137,13 +129,13 @@ class ProjectBoqPurchaseOrderReportApiQueryController
                 $row = 1;
                 foreach($data as $item) {
                     $itemStartRow = $row;
-                    $sheet->setCellValue("A{$row}", 'รายงานประมาณการสั่งซื้อ');
+                    $sheet->setCellValue("A{$row}", 'รายงานงบประมาณโครงการ โดย ใบสั่งซื้อ (PJ-Budget by PO)');
                     $row++;
                     $labelRow = $row;
                     $sheet->setCellValue("A{$row}", 'โครงการ : ');
-                    $sheet->setCellValue("B{$row}", "{$item['projectCode']} {$item['projectName']}");
+                    $sheet->setCellValue("B{$row}", "[{$item['projectCode']}] {$item['projectName']}");
                     $row++;
-                    $sheet->setCellValue("A{$row}", 'Budget : ');
+                    $sheet->setCellValue("A{$row}", 'งบประมาณ : ');
                     $sheet->setCellValue("B{$row}", $item['name']);
                     $row++;
 
@@ -189,7 +181,7 @@ class ProjectBoqPurchaseOrderReportApiQueryController
                         ->setVertical(Alignment::VERTICAL_CENTER)
                     ;
                     $titleStyle->getFont()
-                        ->setSize(24)
+                        ->setSize(16)
                         ->setBold(true)
                     ;
 
@@ -242,6 +234,7 @@ class ProjectBoqPurchaseOrderReportApiQueryController
 
                     $sheet->mergeCells("A{$row}:B{$row}");
                     $sheet->setCellValue("A{$row}", 'รวม');
+                    $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $column = $costStartColumn;
                     foreach($item['cost']['columns'] as $i => $costColumn) {
                         foreach(array_keys($fieldMap) as $field) {
@@ -289,17 +282,18 @@ class ProjectBoqPurchaseOrderReportApiQueryController
                     ;
 
                 }
-                // END: write data
 
+                // END: write data
 
                 $writer = new Xlsx($spreadsheet);
                 $writer->setPreCalculateFormulas(false);
-                $fileName = 'project-boq-po-report-'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-MT-PJ-Budget-PO_'."{$item['projectCode']}-{$item['name']}".'_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 $writer->save($temp_file);
                 $response = new BinaryFileResponse($temp_file);
                 $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
+            break;
         }
     }
 }

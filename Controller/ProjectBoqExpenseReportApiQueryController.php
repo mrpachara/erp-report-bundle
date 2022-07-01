@@ -29,7 +29,9 @@ class ProjectBoqExpenseReportApiQueryController
 26ijx5m68clc4kcs08ckcckwo8k4ow8og4cow4wcwgoowwk40k
  */
 
-/** @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqExpenseReportQuery */
+    /**
+     * @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqExpenseReportQuery
+     */
     private $domainQuery;
     
     /**
@@ -43,7 +45,6 @@ class ProjectBoqExpenseReportApiQueryController
     protected $fileQuery = null;
     
     /**
-     *
      * @var \Twig_Environment
      */
     protected $templating;
@@ -80,7 +81,6 @@ class ProjectBoqExpenseReportApiQueryController
         return [
             'data' => $this->domainQuery->projectBoqEPSummary($id),
         ];
-
     }
 
     /**
@@ -91,7 +91,6 @@ class ProjectBoqExpenseReportApiQueryController
         return [
             'data' => $this->domainQuery->projectBoqEPSummaryEach($id, $idBoq),
         ];
-        
     }
     
     /**
@@ -100,9 +99,7 @@ class ProjectBoqExpenseReportApiQueryController
     public function projectBoqEPSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, string $format)
     {
         $data = $this->domainQuery->projectBoqEPSummaryEach($id, $idBoq);
-        
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
-        
         $logo = null;
         if(!empty($profile['logo'])) {
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
@@ -114,17 +111,17 @@ class ProjectBoqExpenseReportApiQueryController
                     'profile' => $profile,
                     'model' => $data,
                 ]);
-                
                 $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
                     $mpdf->imageVars['logo'] = $logo;
                 });
-                    
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            break;
             case 'xlsx':
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
 
                 // START: write data
+
                 $qs = $request->getQueryParams();
                 $withFormular = empty($qs['raw']);
                 $costFormat = '#,##0.00_-;[Red]-#,##0.00_-;??"-"??_-;[Green]@_-';
@@ -137,7 +134,7 @@ class ProjectBoqExpenseReportApiQueryController
                 $row = 1;
                 foreach($data as $item) {
                     $itemStartRow = $row;
-                    $sheet->setCellValue("A{$row}", 'รายงานประมาณการทำจ่าย');
+                    $sheet->setCellValue("A{$row}", 'รายงานงบประมาณโครงการ โดย ใบจ่ายเงิน (PJ-Budget by EP)');
                     $row++;
                     $labelRow = $row;
                     $sheet->setCellValue("A{$row}", 'โครงการ : ');
@@ -189,7 +186,7 @@ class ProjectBoqExpenseReportApiQueryController
                         ->setVertical(Alignment::VERTICAL_CENTER)
                     ;
                     $titleStyle->getFont()
-                        ->setSize(24)
+                        ->setSize(16)
                         ->setBold(true)
                     ;
 
@@ -242,6 +239,7 @@ class ProjectBoqExpenseReportApiQueryController
 
                     $sheet->mergeCells("A{$row}:B{$row}");
                     $sheet->setCellValue("A{$row}", 'รวม');
+                    $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $column = $costStartColumn;
                     foreach($item['cost']['columns'] as $i => $costColumn) {
                         foreach(array_keys($fieldMap) as $field) {
@@ -289,18 +287,18 @@ class ProjectBoqExpenseReportApiQueryController
                     ;
 
                 }
-                // END: write data
 
+                // END: write data
 
                 $writer = new Xlsx($spreadsheet);
                 $writer->setPreCalculateFormulas(false);
-                $fileName = 'project-boq-ep-report-'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-MT-PJ-Budget-EP_'."{$item['projectCode']}-{$item['name']}".'_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 $writer->save($temp_file);
                 $response = new BinaryFileResponse($temp_file);
                 $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
-            
+            break;
         }
     }
 }

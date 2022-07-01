@@ -24,6 +24,11 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ProjectBoqPurchaseRequestReportApiQueryController
 {
+
+
+
+
+    
     /** 
      * @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery
      */
@@ -51,6 +56,7 @@ class ProjectBoqPurchaseRequestReportApiQueryController
 
     /**
      * ProjectBoqPurchaseRequestReportApiQueryController constructor.
+     * 
      */
     public function __construct(
         \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqPurchaseRequestReportQuery $domainQuery,
@@ -98,6 +104,7 @@ class ProjectBoqPurchaseRequestReportApiQueryController
         if(!empty($profile['logo'])) {
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
+
         switch(strtolower($format)) {
             case 'pdf':
                 $view = $this->templating->render('@ErpReport/pdf/project-boq-pr-report.pdf.twig', [
@@ -127,11 +134,11 @@ class ProjectBoqPurchaseRequestReportApiQueryController
                 $row = 1;
                 foreach($data as $item) {
                     $itemStartRow = $row;
-                    $sheet->setCellValue("A{$row}", 'รายงานโครงการ โดย ใบขอซื้อ (PJ by PR)');
+                    $sheet->setCellValue("A{$row}", 'รายงานงบประมาณโครงการ โดย ใบขอซื้อ (PJ-Budget by PR)');
                     $row++;
                     $labelRow = $row;
                     $sheet->setCellValue("A{$row}", 'โครงการ : ');
-                    $sheet->setCellValue("B{$row}", "{$item['projectCode']} {$item['projectName']}");
+                    $sheet->setCellValue("B{$row}", "[{$item['projectCode']}] {$item['projectName']}");
                     $row++;
                     $sheet->setCellValue("A{$row}", 'งบประมาณ : ');
                     $sheet->setCellValue("B{$row}", $item['name']);
@@ -285,7 +292,7 @@ class ProjectBoqPurchaseRequestReportApiQueryController
 
                 $writer = new Xlsx($spreadsheet);
                 $writer->setPreCalculateFormulas(false);
-                $fileName = 'RP-MT-PJ-PU-PR_'."{$item['projectCode']}-{$item['name']}".'_'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-MT-PJ-Budget-PR_'."{$item['projectCode']}-{$item['name']}".'_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 $writer->save($temp_file);
                 $response = new BinaryFileResponse($temp_file);

@@ -88,7 +88,7 @@ class DepositPurchaseOrderReportApiQueryController
         if(!empty($profile['logo'])) {
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
-
+        
         switch(strtolower($format)) {
             case 'pdf':
                 $view = $this->templating->render('@ErpReport/pdf/deposit-purchase-order-report.pdf.twig', [
@@ -107,36 +107,36 @@ class DepositPurchaseOrderReportApiQueryController
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
                 $sheet->mergeCells("A1:L1");
+                $sheet->mergeCells("B2:L2");
+                $sheet->mergeCells("B3:L3");
+                $sheet->mergeCells("B4:L4");
+                $sheet->mergeCells("B5:L5");
+                $sheet->mergeCells("B6:L6");
                 $sheet->getStyle('A1:L1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle('A1:L1')->getFont()->setSize(16)->setBold(true);
-                $sheet->setCellValue('A1', 'รายงานค่ามัดจำสินค้า โดย ใบสั่งซื้อ (Deposit by PO-FI)');
-                $sheet->mergeCells("C2:F2");
-                $sheet->mergeCells("C3:F3");
-                $sheet->mergeCells("C4:F4");
-                $sheet->mergeCells("C5:F5");
-                $sheet->mergeCells("C6:F6");
                 $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('right');
                 $sheet->getStyle('C2:C8')->getAlignment()->setHorizontal('left');
                 $sheet->getStyle('E7:E8')->getAlignment()->setHorizontal('right');
                 $sheet->getStyle('F7:F8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-                $sheet->setCellValue('B2', 'โครงการ : ');
-                $sheet->setCellValue('B3', 'งบประมาณ : ');
-                $sheet->setCellValue('B4', 'ประเภท : ');
-                $sheet->setCellValue('B5', 'ผู้ต้องการ : ');
-                $sheet->setCellValue('B6', 'ผู้จำหน่าย : ');
-                $sheet->setCellValue('B7', 'สถานะเอกสาร : ');
-                $sheet->setCellValue('B8', 'สถานะมัดจำ : ');
-                $sheet->setCellValue('E7', 'วันที่เริ่มต้น : ');
-                $sheet->setCellValue('E8', 'วันที่สิ้นสุด : ');
-                $sheet->setCellValue('C2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
-                $sheet->setCellValue('C3', (!isset($filterDetail['boq']))? 'ทั้งหมด' : "{$filterDetail['boq']->getName()}");
-                $sheet->setCellValue('C4', (!isset($filterDetail['budgetType']))? 'ทั้งหมด' : "{$filterDetail['budgetType']->getName()}");
-                $sheet->setCellValue('C5', (!isset($filterDetail['requester']))? 'ทั้งหมด' : "[{$filterDetail['requester']->getCode()}] {$filterDetail['requester']->getName()}");
-                $sheet->setCellValue('C6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
-                $sheet->setCellValue('C7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
-                $sheet->setCellValue('C8', (!isset($filterDetail['payTerm']))? 'ทั้งหมด' : ($filterDetail['payTerm']? 'มี' : 'ไม่มี'));
-                $sheet->setCellValue('F7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
-                $sheet->setCellValue('F8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
+                $sheet->setCellValue('A1', 'รายงานค่ามัดจำสินค้า โดย ใบสั่งซื้อ (Deposit by PO-FI)');
+                $sheet->setCellValue('A2', 'โครงการ : ');
+                $sheet->setCellValue('A3', 'งบประมาณ : ');
+                $sheet->setCellValue('A4', 'ประเภท : ');
+                $sheet->setCellValue('A5', 'ผู้ต้องการ : ');
+                $sheet->setCellValue('A6', 'ผู้จำหน่าย : ');
+                $sheet->setCellValue('A7', 'สถานะเอกสาร : ');
+                $sheet->setCellValue('A8', 'สถานะมัดจำสินค้า : ');
+                $sheet->setCellValue('C7', 'วันที่เริ่มต้น : ');
+                $sheet->setCellValue('C8', 'วันที่สิ้นสุด : ');
+                $sheet->setCellValue('B2', (!isset($filterDetail['project']))? 'ทั้งหมด' : "[{$filterDetail['project']->getCode()}] {$filterDetail['project']->getName()}");
+                $sheet->setCellValue('B3', (!isset($filterDetail['boq']))? 'ทั้งหมด' : "{$filterDetail['boq']->getName()}");
+                $sheet->setCellValue('B4', (!isset($filterDetail['budgetType']))? 'ทั้งหมด' : "{$filterDetail['budgetType']->getName()}");
+                $sheet->setCellValue('B5', (!isset($filterDetail['requester']))? 'ทั้งหมด' : "[{$filterDetail['requester']->getCode()}] {$filterDetail['requester']->getName()}");
+                $sheet->setCellValue('B6', (!isset($filterDetail['vendor']))? 'ทั้งหมด' : "[{$filterDetail['vendor']->getCode()}] {$filterDetail['vendor']->getName()}");
+                $sheet->setCellValue('B7', (!isset($filterDetail['approved']))? 'ทั้งหมด' : ($filterDetail['approved']? 'อนุมัติ' : 'รออนุมัติ'));
+                $sheet->setCellValue('B8', (!isset($filterDetail['payTerm']))? 'ทั้งหมด' : ($filterDetail['payTerm']? 'มี' : 'ไม่มี'));
+                $sheet->setCellValue('D7', (!isset($filterDetail['start']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['start']));
+                $sheet->setCellValue('D8', (!isset($filterDetail['end']))? 'ทั้งหมด' : Date::PHPToExcel($filterDetail['end']));
 
                 $sheet->mergeCells('A9:A10');
                 $sheet->mergeCells('B9:C9');
