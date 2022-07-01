@@ -159,9 +159,8 @@ class PurchaseRequestReportApiQueryController
 				
                 $row = 11;
                 $count = 1;
+                $itemStartRow = $row;
                 foreach($data as $item) {
-					$sheet->getStyle('A:D')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('F:H')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['code']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
@@ -174,7 +173,12 @@ class PurchaseRequestReportApiQueryController
                     $row++;
                     $count++;
                 }
+                $itemEndRow = $row - 1;
+                $tableEndRow = $itemEndRow;
 				
+                $sheet->getStyle("A{$itemStartRow}:D{$tableEndRow}")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("F{$itemStartRow}:H{$tableEndRow}")->getAlignment()->setHorizontal('center');
+
                 $writer = new Xlsx($spreadsheet);
                 $fileName = 'RP-DC-PU-PR_rev.2.1.0_'.date('Ymd_His', time()).'.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);

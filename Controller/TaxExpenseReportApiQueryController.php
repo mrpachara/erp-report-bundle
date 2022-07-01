@@ -172,8 +172,6 @@ class TaxExpenseReportApiQueryController
                 $count = 1;
                 $itemStartRow = $row;
                 foreach($data as $item) {
-                    $sheet->getStyle('A:D')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('F:I')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['code']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
@@ -198,6 +196,9 @@ class TaxExpenseReportApiQueryController
                 $row++;
 
                 $tableEndRow = $row - 1;
+
+                $sheet->getStyle("A{$itemStartRow}:D{$tableEndRow}")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("F{$itemStartRow}:I{$tableEndRow}")->getAlignment()->setHorizontal('center');
 
                 $sheet->getStyle("A{$itemStartRow}:M{$tableEndRow}")->getBorders()
                     ->getAllBorders()

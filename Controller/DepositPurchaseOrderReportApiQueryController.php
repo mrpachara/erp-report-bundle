@@ -114,10 +114,10 @@ class DepositPurchaseOrderReportApiQueryController
                 $sheet->mergeCells("B6:L6");
                 $sheet->getStyle('A1:L1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle('A1:L1')->getFont()->setSize(16)->setBold(true);
-                $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('C2:C8')->getAlignment()->setHorizontal('left');
-                $sheet->getStyle('E7:E8')->getAlignment()->setHorizontal('right');
-                $sheet->getStyle('F7:F8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
+                $sheet->getStyle('A2:A8')->getAlignment()->setHorizontal('right');
+                $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
+                $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
+                $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
                 $sheet->setCellValue('A1', 'รายงานค่ามัดจำสินค้า โดย ใบสั่งซื้อ (Deposit by PO-FI)');
                 $sheet->setCellValue('A2', 'โครงการ : ');
                 $sheet->setCellValue('A3', 'งบประมาณ : ');
@@ -170,8 +170,6 @@ class DepositPurchaseOrderReportApiQueryController
                 $count = 1;
                 $itemStartRow = $row;
                 foreach($data as $item) {
-                    $sheet->getStyle('A:D')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('F:I')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['code']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
@@ -195,6 +193,9 @@ class DepositPurchaseOrderReportApiQueryController
                 $row++;
 
                 $tableEndRow = $row - 1;
+
+                $sheet->getStyle("A{$itemStartRow}:D{$tableEndRow}")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("F{$itemStartRow}:I{$tableEndRow}")->getAlignment()->setHorizontal('center');
 
                 $sheet->getStyle("A{$itemStartRow}:L{$tableEndRow}")->getBorders()
                     ->getAllBorders()

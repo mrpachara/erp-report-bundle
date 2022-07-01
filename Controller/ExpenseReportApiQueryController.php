@@ -159,9 +159,8 @@ class ExpenseReportApiQueryController
 				
                 $row = 11;
                 $count = 1;
+                $itemStartRow = $row;
                 foreach($data as $item) {
-					$sheet->getStyle('A:D')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('F:H')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['code']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
@@ -174,6 +173,11 @@ class ExpenseReportApiQueryController
                     $row++;
                     $count++;
                 }
+                $itemEndRow = $row - 1;
+                $tableEndRow = $itemEndRow;
+				
+                $sheet->getStyle("A{$itemStartRow}:D{$tableEndRow}")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("F{$itemStartRow}:H{$tableEndRow}")->getAlignment()->setHorizontal('center');
 				
                 $writer = new Xlsx($spreadsheet);
                 $fileName = 'RP-DC-PU-EP_rev.2.1.0_'.date('Ymd_His', time()).'.xlsx';
@@ -280,8 +284,6 @@ class ExpenseReportApiQueryController
                 $count = 1;
                 $itemStartRow = $row;
                 foreach($data as $item) {
-                    $sheet->getStyle('A:D')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('F:H')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['code']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
@@ -306,6 +308,9 @@ class ExpenseReportApiQueryController
                 $row++;
 
                 $tableEndRow = $row - 1;
+
+                $sheet->getStyle("A{$itemStartRow}:D{$tableEndRow}")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("F{$itemStartRow}:H{$tableEndRow}")->getAlignment()->setHorizontal('center');
 
                 $sheet->getStyle("A{$itemStartRow}:M{$tableEndRow}")->getBorders()
                     ->getAllBorders()

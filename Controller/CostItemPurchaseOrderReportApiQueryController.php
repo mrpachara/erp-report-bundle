@@ -174,8 +174,6 @@ class CostItemPurchaseOrderReportApiQueryController
                 $count = 1;
                 $itemStartRow = $row;
                 foreach($data as $item) {
-                    $sheet->getStyle('A:E')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('G')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['purchaseOrderCode']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
@@ -195,6 +193,9 @@ class CostItemPurchaseOrderReportApiQueryController
                 $row++;
 
                 $tableEndRow = $row - 1;
+
+                $sheet->getStyle("A{$itemStartRow}:E{$tableEndRow}")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("G{$itemStartRow}:G{$tableEndRow}")->getAlignment()->setHorizontal('center');
 
                 $sheet->getStyle("A{$itemStartRow}:H{$tableEndRow}")->getBorders()
                     ->getAllBorders()
@@ -324,8 +325,6 @@ class CostItemPurchaseOrderReportApiQueryController
                 $count = 1;
                 $itemStartRow = $row;
                 foreach($data as $item) {
-                    $sheet->getStyle('A:E')->getAlignment()->setHorizontal('center');
-                    $sheet->getStyle('G')->getAlignment()->setHorizontal('center');
                     $sheet->setCellValue('A'.$row, $count);
                     $sheet->setCellValue('B'.$row, $item['purchaseOrderCode']);
                     $sheet->setCellValue('C'.$row, $item['approved']? 'อนุมัติ' : 'รออนุมัติ');
@@ -345,6 +344,9 @@ class CostItemPurchaseOrderReportApiQueryController
                 $row++;
 
                 $tableEndRow = $row - 1;
+
+                $sheet->getStyle("A{$itemStartRow}:E{$tableEndRow}")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("G{$itemStartRow}:G{$tableEndRow}")->getAlignment()->setHorizontal('center');
 
                 $sheet->getStyle("A{$itemStartRow}:H{$tableEndRow}")->getBorders()
                     ->getAllBorders()
