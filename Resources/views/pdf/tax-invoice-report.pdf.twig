@@ -20,7 +20,14 @@ body {
 
 .cl-header {
   text-align: right;
-  border-bottom: 1px solid #000000;
+  border-bottom: 1px solid #C0C0C0;
+  font-weight: bold;
+  font-size: 10pt;
+}
+
+.cl-footer {
+  text-align: right;
+  border-top: 1px solid #C0C0C0;
   font-weight: bold;
   font-size: 10pt;
 }
@@ -73,24 +80,25 @@ table.cl-layout-cell {
 }
     </style>
   </head>
+
   <body>
 
     <htmlpageheader name="DefaultHeader">
-      <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+      <table width="100%" class="cl-header">
         <tr>
-          <td style="width: 45%; text-align: left;"><span style="font-weight: bold;">{{ profile.profileData.name }}</span></td>
-          <td style="text-align: center; font-weight: bold;"></td>
-          <td style="width: 45%; text-align: right;">TAX INVOICE DOCUMENT REPORT</td>
+          <td style="width: 40%; text-align: left;">{{ profile.profileData.name }}</td>
+          <td style="width: 20%; text-align: center; font-weight: bold;"></td>
+          <td style="width: 40%; text-align: right;">TAX INVOICE DOCUMENT REPORT</td>
         </tr>
       </table>
     </htmlpageheader>
 
-    <htmlpagefooter name="DefaultFooter" class="cl-footer">
-      <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
+    <htmlpagefooter name="DefaultFooter">
+      <table width="100%" class="cl-footer">
         <tr>
-          <td style="width: 25%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
-          <td style="text-align: center; font-weight: bold;">หน้าที่ {PAGENO}/{nbpg}</td>
-          <td style="width: 25%; text-align: right;">RP-DC-IN-TI_rev.2.1.0</td>
+          <td style="width: 40%; text-align: left;">{{ "now"|date('d/m/Y H:i:s') }}</td>
+          <td style="width: 20%; text-align: center;">หน้าที่ {PAGENO}/{nbpg}</td>
+          <td style="width: 40%; text-align: right;">RP-DC-IN-TI_rev.2.1.0</td>
         </tr>
       </table>
     </htmlpagefooter>
@@ -102,9 +110,9 @@ table.cl-layout-cell {
         <td style="font-weight: bold; text-align: right; width: 12.5%">โครงการ :</td>
         <td style="font-weight: normal; text-align: left; width: 87.5%">
           {% if filterDetail.project is not defined %}
-            <span>ทั้งหมด</span>
+              <span>ทั้งหมด</span>
           {% else %}
-            <span>[{{ filterDetail.project.code }}] {{ filterDetail.project.name }}</span>
+              <span>[{{ filterDetail.project.code }}] {{ filterDetail.project.name }}</span>
           {% endif %}
         </td>
       </tr>
@@ -112,7 +120,7 @@ table.cl-layout-cell {
     <table style="width: 100%">
       <tr>
         <td style="font-weight: bold; text-align: right; width: 12.5%">งบประมาณ :</td>
-        <td style="font-weight: normal; text-align: left; width: 87.5%">
+        <td style="font-weight: normal; text-align: left; width: 50%">
           {% if filterDetail.boq is not defined %}
               <span>ทั้งหมด</span>
           {% else %}
@@ -170,17 +178,16 @@ table.cl-layout-cell {
     <table class="data-list">
       <thead>
         <tr style="background-color: #C0C0C0">
-          <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
+          <th rowspan="2" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
           <th colspan="2" style="font-weight: bold;text-align: center;">เอกสาร</th>
           <th colspan="2" style="font-weight: bold;text-align: center;">โครงการ</th>
           <th rowspan="2" style="font-weight: bold;text-align: center;width: 3em;">ผู้ต้องการ</th>
         </tr>
         <tr style="background-color: #C0C0C0">
-          <th></th>
-          <th style="width: 5em;">เลขที่เอกสาร</th>
-          <th style="width: 4em;">สถานะ</th>
-          <th style="width: 3em;">รหัส</th>
-          <th style="width: 8em;">งบประมาณ</th>
+          <th style="font-weight: bold;text-align: center;width: 5em;">เลขที่</th>
+          <th style="font-weight: bold;text-align: center;width: 4em;">สถานะ</th>
+          <th style="font-weight: bold;text-align: center;width: 3em;">รหัส</th>
+          <th style="font-weight: bold;text-align: center;width: 8em;">งบประมาณ</th>
         </tr>
       </thead>
       <tbody>
@@ -190,7 +197,7 @@ table.cl-layout-cell {
             <td style="text-align: center;">{{ data.code }}</td>
             <td style="text-align: center;">{{ (data.approved)? 'อนุมัติ' :'รออนุมัติ' }}</td>
             <td style="text-align: center;">{{ data.project }}</td>
-            <td>{{ data.boq }}</td>
+            <td style="text-align: left;">{{ data.boq }}</td>
             <td style="text-align: center;">{{ data.requester }}</td>
           </tr>
         {% endfor %}
