@@ -21,10 +21,10 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  * CostItem Report Api Controller
  *
  * @Rest\Version("1.0")
- * @Rest\Route("/comp/{_ERP_DB_}/api/report/cost-item")
+ * @Rest\Route("/api/report/cost-item")
  * @Rest\View(serializerEnableMaxDepthChecks=true)
  */
-class CostItemReportApiQueryController
+class CostItemRawReportApiQueryController
 {
     private CostItemQuery $domainQuery;
 
