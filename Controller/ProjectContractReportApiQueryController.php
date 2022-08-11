@@ -3,7 +3,11 @@
 namespace Erp\Bundle\ReportBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Project Contract Report Api Controller
@@ -115,7 +119,7 @@ class ProjectContractReportApiQueryController
     /**
      * @Rest\Get("/{id}/{idBoq}/billing-note/export.{format}")
      */
-    public function projectContractBillingSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectContractBillingSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
             return 'billingnote' === $item['dtype'] || 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
@@ -128,22 +132,52 @@ class ProjectContractReportApiQueryController
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
         
-        $view = $this->templating->render('@ErpReport/pdf/project-contract-billing-note-report.pdf.twig', [
-            'profile' => $profile,
-            'model' => $data,
-        ]);
-        
-        $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
-            $mpdf->imageVars['logo'] = $logo;
-        });
-            
-            return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+        switch(strtolower($format)) {
+            case 'pdf':
+                $view = $this->templating->render('@ErpReport/pdf/project-contract-billing-note-report.pdf.twig', [
+                    'profile' => $profile,
+                    'model' => $data,
+                ]);
+                
+                $output = $this->pdfService->generatePdf($view, ['format' => 'A4-L'], function($mpdf) use ($logo) {
+                    $mpdf->imageVars['logo'] = $logo;
+                });
+                
+                return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            break;
+            case 'xlsx':
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+
+
+
+
+
+
+
+
+                // Create your Office 2007 Excel (XLSX Format)
+                $writer = new Xlsx($spreadsheet);
+                $writer->setPreCalculateFormulas(false);
+
+                // Create a Temporary file in the system
+                $fileName = 'RP-MT-CI-Quantity-PR_rev.2.1.0_'.date('Ymd_His', time()).'.xlsx';
+                $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+                
+                // Create the excel file in the tmp directory of the system
+                $writer->save($temp_file);
+                
+                $response = new BinaryFileResponse($temp_file);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
+                return $response;
+            break;
+        }
     }
     
     /**
      * @Rest\Get("/{id}/{idBoq}/tax-invoice/export.{format}")
      */
-    public function projectContractTaxInvoiceSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectContractTaxInvoiceSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
             return 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
@@ -171,7 +205,7 @@ class ProjectContractReportApiQueryController
     /**
      * @Rest\Get("/{id}/{idBoq}/revenue/export.{format}")
      */
-    public function projectContractRevenueSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectContractRevenueSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
             return 'revenue' === $item['dtype'];
@@ -204,7 +238,7 @@ class ProjectContractReportApiQueryController
     /**
      * @Rest\Get("/{id}/{idBoq}/contract/export.{format}")
      */
-    public function projectContractProjectSummaryExportAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectContractProjectSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function($item) {
             return 'revenue' === $item['dtype'] && $item['approved'] == 1;
