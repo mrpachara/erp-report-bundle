@@ -281,10 +281,6 @@ class ProjectBoqReportApiQueryController
                     $itemFooterStyle->getFont()
                         ->setBold(true)
                     ;
-                    $itemBoqFooterStyle = $sheet->getStyleByColumnAndRow($costStartColumn, $row - 1, $itemEndColumn, $row - 1);
-                    $itemBoqFooterStyle->getFont()
-                        ->setUnderline(Font::UNDERLINE_DOUBLEACCOUNTING)
-                    ;
 
                 }
 
