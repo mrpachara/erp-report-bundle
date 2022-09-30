@@ -4,6 +4,7 @@ namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use \Doctrine\ORM\EntityRepository;
 use Erp\Bundle\ReportBundle\Domain\CQRS\ExpenseReportQuery as QueryInterface;
+
 class ExpenseReportQueryService implements QueryInterface
 {
     /** @var EntityRepository */
@@ -30,8 +31,7 @@ class ExpenseReportQueryService implements QueryInterface
     function __construct(
         \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
         \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService $queryService
-    )
-    {
+    ) {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:Expense');
         $this->queryService = $queryService;
 
@@ -47,27 +47,26 @@ class ExpenseReportQueryService implements QueryInterface
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
             ->select("{$alias}.code AS code")
-                ->addSelect("{$alias}.id AS id")
-                ->addSelect("{$alias}.approved AS approved")
-                ->addSelect("{$alias}_requester.code AS requester")
-                ->addSelect("{$alias}_vendor.code AS vendor")
-                ->addSelect("{$alias}_project.code AS project")
-                ->addSelect("{$alias}.vatCost AS vatCost")
-                ->addSelect("{$alias}.excludeVat AS excludeVat")
-                ->addSelect("{$alias}.docTotal AS total")
-                ->addSelect("{$alias}.tax AS tax")
-                ->addSelect("{$alias}.taxCost AS taxCost")
-                ->addSelect("{$alias}.taxFactor AS taxFactor")
-                ->addSelect("{$alias}.payTotal AS payTotal")
-                ->addSelect("{$alias}_boq.name AS boq")
-                ->addSelect("{$alias}_budgetType.name AS budgetType")
-            ->leftJoin("{$alias}.project","{$alias}_project")
-            ->leftJoin("{$alias}.requester","{$alias}_requester")
-            ->leftJoin("{$alias}.vendor","{$alias}_vendor")
-            ->leftJoin("{$alias}.boq","{$alias}_boq")
-            ->leftJoin("{$alias}.budgetType","{$alias}_budgetType")
-            ->groupBy("{$alias}")
-        ;
+            ->addSelect("{$alias}.id AS id")
+            ->addSelect("{$alias}.approved AS approved")
+            ->addSelect("{$alias}_requester.code AS requester")
+            ->addSelect("{$alias}_vendor.code AS vendor")
+            ->addSelect("{$alias}_project.code AS project")
+            ->addSelect("{$alias}.vatCost AS vatCost")
+            ->addSelect("{$alias}.excludeVat AS excludeVat")
+            ->addSelect("{$alias}.docTotal AS docTotal")
+            ->addSelect("{$alias}.tax AS tax")
+            ->addSelect("{$alias}.taxCost AS taxCost")
+            ->addSelect("{$alias}.taxFactor AS taxFactor")
+            ->addSelect("{$alias}.payTotal AS payTotal")
+            ->addSelect("{$alias}_boq.name AS boq")
+            ->addSelect("{$alias}_budgetType.name AS budgetType")
+            ->leftJoin("{$alias}.project", "{$alias}_project")
+            ->leftJoin("{$alias}.requester", "{$alias}_requester")
+            ->leftJoin("{$alias}.vendor", "{$alias}_vendor")
+            ->leftJoin("{$alias}.boq", "{$alias}_boq")
+            ->leftJoin("{$alias}.budgetType", "{$alias}_budgetType")
+            ->groupBy("{$alias}");
 
         return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
@@ -76,65 +75,55 @@ class ExpenseReportQueryService implements QueryInterface
     {
         $filterDetail = [];
         $qb = $this->expenseQueryBuilder('_entity');
-        if(!empty($filter['start'])) {
+        if (!empty($filter['start'])) {
             $qb
                 ->andWhere('_entity.tstmp >= :startDate')
-                ->setParameter('startDate', new \DateTimeImmutable($filter['start']))
-            ;
+                ->setParameter('startDate', new \DateTimeImmutable($filter['start']));
             $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
         }
-        if(!empty($filter['end'])) {
+        if (!empty($filter['end'])) {
             $qb
                 ->andWhere('_entity.tstmp <= :endDate')
-                ->setParameter('endDate', new \DateTimeImmutable($filter['end']))
-            ;
+                ->setParameter('endDate', new \DateTimeImmutable($filter['end']));
             $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
         }
-        if(array_key_exists('approved', $filter)) {
+        if (array_key_exists('approved', $filter)) {
             $qb
-            ->andWhere('_entity.approved = :approved')
-            ->setParameter('approved', $filter['approved'])
-            ;
+                ->andWhere('_entity.approved = :approved')
+                ->setParameter('approved', $filter['approved']);
             $filterDetail['approved'] = $filter['approved'];
         }
-        if(!empty($filter['requester'])) {
+        if (!empty($filter['requester'])) {
             $qb
                 ->andWhere('_entity_requester = :requester')
-                ->setParameter('requester', $filter['requester'])
-            ;
+                ->setParameter('requester', $filter['requester']);
             $filterDetail['requester'] = $this->employeeRepos->find($filter['requester']);
         }
-        if(!empty($filter['vendor'])) {
+        if (!empty($filter['vendor'])) {
             $qb
                 ->andWhere('_entity_vendor = :vendor')
-                ->setParameter('vendor', $filter['vendor'])
-            ;
+                ->setParameter('vendor', $filter['vendor']);
             $filterDetail['vendor'] = $this->vendorRepos->find($filter['vendor']);
         }
-        if(!empty($filter['project'])) {
+        if (!empty($filter['project'])) {
             $qb
                 ->andWhere('_entity_project = :project')
-                ->setParameter('project', $filter['project'])
-            ;
+                ->setParameter('project', $filter['project']);
             $filterDetail['project'] = $this->projectRepos->find($filter['project']);
         }
-        if(!empty($filter['boq'])) {
+        if (!empty($filter['boq'])) {
             $qb
                 ->andWhere('_entity_boq = :boq')
-                ->setParameter('boq', $filter['boq'])
-            ;
+                ->setParameter('boq', $filter['boq']);
             $filterDetail['boq'] = $this->boqRepos->find($filter['boq']);
         }
-        if(!empty($filter['budgetType'])) {
+        if (!empty($filter['budgetType'])) {
             $qb
                 ->andWhere('_entity_budgetType = :budgetType')
-                ->setParameter('budgetType', $filter['budgetType'])
-            ;
+                ->setParameter('budgetType', $filter['budgetType']);
             $filterDetail['budgetType'] = $this->budgetTypeRepos->find($filter['budgetType']);
         }
 
         return $qb->getQuery()->getArrayResult();
-
     }
-
 }

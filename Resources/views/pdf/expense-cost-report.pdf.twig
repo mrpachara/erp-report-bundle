@@ -230,7 +230,7 @@ table.cl-layout-cell {
             <td class="cl-number">{{ data.excludeVat|number_format(2) }}</td>
             <td class="cl-number">{{ data.taxCost|number_format(2) }}</td>
             <td class="cl-number">{{ data.payTotal|number_format(2) }}</td>
-            <td class="cl-number">{{ data.total|number_format(2) }}</td>
+            <td class="cl-number">{{ data.docTotal|number_format(2) }}</td>
           </tr>
         {% endfor %}
         <tr style="background-color: #C0C0C0">
@@ -239,7 +239,7 @@ table.cl-layout-cell {
           <td class="cl-number">{{ model|asum('excludeVat')|number_format(2) }}</td>
           <td class="cl-number">{{ model|asum('taxCost')|number_format(2) }}</td>
           <td class="cl-number">{{ model|asum('payTotal')|number_format(2) }}</td>
-          <td class="cl-number">{{ model|asum('total')|number_format(2) }}</td>
+          <td class="cl-number">{{ model|asum('docTotal')|number_format(2) }}</td>
         </tr>
       </tbody>
     </table>
