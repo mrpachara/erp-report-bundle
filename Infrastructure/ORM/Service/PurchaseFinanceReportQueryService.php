@@ -85,7 +85,7 @@ class PurchaseFinanceReportQueryService implements QueryInterface
 
         $qb->addSelect('(' . $ratioQb->getDQL() . ') AS ratio');
 
-        return $this->purchaseFinanceQuery->assignHeaderRemainFilter($qb, $alias);
+        return $this->purchaseFinanceQuery->assignHeaderRemainFilter($qb, $alias, true);
     }
 
     function summarize(array $filter = null, array &$filterDetail = null)

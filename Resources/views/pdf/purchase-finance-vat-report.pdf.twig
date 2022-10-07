@@ -87,7 +87,7 @@ table.cl-layout-cell {
         <tr>
           <td style="width: 40%; text-align: left;">{{ profile.profileData.name }}</td>
           <td style="width: 20%; text-align: center; font-weight: bold;"></td>
-          <td style="width: 40%; text-align: right;">VAT BY PURCHASE ORDER REPORT</td>
+          <td style="width: 40%; text-align: right;">VAT BY {{ docNameEn }} REPORT</td>
         </tr>
       </table>
     </htmlpageheader>
@@ -97,12 +97,12 @@ table.cl-layout-cell {
         <tr>
           <td style="width: 40%; text-align: left;">{{ "now"|date('d/m/Y H:i:s') }}</td>
           <td style="width: 20%; text-align: center;">หน้าที่ {PAGENO}/{nbpg}</td>
-          <td style="width: 40%; text-align: right;">RP-FI-PU-PO-Vat_rev.2.1.0</td>
+          <td style="width: 40%; text-align: right;">RP-FI-PU-{{ docAbbr }}-Vat_rev.2.1.0</td>
         </tr>
       </table>
     </htmlpagefooter>
 
-    <h1 class="cl-title">รายงานภาษีมูลค่าเพิ่ม โดย ใบสั่งซื้อ (Vat by PO-FI)</h1>
+    <h1 class="cl-title">รายงานภาษีมูลค่าเพิ่ม โดย {{ docNameTh }} (Vat by {{ docAbbr }}-FI)</h1>
 
     <table style="width: 100%">
       <tr>
