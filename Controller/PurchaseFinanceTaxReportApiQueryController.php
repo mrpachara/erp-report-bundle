@@ -3,28 +3,21 @@
 namespace Erp\Bundle\ReportBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Font;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
- * PurchaseFinance Vat Report Api Controller
+ * tax Report Api Controller
  *
  * @Rest\Version("1.0")
- * @Rest\Route("/api/report/vat-purchase")
+ * @Rest\Route("/api/report/tax-purchase")
  * @Rest\View(serializerEnableMaxDepthChecks=true)
  */
-class PurchaseFinanceVatReportApiQueryController
+class PurchaseFinanceTaxReportApiQueryController
 {
     /**
-     *  @var \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery
+     * @var \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery
      */
     private $domainQuery;
 
@@ -54,7 +47,7 @@ class PurchaseFinanceVatReportApiQueryController
     protected $excelReport;
 
     /**
-     * PurchaseFinanceVatReportQueryController constructor.
+     * PurchaseFinanceTaxReportQueryController constructor.
      */
     public function __construct(
         \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery $domainQuery,
@@ -75,7 +68,7 @@ class PurchaseFinanceVatReportApiQueryController
     /**
      * @Rest\Get("")
      */
-    public function summarizeVatAction(ServerRequestInterface $request)
+    public function summarizeTaxAction(ServerRequestInterface $request)
     {
         return [
             'data' => $this->domainQuery->summarize($request->getQueryParams()),
@@ -85,7 +78,7 @@ class PurchaseFinanceVatReportApiQueryController
     /**
      * @Rest\Get("/export.{format}")
      */
-    public function summarizeVatExportAction(ServerRequestInterface $request, string $format)
+    public function summarizeTaxExportAction(ServerRequestInterface $request, string $format)
     {
         $filterDetail = [];
         $data = $this->domainQuery->summarize($request->getQueryParams(), $filterDetail);
@@ -97,7 +90,7 @@ class PurchaseFinanceVatReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
-                $view = $this->templating->render('@ErpReport/pdf/purchase-finance-vat-report.pdf.twig', [
+                $view = $this->templating->render('@ErpReport/pdf/purchase-finance-tax-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
                     'filterDetail' => $filterDetail,
@@ -111,7 +104,7 @@ class PurchaseFinanceVatReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
-                $tempFile = $this->excelReport->vatReportExcel(
+                $tempFile = $this->excelReport->taxReportExcel(
                     $data,
                     $filterDetail,
                     PurchaseFinanceReportApiQueryController::docNameEn,
@@ -121,10 +114,7 @@ class PurchaseFinanceVatReportApiQueryController
                 );
 
                 $response = new BinaryFileResponse($tempFile);
-                $response->setContentDisposition(
-                    ResponseHeaderBag::DISPOSITION_INLINE,
-                    null === $fileName ? $response->getFile()->getFilename() : $fileName
-                );
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
                 break;
         }

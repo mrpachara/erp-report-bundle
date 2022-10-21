@@ -3,28 +3,21 @@
 namespace Erp\Bundle\ReportBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Font;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
- * PurchaseFinance Vat Report Api Controller
+ * PurchaseOrder PayMethod Report Api Controller
  *
  * @Rest\Version("1.0")
- * @Rest\Route("/api/report/vat-purchase")
+ * @Rest\Route("/api/report/pay-method-purchase-order")
  * @Rest\View(serializerEnableMaxDepthChecks=true)
  */
-class PurchaseFinanceVatReportApiQueryController
+class PurchaseOrderPayMethodReportApiQueryController
 {
     /**
-     *  @var \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery
+     * @var \Erp\Bundle\ReportBundle\Domain\CQRS\PayMethodPurchaseOrderReportQuery
      */
     private $domainQuery;
 
@@ -54,10 +47,10 @@ class PurchaseFinanceVatReportApiQueryController
     protected $excelReport;
 
     /**
-     * PurchaseFinanceVatReportQueryController constructor.
+     * PurchaseOrderPayMethodReportApiQueryController constructor.
      */
     public function __construct(
-        \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery $domainQuery,
+        \Erp\Bundle\ReportBundle\Domain\CQRS\PayMethodPurchaseOrderReportQuery $domainQuery,
         \Erp\Bundle\SettingBundle\Domain\CQRS\SettingQuery $settingQuery,
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
@@ -75,20 +68,20 @@ class PurchaseFinanceVatReportApiQueryController
     /**
      * @Rest\Get("")
      */
-    public function summarizeVatAction(ServerRequestInterface $request)
+    public function payMethodPurchaseOrderSummaryAction(ServerRequestInterface $request)
     {
         return [
-            'data' => $this->domainQuery->summarize($request->getQueryParams()),
+            'data' => $this->domainQuery->payMethodPurchaseOrderSummary($request->getQueryParams()),
         ];
     }
 
     /**
      * @Rest\Get("/export.{format}")
      */
-    public function summarizeVatExportAction(ServerRequestInterface $request, string $format)
+    public function payMethodPurchaseOrderSummaryExportAction(ServerRequestInterface $request, string $format)
     {
         $filterDetail = [];
-        $data = $this->domainQuery->summarize($request->getQueryParams(), $filterDetail);
+        $data = $this->domainQuery->payMethodPurchaseOrderSummary($request->getQueryParams(), $filterDetail);
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         $logo = null;
         if (!empty($profile['logo'])) {
@@ -97,13 +90,13 @@ class PurchaseFinanceVatReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
-                $view = $this->templating->render('@ErpReport/pdf/purchase-finance-vat-report.pdf.twig', [
+                $view = $this->templating->render('@ErpReport/pdf/purchase-finance-pay-method-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
                     'filterDetail' => $filterDetail,
-                    'docNameEn' => PurchaseFinanceReportApiQueryController::docNameEn,
-                    'docNameTh' => PurchaseFinanceReportApiQueryController::docNameTh,
-                    'docAbbr' => PurchaseFinanceReportApiQueryController::docAbbr,
+                    'docNameEn' => PurchaseOrderReportApiQueryController::docNameEn,
+                    'docNameTh' => PurchaseOrderReportApiQueryController::docNameTh,
+                    'docAbbr' => PurchaseOrderReportApiQueryController::docAbbr,
                 ]);
                 $output = $this->pdfService->generatePdf($view, ['format' => 'A4'], function ($mpdf) use ($logo) {
                     $mpdf->imageVars['logo'] = $logo;
@@ -111,20 +104,17 @@ class PurchaseFinanceVatReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
-                $tempFile = $this->excelReport->vatReportExcel(
+                $tempFile = $this->excelReport->payMethodReportExcel(
                     $data,
                     $filterDetail,
-                    PurchaseFinanceReportApiQueryController::docNameEn,
-                    PurchaseFinanceReportApiQueryController::docNameTh,
-                    PurchaseFinanceReportApiQueryController::docAbbr,
+                    PurchaseOrderReportApiQueryController::docNameEn,
+                    PurchaseOrderReportApiQueryController::docNameTh,
+                    PurchaseOrderReportApiQueryController::docAbbr,
                     $fileName
                 );
 
                 $response = new BinaryFileResponse($tempFile);
-                $response->setContentDisposition(
-                    ResponseHeaderBag::DISPOSITION_INLINE,
-                    null === $fileName ? $response->getFile()->getFilename() : $fileName
-                );
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
                 break;
         }

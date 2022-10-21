@@ -111,6 +111,7 @@ class PurchaseFinanceReportApiQueryController
                 $fileName = null;
                 $tempFile = $this->excelReport->docReportExcel(
                     $data,
+                    $filterDetail,
                     self::docNameEn,
                     self::docNameTh,
                     self::docAbbr,
@@ -159,6 +160,7 @@ class PurchaseFinanceReportApiQueryController
                 $fileName = null;
                 $tempFile = $this->excelReport->costReportExcel(
                     $data,
+                    $filterDetail,
                     self::docNameEn,
                     self::docNameTh,
                     self::docAbbr,

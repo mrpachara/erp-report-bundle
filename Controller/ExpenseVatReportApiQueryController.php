@@ -106,6 +106,7 @@ class ExpenseVatReportApiQueryController
             case 'xlsx':
                 $tempFile = $this->excelReport->vatReportExcel(
                     $data,
+                    $filterDetail,
                     ExpenseReportApiQueryController::docNameEn,
                     ExpenseReportApiQueryController::docNameTh,
                     ExpenseReportApiQueryController::docAbbr,

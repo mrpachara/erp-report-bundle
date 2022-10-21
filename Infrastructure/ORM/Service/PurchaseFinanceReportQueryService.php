@@ -63,9 +63,13 @@ class PurchaseFinanceReportQueryService implements QueryInterface
             ->addSelect("{$alias}.taxCost AS taxCost")
             ->addSelect("{$alias}.payTotal AS payTotal")
 
+            ->addSelect("{$alias}.payMethod AS payMethod")
+            ->addSelect("{$alias}.dueDate AS dueDate")
+
             ->addSelect("{$alias}.productWarranty AS productWarranty")
             ->addSelect("{$alias}.productWarrantyCost AS productWarrantyCost")
 
+            ->addSelect("{$alias}.payTerm AS payTerm")
             ->addSelect("{$alias}.payDeposit AS payDeposit")
 
             ->addSelect("{$alias}.startDate AS startDate")

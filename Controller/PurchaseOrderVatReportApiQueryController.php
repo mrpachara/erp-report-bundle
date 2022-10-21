@@ -106,6 +106,7 @@ class PurchaseOrderVatReportApiQueryController
             case 'xlsx':
                 $tempFile = $this->excelReport->vatReportExcel(
                     $data,
+                    $filterDetail,
                     PurchaseOrderReportApiQueryController::docNameEn,
                     PurchaseOrderReportApiQueryController::docNameTh,
                     PurchaseOrderReportApiQueryController::docAbbr,
