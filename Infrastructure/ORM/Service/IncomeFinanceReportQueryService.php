@@ -3,56 +3,51 @@
 namespace Erp\Bundle\ReportBundle\Infrastructure\ORM\Service;
 
 use \Doctrine\ORM\EntityRepository;
-use Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\PurchaseFinanceQueryService;
-use Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery as QueryInterface;
+use Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\IncomeFinanceQueryService;
+use Erp\Bundle\ReportBundle\Domain\CQRS\IncomeFinanceReportQuery as QueryInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
-class PurchaseFinanceReportQueryService implements QueryInterface
+class IncomeFinanceReportQueryService implements QueryInterface
 {
-    /** @var PurchaseFinanceQueryService */
-    protected $purchaseFinanceQuery;
+    /** @var IncomeFinanceQueryService */
+    protected $incomeFinanceQuery;
 
     /** @var EntityRepository */
     protected $employeeRepos;
 
     /** @var EntityRepository */
-    protected $vendorRepos;
+    protected $projectRepos;
 
     /** @var EntityRepository */
-    protected $projectRepos;
+    protected $personRepos;
 
     /** @var EntityRepository */
     protected $boqRepos;
 
-    /** @var EntityRepository */
-    protected $budgetTypeRepos;
-
     function __construct(
-        PurchaseFinanceQueryService $purchaseFinanceQuery,
+        IncomeFinanceQueryService $incomeFinanceQuery,
         RegistryInterface $doctrine
     ) {
-        $this->purchaseFinanceQuery = $purchaseFinanceQuery;
+        $this->incomeFinanceQuery = $incomeFinanceQuery;
 
         $this->employeeRepos = $doctrine->getRepository('ErpMasterBundle:Employee');
-        $this->vendorRepos = $doctrine->getRepository('ErpMasterBundle:Vendor');
         $this->projectRepos = $doctrine->getRepository('ErpMasterBundle:Project');
+        $this->personRepos = $doctrine->getRepository('ErpMasterBundle:Person');
         $this->boqRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoq');
-        $this->budgetTypeRepos = $doctrine->getRepository('ErpMasterBundle:ProjectBoqBudgetType');
     }
 
     function createQueryBuilder(string $alias)
     {
-        $qb = $this->purchaseFinanceQuery->createQueryBuilder($alias);
+        $qb = $this->incomeFinanceQuery->createQueryBuilder($alias);
         $qb
             ->select("{$alias}.code AS code")
             ->addSelect("{$alias}.id AS id")
             ->addSelect("{$alias}.approved AS approved")
             ->addSelect("{$alias}_requester.code AS requester")
-            ->addSelect("{$alias}_vendor.code AS vendor")
+            ->addSelect("{$alias}_thingOwner.name AS owner")
             ->addSelect("{$alias}_project.code AS project")
             ->addSelect("{$alias}.docTotal AS docTotal")
             ->addSelect("{$alias}_boq.name AS boq")
-            ->addSelect("{$alias}_budgetType.name AS budgetType")
 
             ->addSelect("{$alias}.vatFactor AS vatFactor")
             ->addSelect("{$alias}.vatCost AS vatCost")
@@ -63,33 +58,31 @@ class PurchaseFinanceReportQueryService implements QueryInterface
             ->addSelect("{$alias}.taxCost AS taxCost")
             ->addSelect("{$alias}.payTotal AS payTotal")
 
-            ->addSelect("{$alias}.payMethod AS payMethod")
-            ->addSelect("{$alias}.dueDate AS dueDate")
+            ->addSelect("{$alias}.retentionFactor AS retentionFactor")
+            ->addSelect("{$alias}.retention AS retention")
+            ->addSelect("{$alias}.retentionCost AS retentionCost")
+            ->addSelect("{$alias}.retentionPayTotal AS retentionPayTotal")
 
-            ->addSelect("{$alias}.productWarranty AS productWarranty")
-            ->addSelect("{$alias}.productWarrantyCost AS productWarrantyCost")
+            ->addSelect("{$alias}.paymentDate AS paymentDate")
+            ->addSelect("{$alias}.netTotal AS netTotal")
 
-            ->addSelect("{$alias}.payTerm AS payTerm")
-            ->addSelect("{$alias}.payDeposit AS payDeposit")
-
-            ->addSelect("{$alias}.startDate AS startDate")
-            ->addSelect("{$alias}.finishDate AS finishDate")
+            ->addSelect("{$alias}.deliveryDate AS deliveryDate")
 
             ->leftJoin("{$alias}.project", "{$alias}_project")
+            ->leftJoin("{$alias}_project.owner", "{$alias}_owner")
+            ->leftJoin("{$alias}_owner.thing", "{$alias}_thingOwner")
             ->leftJoin("{$alias}.requester", "{$alias}_requester")
-            ->leftJoin("{$alias}.vendor", "{$alias}_vendor")
-            ->leftJoin("{$alias}.boq", "{$alias}_boq")
-            ->leftJoin("{$alias}.budgetType", "{$alias}_budgetType");
+            ->leftJoin("{$alias}.boq", "{$alias}_boq");
 
         $ratioAlias = "{$alias}_detail_ratio";
-        $ratioQb = $this->purchaseFinanceQuery->createDetailQueryBuilder($ratioAlias);
-        $ratioQb = $this->purchaseFinanceQuery->assignDetailRemainFilter($ratioQb, $ratioAlias);
-        $ratioQb->andWhere("{$ratioAlias}.purchase = {$alias}");
+        $ratioQb = $this->incomeFinanceQuery->createDetailQueryBuilder($ratioAlias);
+        $ratioQb = $this->incomeFinanceQuery->assignDetailRemainFilter($ratioQb, $ratioAlias);
+        $ratioQb->andWhere("{$ratioAlias}.income = {$alias}");
         $ratioQb->select("SUM({$ratioAlias}.total) / {$alias}.docTotal");
 
         $qb->addSelect('(' . $ratioQb->getDQL() . ') AS ratio');
 
-        return $this->purchaseFinanceQuery->assignHeaderRemainFilter($qb, $alias, true);
+        return $this->incomeFinanceQuery->assignHeaderRemainFilter($qb, $alias, true);
     }
 
     function summarize(array $filter = null, array &$filterDetail = null)
@@ -122,11 +115,11 @@ class PurchaseFinanceReportQueryService implements QueryInterface
                 ->setParameter('requester', $filter['requester']);
             $filterDetail['requester'] = $this->employeeRepos->find($filter['requester']);
         }
-        if (!empty($filter['vendor'])) {
+        if (!empty($filter['owner'])) {
             $qb
-                ->andWhere('_entity_vendor = :vendor')
-                ->setParameter('vendor', $filter['vendor']);
-            $filterDetail['vendor'] = $this->vendorRepos->find($filter['vendor']);
+                ->andWhere('_entity_owner = :owner')
+                ->setParameter('owner', $filter['owner']);
+            $filterDetail['owner'] = $this->personRepos->find($filter['owner']);
         }
         if (!empty($filter['project'])) {
             $qb
@@ -140,12 +133,6 @@ class PurchaseFinanceReportQueryService implements QueryInterface
                 ->setParameter('boq', $filter['boq']);
             $filterDetail['boq'] = $this->boqRepos->find($filter['boq']);
         }
-        if (!empty($filter['budgetType'])) {
-            $qb
-                ->andWhere('_entity_budgetType = :budgetType')
-                ->setParameter('budgetType', $filter['budgetType']);
-            $filterDetail['budgetType'] = $this->budgetTypeRepos->find($filter['budgetType']);
-        }
         if (array_key_exists('vatFactor', $filter)) {
             $qb
                 ->andWhere('_entity.vatFactor = :vatFactor')
@@ -158,23 +145,17 @@ class PurchaseFinanceReportQueryService implements QueryInterface
                 ->setParameter('taxFactor', $filter['taxFactor']);
             $filterDetail['taxFactor'] = $filter['taxFactor'];
         }
-        if (array_key_exists('payMethod', $filter)) {
+        if (array_key_exists('retentionFactor', $filter)) {
             $qb
-                ->andWhere('_entity.payMethod = :payMethod')
-                ->setParameter('payMethod', $filter['payMethod']);
-            $filterDetail['payMethod'] = $filter['payMethod'];
+                ->andWhere('_entity.retentionFactor = :retentionFactor')
+                ->setParameter('retentionFactor', $filter['retentionFactor']);
+            $filterDetail['retentionFactor'] = $filter['retentionFactor'];
         }
-        if (array_key_exists('productWarranty', $filter)) {
+        if (array_key_exists('paymentDate', $filter)) {
             $qb
-                ->andWhere('_entity.productWarranty = :productWarranty')
-                ->setParameter('productWarranty', $filter['productWarranty']);
-            $filterDetail['productWarranty'] = $filter['productWarranty'];
-        }
-        if (array_key_exists('payTerm', $filter)) {
-            $qb
-                ->andWhere('_entity.payTerm = :payTerm')
-                ->setParameter('payTerm', $filter['payTerm']);
-            $filterDetail['payTerm'] = $filter['payTerm'];
+                ->andWhere('_entity.paymentDate = :paymentDate')
+                ->setParameter('paymentDate', $filter['paymentDate']);
+            $filterDetail['paymentDate'] = $filter['paymentDate'];
         }
 
         return array_map(function ($data) {
@@ -195,13 +176,12 @@ class PurchaseFinanceReportQueryService implements QueryInterface
             $data['taxCost'] = $calRatio($data['taxCost']);
             $data['payTotal'] = $calRatio($data['payTotal']);
 
+            // Retention
+            $data['retentionCost'] = $calRatio($data['retentionCost']);
+            $data['retentionPayTotal'] = $calRatio($data['retentionPayTotal']);
+
             // Paymethod
-
-            // Warranty
-            $data['productWarrantyCost'] = $calRatio($data['productWarrantyCost']);
-
-            // Deposit
-            $data['payDeposit'] = $calRatio($data['payDeposit']);
+            $data['netTotal'] = $calRatio($data['netTotal']);
 
             return $data;
         }, $qb->getQuery()->getArrayResult());

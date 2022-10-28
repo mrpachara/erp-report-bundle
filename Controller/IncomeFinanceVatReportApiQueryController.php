@@ -8,16 +8,16 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
- * PurchaseFinance Vat Report Api Controller
+ * IncomeFinance Vat Report Api Controller
  *
  * @Rest\Version("1.0")
- * @Rest\Route("/api/report/vat-purchase")
+ * @Rest\Route("/api/report/vat-income")
  * @Rest\View(serializerEnableMaxDepthChecks=true)
  */
-class PurchaseFinanceVatReportApiQueryController
+class IncomeFinanceVatReportApiQueryController
 {
     /**
-     *  @var \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery
+     *  @var \Erp\Bundle\ReportBundle\Domain\CQRS\IncomeFinanceReportQuery
      */
     private $domainQuery;
 
@@ -42,20 +42,20 @@ class PurchaseFinanceVatReportApiQueryController
     protected $pdfService = null;
 
     /**
-     * @var PurchaseFinanceExcelReportHelper
+     * @var IncomeFinanceExcelReportHelper
      */
     protected $excelReport;
 
     /**
-     * PurchaseFinanceVatReportQueryController constructor.
+     * IncomeFinanceVatReportQueryController constructor.
      */
     public function __construct(
-        \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery $domainQuery,
+        \Erp\Bundle\ReportBundle\Domain\CQRS\IncomeFinanceReportQuery $domainQuery,
         \Erp\Bundle\SettingBundle\Domain\CQRS\SettingQuery $settingQuery,
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        PurchaseFinanceExcelReportHelper $excelReport
+        IncomeFinanceExcelReportHelper $excelReport
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -90,13 +90,13 @@ class PurchaseFinanceVatReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
-                $view = $this->templating->render('@ErpReport/pdf/purchase-finance-vat-report.pdf.twig', [
+                $view = $this->templating->render('@ErpReport/pdf/income-finance-vat-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
                     'filterDetail' => $filterDetail,
-                    'docNameEn' => PurchaseFinanceReportApiQueryController::docNameEn,
-                    'docNameTh' => PurchaseFinanceReportApiQueryController::docNameTh,
-                    'docAbbr' => PurchaseFinanceReportApiQueryController::docAbbr,
+                    'docNameEn' => IncomeFinanceReportApiQueryController::docNameEn,
+                    'docNameTh' => IncomeFinanceReportApiQueryController::docNameTh,
+                    'docAbbr' => IncomeFinanceReportApiQueryController::docAbbr,
                 ]);
                 $output = $this->pdfService->generatePdf($view, ['format' => 'A4'], function ($mpdf) use ($logo) {
                     $mpdf->imageVars['logo'] = $logo;
@@ -107,9 +107,9 @@ class PurchaseFinanceVatReportApiQueryController
                 $tempFile = $this->excelReport->vatReportExcel(
                     $data,
                     $filterDetail,
-                    PurchaseFinanceReportApiQueryController::docNameEn,
-                    PurchaseFinanceReportApiQueryController::docNameTh,
-                    PurchaseFinanceReportApiQueryController::docAbbr,
+                    IncomeFinanceReportApiQueryController::docNameEn,
+                    IncomeFinanceReportApiQueryController::docNameTh,
+                    IncomeFinanceReportApiQueryController::docAbbr,
                     $fileName
                 );
 

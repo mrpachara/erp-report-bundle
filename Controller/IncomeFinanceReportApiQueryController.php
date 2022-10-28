@@ -8,20 +8,20 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
- * Purchase Report Api Controller
+ * Income Report Api Controller
  *
  * @Rest\Version("1.0")
- * @Rest\Route("/api/report/purchase")
+ * @Rest\Route("/api/report/income")
  * @Rest\View(serializerEnableMaxDepthChecks=true)
  */
-class PurchaseFinanceReportApiQueryController
+class IncomeFinanceReportApiQueryController
 {
-    const docNameEn = 'PURCHASE';
-    const docNameTh = 'จัดซื้อ';
-    const docAbbr = 'PU';
+    const docNameEn = 'INCOME';
+    const docNameTh = 'รายได้';
+    const docAbbr = 'IN';
 
     /**
-     * @var \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery
+     * @var \Erp\Bundle\ReportBundle\Domain\CQRS\IncomeFinanceReportQuery
      */
     private $domainQuery;
 
@@ -46,20 +46,20 @@ class PurchaseFinanceReportApiQueryController
     protected $pdfService = null;
 
     /**
-     * @var PurchaseFinanceExcelReportHelper
+     * @var IncomeFinanceExcelReportHelper
      */
     protected $excelReport;
 
     /**
-     * PurchaseFinanceReportApiQueryController constructor.
+     * IncomeFinanceReportApiQueryController constructor.
      */
     public function __construct(
-        \Erp\Bundle\ReportBundle\Domain\CQRS\PurchaseFinanceReportQuery $domainQuery,
+        \Erp\Bundle\ReportBundle\Domain\CQRS\IncomeFinanceReportQuery $domainQuery,
         \Erp\Bundle\SettingBundle\Domain\CQRS\SettingQuery $settingQuery,
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        PurchaseFinanceExcelReportHelper $excelReport
+        IncomeFinanceExcelReportHelper $excelReport
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -94,7 +94,7 @@ class PurchaseFinanceReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
-                $view = $this->templating->render('@ErpReport/pdf/purchase-finance-report.pdf.twig', [
+                $view = $this->templating->render('@ErpReport/pdf/income-finance-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
                     'filterDetail' => $filterDetail,
@@ -143,7 +143,7 @@ class PurchaseFinanceReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
-                $view = $this->templating->render('@ErpReport/pdf/purchase-finance-cost-report.pdf.twig', [
+                $view = $this->templating->render('@ErpReport/pdf/income-finance-cost-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
                     'filterDetail' => $filterDetail,
