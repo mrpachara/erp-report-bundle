@@ -78,9 +78,9 @@ class IncomeFinanceReportQueryService implements QueryInterface
         $ratioQb = $this->incomeFinanceQuery->createDetailQueryBuilder($ratioAlias);
         $ratioQb = $this->incomeFinanceQuery->assignDetailRemainFilter($ratioQb, $ratioAlias);
         $ratioQb->andWhere("{$ratioAlias}.income = {$alias}");
-        $ratioQb->select("SUM({$ratioAlias}.total) / {$alias}.docTotal");
+        $ratioQb->select("SUM({$ratioAlias}.total)");
 
-        $qb->addSelect('(' . $ratioQb->getDQL() . ') AS ratio');
+        $qb->addSelect('(' . $ratioQb->getDQL() . ') AS remain');
 
         return $this->incomeFinanceQuery->assignHeaderRemainFilter($qb, $alias, true);
     }
@@ -159,8 +159,12 @@ class IncomeFinanceReportQueryService implements QueryInterface
         }
 
         return array_map(function ($data) {
+            $docTotal = (float) $data['docTotal'];
+            $remain = (float) $data['remain'];
+            $data['ratio'] = ($docTotal === 0.0) ? null : $remain / $docTotal;
+
             $calRatio = function ($value) use ($data) {
-                if ($value === null) {
+                if ($value === null || $data['ratio'] === null) {
                     return $value;
                 }
                 return number_format($value * $data['ratio'], 2, '.', '');
