@@ -124,7 +124,7 @@ class IncomeFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานการเงิน{$docNameTh} ({$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานการเงิน โดย {$docNameTh} (FI by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         // $sheet->setCellValue('A4', 'ประเภท : ');
@@ -253,7 +253,7 @@ class IncomeFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานภาษีมูลค่าเพิ่ม โดย {$docNameTh} (Vat by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานภาษีมูลค่าเพิ่ม โดย {$docNameTh} (Vat by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         // $sheet->setCellValue('A4', 'ประเภท : ');
@@ -381,7 +381,7 @@ class IncomeFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานภาษีหัก ณ ที่จ่าย โดย {$docNameTh} (Tax by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานภาษีหัก ณ ที่จ่าย โดย {$docNameTh} (Tax by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         // $sheet->setCellValue('A4', 'ประเภท : ');
@@ -512,7 +512,7 @@ class IncomeFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานค่าประกันผลงาน โดย {$docNameTh} (Retention by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานค่าประกันผลงาน โดย {$docNameTh} (Retention by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         // $sheet->setCellValue('A4', 'ประเภท : ');
@@ -643,7 +643,7 @@ class IncomeFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานกำหนดการรับเงิน โดย {$docNameTh} (Accept by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานกำหนดการรับเงิน โดย {$docNameTh} (Accept by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         // $sheet->setCellValue('A4', 'ประเภท : ');

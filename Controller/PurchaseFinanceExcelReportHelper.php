@@ -129,7 +129,7 @@ class PurchaseFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานการเงิน{$docNameTh} ({$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานการเงิน โดย {$docNameTh} (FI by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         $sheet->setCellValue('A4', 'ประเภท : ');
@@ -155,11 +155,27 @@ class PurchaseFinanceExcelReportHelper
         $sheet->mergeCells('G9:G10');
         $sheet->mergeCells('H9:H10');
         $sheet->mergeCells('I9:M9');
+        // - > เพิ่มตรงนี้ 06/12/2565(เริ่ม)
+        $sheet->mergeCells('N9:O9');
+        $sheet->mergeCells('P9:R9');
+        $sheet->mergeCells('S9:U9');
+        $sheet->mergeCells('V9:W9');
+        $sheet->mergeCells('X9:Z9');
+        // - - - > เพิ่มตรงนี้ 06/12/2565(สิ้นสุด)
+
         $sheet->getStyle('A9:M10')->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         $sheet->getStyle('A9:M10')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
         $sheet->getStyle('A9:M10')->getFill()->getStartColor()->setRGB('DCDCDC');
         $sheet->getStyle('A9:M10')->getAlignment()->setHorizontal('center');
         $sheet->getStyle('A9:M10')->getAlignment()->setVertical('center');
+        // - > เพิ่มตรงนี้ 06/12/2565(เริ่ม)
+        $sheet->getStyle('N9:Z10')->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getStyle('N9:Z10')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+        $sheet->getStyle('N9:Z10')->getFill()->getStartColor()->setRGB('DCDCDC');
+        $sheet->getStyle('N9:Z10')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('N9:Z10')->getAlignment()->setVertical('center');
+        // - - - > เพิ่มตรงนี้ 06/12/2565(สิ้นสุด)
+
         $sheet->setCellValue('A9', 'ลำดับ');
         $sheet->setCellValue('B9', 'เอกสาร');
         $sheet->setCellValue('B10', 'เลขที่');
@@ -176,6 +192,27 @@ class PurchaseFinanceExcelReportHelper
         $sheet->setCellValue('K10', 'TAX');
         $sheet->setCellValue('L10', 'รวมชำระ');
         $sheet->setCellValue('M10', 'รวมสุทธิ');
+
+        // - > เพิ่มตรงนี้ 06/12/2565(เริ่ม)
+        $sheet->setCellValue('N9', 'VAT');
+        $sheet->setCellValue('P9', 'TAX');
+        $sheet->setCellValue('S9', 'การชำระเงิน');
+        $sheet->setCellValue('V9', 'ประกันสินค้า');
+        $sheet->setCellValue('X9', 'มัดจำสินค้า');
+        $sheet->setCellValue('N10', 'สถานะ');
+        $sheet->setCellValue('O10', 'มูลค่า (บาท)');
+        $sheet->setCellValue('P10', 'สถานะ');
+        $sheet->setCellValue('Q10', '%');
+        $sheet->setCellValue('R10', 'มูลค่า (บาท)');
+        $sheet->setCellValue('S10', 'สถานะ');
+        $sheet->setCellValue('T10', 'วันที่');
+        $sheet->setCellValue('U10', 'มูลค่า (บาท)');
+        $sheet->setCellValue('V10', 'สถานะ');
+        $sheet->setCellValue('W10', 'มูลค่า (บาท)');
+        $sheet->setCellValue('X10', 'สถานะ');
+        $sheet->setCellValue('Y10', 'มูลค่า (บาท)');
+        $sheet->setCellValue('Z10', 'คงค้าง (บาท)');
+        // - - - > เพิ่มตรงนี้ 06/12/2565(สิ้นสุด)
 
         $row = 11;
         $count = 1;
@@ -194,6 +231,25 @@ class PurchaseFinanceExcelReportHelper
             $sheet->setCellValue('K' . $row, $item['taxCost']);
             $sheet->setCellValue('L' . $row, $item['payTotal']);
             $sheet->setCellValue('M' . $row, $item['docTotal']);
+
+            // - > เพิ่มตรงนี้ 06/12/2565(เริ่ม)
+            $sheet->setCellValue('N' . $row, $item['vatFactor'] ? 'มี' : 'ไม่มี');
+            $sheet->setCellValue('O' . $row, $item['vatCost']);
+            $sheet->setCellValue('P' . $row, $item['taxFactor'] ? 'มี' : 'ไม่มี');
+            $sheet->setCellValue('Q' . $row, $item['taxFactor'] * $item['tax']);
+            $sheet->setCellValue('R' . $row, $item['taxCost']);
+            $sheet->setCellValue('S' . $row, $item['payMethod'] ? 'เครดิต' : 'เงินสด');
+            //รอแก้ไขตรงนี้
+            $sheet->setCellValue('T' . $row, empty($item['dueDate']) ? '' : Date::PHPToExcel($item['dueDate']));
+            //รอแก้ไขตรงนี้
+            $sheet->setCellValue('U' . $row, $item['docTotal']);
+            $sheet->setCellValue('V' . $row, $item['productWarranty'] ? 'มี' : 'ไม่มี');
+            $sheet->setCellValue('W' . $row, $item['productWarranty'] * $item['productWarrantyCost']);
+            $sheet->setCellValue('X' . $row, $item['payTerm'] ? 'มี' : 'ไม่มี');
+            $sheet->setCellValue('Y' . $row, $item['payDeposit']);
+            $sheet->setCellValue('Z' . $row, $item['docTotal'] - $item['payDeposit']);
+            // - - - > เพิ่มตรงนี้ 06/12/2565(สิ้นสุด)
+
             $row++;
             $count++;
         }
@@ -226,6 +282,36 @@ class PurchaseFinanceExcelReportHelper
 
         $sheet->getStyle("I{$tableEndRow}:M{$tableEndRow}")->getFont()
             ->setUnderline(Font::UNDERLINE_DOUBLEACCOUNTING);
+        
+        // - > เพิ่มตรงนี้ 06/12/2565(เริ่ม)
+        $sheet->getStyle("N{$itemStartRow}:N{$tableEndRow}")->getAlignment()->setHorizontal('center');
+        $sheet->getStyle("O{$itemStartRow}:O{$tableEndRow}")->getNumberFormat()->setFormatCode(self::NUMBER_FORMAT);
+        $sheet->getStyle("P{$itemStartRow}:P{$tableEndRow}")->getAlignment()->setHorizontal('center');
+        $sheet->getStyle("Q{$itemStartRow}:Q{$tableEndRow}")->getAlignment()->setHorizontal('center');
+        $sheet->getStyle("R{$itemStartRow}:R{$tableEndRow}")->getNumberFormat()->setFormatCode(self::NUMBER_FORMAT);
+        $sheet->getStyle("S{$itemStartRow}:T{$tableEndRow}")->getAlignment()->setHorizontal('center');
+        $sheet->getStyle("T{$itemStartRow}:T{$tableEndRow}")->getNumberFormat()->setFormatCode('DD/MM/YYYY');
+        $sheet->getStyle("U{$itemStartRow}:U{$tableEndRow}")->getNumberFormat()->setFormatCode(self::NUMBER_FORMAT);
+        $sheet->getStyle("V{$itemStartRow}:V{$tableEndRow}")->getAlignment()->setHorizontal('center');
+        $sheet->getStyle("W{$itemStartRow}:W{$tableEndRow}")->getNumberFormat()->setFormatCode(self::NUMBER_FORMAT);
+        $sheet->getStyle("X{$itemStartRow}:X{$tableEndRow}")->getAlignment()->setHorizontal('center');
+        $sheet->getStyle("Y{$itemStartRow}:Z{$tableEndRow}")->getNumberFormat()->setFormatCode(self::NUMBER_FORMAT);
+
+        $sheet->getStyle("N{$itemStartRow}:Z{$tableEndRow}")->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
+
+        $itemFooterStyle = $sheet->getStyle("N{$tableEndRow}:Z{$tableEndRow}");
+        $itemFooterStyle->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setRGB('DCDCDC');
+        $itemFooterStyle->getFont()
+            ->setBold(true);
+
+        $sheet->getStyle("N{$tableEndRow}:Z{$tableEndRow}")->getFont()
+            ->setUnderline(Font::UNDERLINE_DOUBLEACCOUNTING);
+        // - - - > เพิ่มตรงนี้ 06/12/2565(สิ้นสุด)
 
         // Create your Office 2007 Excel (XLSX Format)
         $writer = new Xlsx($spreadsheet);
@@ -263,7 +349,7 @@ class PurchaseFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานภาษีมูลค่าเพิ่ม โดย {$docNameTh} (Vat by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานภาษีมูลค่าเพิ่ม โดย {$docNameTh} (Vat by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         $sheet->setCellValue('A4', 'ประเภท : ');
@@ -396,7 +482,7 @@ class PurchaseFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานภาษีหัก ณ ที่จ่าย โดย {$docNameTh} (Tax by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานภาษีหัก ณ ที่จ่าย โดย {$docNameTh} (Tax by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         $sheet->setCellValue('A4', 'ประเภท : ');
@@ -532,7 +618,7 @@ class PurchaseFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานการชำระเงิน โดย {$docNameTh} (Payment by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานการชำระเงิน โดย {$docNameTh} (Payment by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         $sheet->setCellValue('A4', 'ประเภท : ');
@@ -667,7 +753,7 @@ class PurchaseFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานค่าประกันสินค้า โดย {$docNameTh} (Warranty by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานค่าประกันสินค้า โดย {$docNameTh} (Warranty by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         $sheet->setCellValue('A4', 'ประเภท : ');
@@ -795,7 +881,7 @@ class PurchaseFinanceExcelReportHelper
         $sheet->getStyle('B2:B8')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('C7:C8')->getAlignment()->setHorizontal('right');
         $sheet->getStyle('D7:D8')->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-        $sheet->setCellValue('A1', "รายงานค่ามัดจำสินค้า โดย {$docNameTh} (Deposit by {$docAbbr}-FI)");
+        $sheet->setCellValue('A1', "รายงานค่ามัดจำสินค้า โดย {$docNameTh} (Deposit by {$docAbbr})");
         $sheet->setCellValue('A2', 'โครงการ : ');
         $sheet->setCellValue('A3', 'งบประมาณ : ');
         $sheet->setCellValue('A4', 'ประเภท : ');
