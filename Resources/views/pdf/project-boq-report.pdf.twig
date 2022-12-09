@@ -83,7 +83,7 @@ tr.cl-total * {
           <table width="100%" style="vertical-align: bottom; color: #000000; font-weight: bold;">
             <tr>
               <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">created by CONSOL</span></td>
-              <td style="text-align: center; font-weight: bold;">Project Budget Report</td>
+              <td style="text-align: center; font-weight: bold;">Project Budget Report{{ extendHeader }}</td>
               <td style="width: 33%; text-align: right;"></td>
             </tr>
           </table>
@@ -95,13 +95,13 @@ tr.cl-total * {
               <tr>
                   <td style="width: 33%; text-align: left;"><span style="font-weight: bold;">{{ "now"|date('d/m/Y H:i:s') }}</span></td>
                   <td style="text-align: center; font-weight: bold;">{PAGENO}/{nbpg}</td>
-                  <td style="width: 33%; text-align: right;">PROJECT BUDGET-REPORT-rev1.0</td>
+                  <td style="width: 33%; text-align: right;">PROJECT BUDGET-{{ extendName }}-REPORT-rev1.0</td>
               </tr>
           </table>
       </htmlpagefooter>
-      
+
 {% for data in model %}
-      <h1 class="cl-title">รายงานสรุปจ่าย</h1>
+      <h1 class="cl-title">รายงานงบประมาณโครงการ</h1>
       <table style="width: 100%;">
         <tr>
           <td style="font-weight: bold;" width="8%">โครงการ : </td>
@@ -112,63 +112,52 @@ tr.cl-total * {
           <td style="font-weight: bold;">{{ data.name }}</td>
         </tr>
       </table>
-{% endfor %}
+
       <table class="data-list">
         <thead>
           <tr style="background-color: #C0C0C0">
             <th rowspan="1" style="font-weight: bold;text-align: center;width: 2em;">ลำดับ</th>
             <th rowspan="1" style="font-weight: bold;text-align: center;">รายการ</th>
-{% for data in model %}
-	{% for column in data.cost.columns %}
+  {% for column in data.cost.columns %}
             <th colspan="3" style="font-weight: bold;text-align: center;">{{ (column.name == 'total')? 'รวม' : column.name }}</th>
-    {% endfor %}
-{% endfor %}
+  {% endfor %}
           </tr>
           <tr style="background-color: #C0C0C0">
             <th></th>
             <th></th>
-{% for data in model %}
-	{% for column in data.cost.columns %}
-			<th>ที่มี</th>
+  {% for column in data.cost.columns %}
+            <th>ที่มี</th>
             <th>ใช้ไป</th>
             <th>คงเหลือ</th>
-    {% endfor %}
-{% endfor %}
+  {% endfor %}
           </tr>
         </thead>
         <tbody>
-{% for data in model %}
-	{% for boq in data.cost.data %}
-	    {% if boq.number != '' %}
+  {% for boq in data.cost.data %}
+    {% if boq.number != '' %}
           <tr>
             <td class="{{ (boq.isTotal)? 'cl-total' : '' }}" style="text-align: center;">{{ boq.number }}</td>
             <td class="{{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.name }}</td>
-	    {% for column in data.cost.columns %}
-	    {% set i = loop.index0 %}
-	    <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].budget |number_format }}</td>
-	    <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].cost |number_format }}</td>
-	    <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].remain |number_format }}</td>
-	    {% endfor %}
+      {% for column in data.cost.columns %}
+      {% set i = loop.index0 %}
+      <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].budget |number_format }}</td>
+      <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].cost |number_format }}</td>
+      <td class="cl-number {{ (boq.isTotal)? 'cl-total' : '' }}">{{ boq.costs[i].remain |number_format }}</td>
+      {% endfor %}
           </tr>
-        {% endif %}
-    {% endfor %}
-{% endfor %}
-{% for data in model %}
-	{% for boq in data.cost.data %}
-	    {% if boq.number == '' %}
+    {% else %}
           <tr style="background-color: #E0E0E0">
             <td style="text-align: center;"></td>
             <td style="text-align: center;"></td>
-	    {% for column in data.cost.columns %}
-	    {% set i = loop.index0 %}
-	    <td class="cl-number">{{ boq.costs[i].budget |number_format }}</td>
-	    <td class="cl-number">{{ boq.costs[i].cost |number_format }}</td>
-	    <td class="cl-number">{{ boq.costs[i].remain |number_format }}</td>
-	    {% endfor %}
-	    
+      {% for column in data.cost.columns %}
+      {% set i = loop.index0 %}
+      <td class="cl-number">{{ boq.costs[i].budget |number_format }}</td>
+      <td class="cl-number">{{ boq.costs[i].cost |number_format }}</td>
+      <td class="cl-number">{{ boq.costs[i].remain |number_format }}</td>
+      {% endfor %}
           </tr>
-        {% endif %}
-    {% endfor %}
+    {% endif %}
+  {% endfor %}
 {% endfor %}
         </tbody>
       </table>
