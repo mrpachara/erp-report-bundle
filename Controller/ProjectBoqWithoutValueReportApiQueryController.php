@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  * Project Boq Without Value Report Api Controller
  *
  * @Rest\Version("1.0")
- * @Rest\Route("/comp/{_ERP_DB_}/report/project-boq-without-value")
+ * @Rest\Route("/api/report/project-boq-without-value/{idProject}")
  * @Rest\View(serializerEnableMaxDepthChecks=true)
  */
 class ProjectBoqWithoutValueReportApiQueryController
@@ -67,31 +67,31 @@ class ProjectBoqWithoutValueReportApiQueryController
     }
 
     /**
+     * @Rest\Get("")
+     */
+    public function projectBoqSummaryAction(ServerRequestInterface $request, $idProject)
+    {
+        return [
+            'data' => $this->domainQuery->projectBoqWithoutValueSummary($idProject),
+        ];
+    }
+
+    /**
      * @Rest\Get("/{id}")
      */
-    public function projectBoqSummaryAction(ServerRequestInterface $request, $id)
+    public function projectBoqSummaryEachAction(ServerRequestInterface $request, $idProject, $id)
     {
         return [
-            'data' => $this->domainQuery->projectBoqWithoutValueSummary($id),
+            'data' => $this->domainQuery->projectBoqWithoutValueSummaryEach($idProject, $id),
         ];
     }
 
     /**
-     * @Rest\Get("/{id}/{idBoq}")
+     * @Rest\Get("/{id}/export.{format}")
      */
-    public function projectBoqSummaryEachAction(ServerRequestInterface $request, $id, $idBoq)
+    public function projectBoqSummaryExportAction(ServerRequestInterface $request, $idProject, $id, string $format)
     {
-        return [
-            'data' => $this->domainQuery->projectBoqWithoutValueSummaryEach($id, $idBoq),
-        ];
-    }
-
-    /**
-     * @Rest\Get("/{id}/{idBoq}/export.{format}")
-     */
-    public function projectBoqSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, string $format)
-    {
-        $data = $this->domainQuery->projectBoqWithoutValueSummaryEach($id, $idBoq);
+        $data = $this->domainQuery->projectBoqWithoutValueSummaryEach($idProject, $id);
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         $logo = null;
         if (!empty($profile['logo'])) {
