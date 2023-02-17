@@ -2,6 +2,7 @@
 
 namespace Erp\Bundle\ReportBundle\Controller;
 
+use Erp\Bundle\ReportBundle\Authorization\PurchaseOrderReportAuthorization;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class PurchaseOrderWarrantyReportApiQueryController
 {
+    use ReportGranterTrait;
+
     /**
      * @var \Erp\Bundle\ReportBundle\Domain\CQRS\WarrantyPurchaseOrderReportQuery
      */
@@ -47,6 +50,11 @@ class PurchaseOrderWarrantyReportApiQueryController
     protected $excelReport;
 
     /**
+     * @var PurchaseOrderReportAuthorization
+     */
+    protected $authorization;
+
+    /**
      * PurchaseOrderWarrantyReportApiQueryController constructor.
      */
     public function __construct(
@@ -55,7 +63,8 @@ class PurchaseOrderWarrantyReportApiQueryController
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        PurchaseFinanceExcelReportHelper $excelReport
+        PurchaseFinanceExcelReportHelper $excelReport,
+        PurchaseOrderReportAuthorization $authorization
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -63,6 +72,9 @@ class PurchaseOrderWarrantyReportApiQueryController
         $this->templating = $templating;
         $this->pdfService = $pdfService;
         $this->excelReport = $excelReport;
+        $this->authorization = $authorization;
+
+        $this->grant($this->authorization->access());
     }
 
     /**
@@ -90,6 +102,8 @@ class PurchaseOrderWarrantyReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/purchase-finance-warranty-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -104,6 +118,8 @@ class PurchaseOrderWarrantyReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $tempFile = $this->excelReport->warrantyReportExcel(
                     $data,
                     $filterDetail,

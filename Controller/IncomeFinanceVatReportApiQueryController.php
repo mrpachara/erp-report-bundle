@@ -2,6 +2,7 @@
 
 namespace Erp\Bundle\ReportBundle\Controller;
 
+use Erp\Bundle\ReportBundle\Authorization\IncomeFinanceReportAuthorization;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class IncomeFinanceVatReportApiQueryController
 {
+    use ReportGranterTrait;
+
     /**
      *  @var \Erp\Bundle\ReportBundle\Domain\CQRS\IncomeFinanceReportQuery
      */
@@ -47,6 +50,11 @@ class IncomeFinanceVatReportApiQueryController
     protected $excelReport;
 
     /**
+     * @var IncomeFinanceReportAuthorization
+     */
+    protected $authorization;
+
+    /**
      * IncomeFinanceVatReportQueryController constructor.
      */
     public function __construct(
@@ -55,7 +63,8 @@ class IncomeFinanceVatReportApiQueryController
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        IncomeFinanceExcelReportHelper $excelReport
+        IncomeFinanceExcelReportHelper $excelReport,
+        IncomeFinanceReportAuthorization $authorization
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -63,6 +72,9 @@ class IncomeFinanceVatReportApiQueryController
         $this->templating = $templating;
         $this->pdfService = $pdfService;
         $this->excelReport = $excelReport;
+        $this->authorization = $authorization;
+
+        $this->grant($this->authorization->access());
     }
 
     /**
@@ -90,6 +102,8 @@ class IncomeFinanceVatReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/income-finance-vat-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -104,6 +118,8 @@ class IncomeFinanceVatReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $tempFile = $this->excelReport->vatReportExcel(
                     $data,
                     $filterDetail,

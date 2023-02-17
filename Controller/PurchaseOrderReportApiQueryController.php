@@ -2,6 +2,7 @@
 
 namespace Erp\Bundle\ReportBundle\Controller;
 
+use Erp\Bundle\ReportBundle\Authorization\PurchaseOrderReportAuthorization;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class PurchaseOrderReportApiQueryController
 {
+    use ReportGranterTrait;
+
     const docNameEn = 'PURCHASE ORDER';
     const docNameTh = 'ใบสั่งซื้อ';
     const docAbbr = 'PO';
@@ -51,6 +54,11 @@ class PurchaseOrderReportApiQueryController
     protected $excelReport;
 
     /**
+     * @var PurchaseOrderReportAuthorization
+     */
+    protected $authorization;
+
+    /**
      * PurchaseOrderReportApiQueryController constructor.
      */
     public function __construct(
@@ -59,7 +67,8 @@ class PurchaseOrderReportApiQueryController
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        PurchaseFinanceExcelReportHelper $excelReport
+        PurchaseFinanceExcelReportHelper $excelReport,
+        PurchaseOrderReportAuthorization $authorization
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -67,6 +76,9 @@ class PurchaseOrderReportApiQueryController
         $this->templating = $templating;
         $this->pdfService = $pdfService;
         $this->excelReport = $excelReport;
+        $this->authorization = $authorization;
+
+        $this->grant($this->authorization->access());
     }
 
     /**
@@ -94,6 +106,8 @@ class PurchaseOrderReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/purchase-finance-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -108,6 +122,8 @@ class PurchaseOrderReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $fileName = null;
                 $tempFile = $this->excelReport->docReportExcel(
                     $data,
@@ -143,6 +159,8 @@ class PurchaseOrderReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/purchase-finance-cost-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -157,6 +175,8 @@ class PurchaseOrderReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $fileName = null;
                 $tempFile = $this->excelReport->costReportExcel(
                     $data,

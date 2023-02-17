@@ -2,13 +2,12 @@
 
 namespace Erp\Bundle\ReportBundle\Controller;
 
+use Erp\Bundle\ReportBundle\Authorization\RevenueReportAuthorization;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -23,6 +22,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class RevenueReportApiQueryController
 {
+    use ReportGranterTrait;
+
     const docNameEn = 'REVENUE';
     const docNameTh = 'ใบรับเงิน';
     const docAbbr = 'RV';
@@ -57,6 +58,11 @@ class RevenueReportApiQueryController
     protected $excelReport;
 
     /**
+     * @var RevenueReportAuthorization
+     */
+    protected $authorization;
+
+    /**
      * RevenueReportApiQueryController constructor.
      */
     public function __construct(
@@ -65,7 +71,8 @@ class RevenueReportApiQueryController
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        IncomeFinanceExcelReportHelper $excelReport
+        IncomeFinanceExcelReportHelper $excelReport,
+        RevenueReportAuthorization $authorization
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -73,6 +80,9 @@ class RevenueReportApiQueryController
         $this->templating = $templating;
         $this->pdfService = $pdfService;
         $this->excelReport = $excelReport;
+        $this->authorization = $authorization;
+
+        $this->grant($this->authorization->access());
     }
 
     /**
@@ -100,6 +110,8 @@ class RevenueReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/revenue-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -111,6 +123,8 @@ class RevenueReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
                 $sheet->mergeCells("A1:F1");
@@ -209,6 +223,8 @@ class RevenueReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/income-finance-cost-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -223,6 +239,8 @@ class RevenueReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $fileName = null;
                 $tempFile = $this->excelReport->costReportExcel(
                     $data,

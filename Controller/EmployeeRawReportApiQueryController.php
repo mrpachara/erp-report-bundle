@@ -5,9 +5,8 @@ namespace Erp\Bundle\ReportBundle\Controller;
 use Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery;
 use Erp\Bundle\MasterBundle\Domain\CQRS\EmployeeQuery;
 use Erp\Bundle\MasterBundle\Entity\Employee;
-use Erp\Bundle\MasterBundle\Entity\Person;
-use Erp\Bundle\MasterBundle\Entity\PersonIndividual;
 use Erp\Bundle\ObjectValueBundle\Entity\Citizen;
+use Erp\Bundle\ReportBundle\Authorization\EmployeeRawReportAuthorization;
 use Erp\Bundle\SettingBundle\Domain\CQRS\SettingQuery;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -30,21 +29,31 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class EmployeeRawReportApiQueryController
 {
+    use ReportGranterTrait;
+
     private EmployeeQuery $domainQuery;
 
     private SettingQuery $settingQuery;
 
     private TempFileItemQuery $fileQuery;
 
+    /**
+     * @var EmployeeRawReportAuthorization
+     */
+    protected $authorization;
+
     function __construct(
         EmployeeQuery $domainQuery,
         SettingQuery $settingQuery,
-        TempFileItemQuery $fileQuery
-    )
-    {
+        TempFileItemQuery $fileQuery,
+        EmployeeRawReportAuthorization $authorization
+    ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
         $this->fileQuery = $fileQuery;
+        $this->authorization = $authorization;
+
+        $this->grant($this->authorization->access());
     }
 
     /**
@@ -56,15 +65,17 @@ class EmployeeRawReportApiQueryController
         $data = $this->domainQuery->findAll();
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         $logo = null;
-        if(!empty($profile['logo'])) {
+        if (!empty($profile['logo'])) {
             $logo = stream_get_contents($this->fileQuery->get($profile['logo'])->getData());
         }
-        
-        switch(strtolower($format)) {
+
+        switch (strtolower($format)) {
             case 'pdf':
                 throw new BadRequestHttpException("No implementation for '${format}' yet.");
-            break;
+                break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
                 $sheet->mergeCells("A1:AP1");
@@ -105,7 +116,7 @@ class EmployeeRawReportApiQueryController
                 $sheet->getStyle('A8:AP10')->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $sheet->getStyle('A8:AP10')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
                 $sheet->getStyle('A8:AP10')->getFill()->getStartColor()->setRGB('DCDCDC');
-				$sheet->getStyle('A8:AP10')->getAlignment()->setHorizontal('center');
+                $sheet->getStyle('A8:AP10')->getAlignment()->setHorizontal('center');
                 $sheet->getStyle('A8:AP10')->getAlignment()->setVertical('center');
                 //หัวเอกสาร
                 $sheet->setCellValue('A1', 'รายงานข้อมูลบุคคลธรรมดา (INDIVIDUAL PERSON REPORT)');
@@ -168,68 +179,68 @@ class EmployeeRawReportApiQueryController
                 $row = 11;
                 $count = 1;
                 $itemStartRow = $row;
-                foreach($data as $item) {
+                foreach ($data as $item) {
                     $individual = $item->getIndividual();
 
                     $personData = $individual->getPersonData();
 
-                    if($personData instanceof Citizen) {
-                        $sheet->setCellValue('A'.$row, $count);
-                        $sheet->setCellValue('B'.$row, $item->getCode());
-                        $sheet->setCellValueExplicit('C'.$row, $personData->getCode(), DataType::TYPE_STRING2);
-                        $sheet->setCellValue('D'.$row, $personData->getInitname());
-                        $sheet->setCellValue('E'.$row, $personData->getFirstname());
-                        $sheet->setCellValue('F'.$row, $personData->getLastname());
-                        $sheet->setCellValue('G'.$row, $personData->getAddress()->getAddress());
-                        $sheet->setCellValue('H'.$row, $personData->getAddress()->getSubdistrict());
-                        $sheet->setCellValue('I'.$row, $personData->getAddress()->getDistrict());
-                        $sheet->setCellValue('J'.$row, $personData->getAddress()->getProvince());
-                        $sheet->setCellValue('K'.$row, $personData->getAddress()->getPostalcode());
-                        $sheet->setCellValue('L'.$row, empty($personData->getBirthDate())? '' : Date::PHPToExcel($personData->getBirthDate()));
-                        $sheet->setCellValue('M'.$row, $personData->getReligious());
-                        $sheet->setCellValue('N'.$row, empty($personData->getIssueDate())? '' : Date::PHPToExcel($personData->getIssueDate()));
-                        $sheet->setCellValue('O'.$row, empty($personData->getExpiredDate())? '' : Date::PHPToExcel($personData->getExpiredDate()));
+                    if ($personData instanceof Citizen) {
+                        $sheet->setCellValue('A' . $row, $count);
+                        $sheet->setCellValue('B' . $row, $item->getCode());
+                        $sheet->setCellValueExplicit('C' . $row, $personData->getCode(), DataType::TYPE_STRING2);
+                        $sheet->setCellValue('D' . $row, $personData->getInitname());
+                        $sheet->setCellValue('E' . $row, $personData->getFirstname());
+                        $sheet->setCellValue('F' . $row, $personData->getLastname());
+                        $sheet->setCellValue('G' . $row, $personData->getAddress()->getAddress());
+                        $sheet->setCellValue('H' . $row, $personData->getAddress()->getSubdistrict());
+                        $sheet->setCellValue('I' . $row, $personData->getAddress()->getDistrict());
+                        $sheet->setCellValue('J' . $row, $personData->getAddress()->getProvince());
+                        $sheet->setCellValue('K' . $row, $personData->getAddress()->getPostalcode());
+                        $sheet->setCellValue('L' . $row, empty($personData->getBirthDate()) ? '' : Date::PHPToExcel($personData->getBirthDate()));
+                        $sheet->setCellValue('M' . $row, $personData->getReligious());
+                        $sheet->setCellValue('N' . $row, empty($personData->getIssueDate()) ? '' : Date::PHPToExcel($personData->getIssueDate()));
+                        $sheet->setCellValue('O' . $row, empty($personData->getExpiredDate()) ? '' : Date::PHPToExcel($personData->getExpiredDate()));
 
-                        $sheet->setCellValue('P'.$row, $individual->getAddress()->getAddress());
-                        $sheet->setCellValue('Q'.$row, $individual->getAddress()->getSubdistrict());
-                        $sheet->setCellValue('R'.$row, $individual->getAddress()->getDistrict());
-                        $sheet->setCellValue('S'.$row, $individual->getAddress()->getProvince());
-                        $sheet->setCellValue('T'.$row, $individual->getAddress()->getPostalcode());
-                        $sheet->setCellValue('U'.$row, $individual->getContact()->getAlias());
-                        $sheet->setCellValue('V'.$row, $individual->getContact()->getPosition());
-                        $sheet->setCellValue('W'.$row, $individual->getContact()->getEmail());
-                        $sheet->setCellValue('X'.$row, $individual->getContact()->getLineId());
-                        $sheet->setCellValue('Y'.$row, empty($individual->getContact()->getPhones()[0])? null : $individual->getContact()->getPhones()[0]->getPhone());
-                        $sheet->setCellValue('Z'.$row, empty($individual->getContact()->getPhones()[1])? null : $individual->getContact()->getPhones()[1]->getPhone());
-                        $sheet->setCellValue('AA'.$row, empty($individual->getContact()->getPhones()[2])? null : $individual->getContact()->getPhones()[2]->getPhone());
+                        $sheet->setCellValue('P' . $row, $individual->getAddress()->getAddress());
+                        $sheet->setCellValue('Q' . $row, $individual->getAddress()->getSubdistrict());
+                        $sheet->setCellValue('R' . $row, $individual->getAddress()->getDistrict());
+                        $sheet->setCellValue('S' . $row, $individual->getAddress()->getProvince());
+                        $sheet->setCellValue('T' . $row, $individual->getAddress()->getPostalcode());
+                        $sheet->setCellValue('U' . $row, $individual->getContact()->getAlias());
+                        $sheet->setCellValue('V' . $row, $individual->getContact()->getPosition());
+                        $sheet->setCellValue('W' . $row, $individual->getContact()->getEmail());
+                        $sheet->setCellValue('X' . $row, $individual->getContact()->getLineId());
+                        $sheet->setCellValue('Y' . $row, empty($individual->getContact()->getPhones()[0]) ? null : $individual->getContact()->getPhones()[0]->getPhone());
+                        $sheet->setCellValue('Z' . $row, empty($individual->getContact()->getPhones()[1]) ? null : $individual->getContact()->getPhones()[1]->getPhone());
+                        $sheet->setCellValue('AA' . $row, empty($individual->getContact()->getPhones()[2]) ? null : $individual->getContact()->getPhones()[2]->getPhone());
                         //$sheet->setCellValue('AB'.$row, $item->getPhone());
                         //$sheet->setCellValue('AC'.$row, $item->getPhone());
 
                         $bankAccount0 = $individual->getBankAccounts()[0] ?? null;
-                        if($bankAccount0 !== null) {
-                            $sheet->setCellValue('AB'.$row, $bankAccount0->getCode());
-                            $sheet->setCellValue('AC'.$row, $bankAccount0->getName());
-                            $sheet->setCellValue('AD'.$row, $bankAccount0->getCategory());
-                            $sheet->setCellValue('AE'.$row, $bankAccount0->getBank());
-                            $sheet->setCellValue('AF'.$row, $bankAccount0->getBranch());    
+                        if ($bankAccount0 !== null) {
+                            $sheet->setCellValue('AB' . $row, $bankAccount0->getCode());
+                            $sheet->setCellValue('AC' . $row, $bankAccount0->getName());
+                            $sheet->setCellValue('AD' . $row, $bankAccount0->getCategory());
+                            $sheet->setCellValue('AE' . $row, $bankAccount0->getBank());
+                            $sheet->setCellValue('AF' . $row, $bankAccount0->getBranch());
                         }
 
                         $bankAccount1 = $individual->getBankAccounts()[1] ?? null;
-                        if($bankAccount1 !== null) {
-                            $sheet->setCellValue('AG'.$row, $bankAccount1->getCode());
-                            $sheet->setCellValue('AH'.$row, $bankAccount1->getName());
-                            $sheet->setCellValue('AI'.$row, $bankAccount1->getCategory());
-                            $sheet->setCellValue('AJ'.$row, $bankAccount1->getBank());
-                            $sheet->setCellValue('AK'.$row, $bankAccount1->getBranch());
+                        if ($bankAccount1 !== null) {
+                            $sheet->setCellValue('AG' . $row, $bankAccount1->getCode());
+                            $sheet->setCellValue('AH' . $row, $bankAccount1->getName());
+                            $sheet->setCellValue('AI' . $row, $bankAccount1->getCategory());
+                            $sheet->setCellValue('AJ' . $row, $bankAccount1->getBank());
+                            $sheet->setCellValue('AK' . $row, $bankAccount1->getBranch());
                         }
 
                         $bankAccount2 = $individual->getBankAccounts()[2] ?? null;
-                        if($bankAccount2 !== null) {
-                            $sheet->setCellValue('AL'.$row, $bankAccount2->getCode());
-                            $sheet->setCellValue('AM'.$row, $bankAccount2->getName());
-                            $sheet->setCellValue('AN'.$row, $bankAccount2->getCategory());
-                            $sheet->setCellValue('AO'.$row, $bankAccount2->getBank());
-                            $sheet->setCellValue('AP'.$row, $bankAccount2->getBranch());
+                        if ($bankAccount2 !== null) {
+                            $sheet->setCellValue('AL' . $row, $bankAccount2->getCode());
+                            $sheet->setCellValue('AM' . $row, $bankAccount2->getName());
+                            $sheet->setCellValue('AN' . $row, $bankAccount2->getCategory());
+                            $sheet->setCellValue('AO' . $row, $bankAccount2->getBank());
+                            $sheet->setCellValue('AP' . $row, $bankAccount2->getBranch());
                         }
                     }
 
@@ -251,13 +262,13 @@ class EmployeeRawReportApiQueryController
 
                 $writer = new Xlsx($spreadsheet);
                 $writer->setPreCalculateFormulas(false);
-                $fileName = 'RP-MT-PS-Individual_rev.2.1.0_'.date('Ymd_His', time()).'.xlsx';
+                $fileName = 'RP-MT-PS-Individual_rev.2.1.0_' . date('Ymd_His', time()) . '.xlsx';
                 $temp_file = tempnam(sys_get_temp_dir(), $fileName);
                 $writer->save($temp_file);
                 $response = new BinaryFileResponse($temp_file);
                 $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
-            break;
+                break;
             default:
                 throw new BadRequestHttpException("Unknown format '${format}'");
         }

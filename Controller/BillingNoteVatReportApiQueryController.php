@@ -2,6 +2,7 @@
 
 namespace Erp\Bundle\ReportBundle\Controller;
 
+use Erp\Bundle\ReportBundle\Authorization\BillingNoteReportAuthorization;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class BillingNoteVatReportApiQueryController
 {
+    use ReportGranterTrait;
+
     /**
      * @var \Erp\Bundle\ReportBundle\Domain\CQRS\VatBillingNoteReportQuery
      */
@@ -47,6 +50,11 @@ class BillingNoteVatReportApiQueryController
     protected $excelReport;
 
     /**
+     * @var BillingNoteReportAuthorization
+     */
+    protected $authorization;
+
+    /**
      * BillingNoteVatReportApiQueryController constructor.
      */
     public function __construct(
@@ -55,7 +63,8 @@ class BillingNoteVatReportApiQueryController
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        IncomeFinanceExcelReportHelper $excelReport
+        IncomeFinanceExcelReportHelper $excelReport,
+        BillingNoteReportAuthorization $authorization
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -63,6 +72,9 @@ class BillingNoteVatReportApiQueryController
         $this->templating = $templating;
         $this->pdfService = $pdfService;
         $this->excelReport = $excelReport;
+        $this->authorization = $authorization;
+
+        $this->grant($this->authorization->access());
     }
 
     /**
@@ -90,6 +102,8 @@ class BillingNoteVatReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/income-finance-vat-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -104,6 +118,8 @@ class BillingNoteVatReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $tempFile = $this->excelReport->vatReportExcel(
                     $data,
                     $filterDetail,

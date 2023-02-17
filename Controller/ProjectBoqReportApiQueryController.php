@@ -2,10 +2,12 @@
 
 namespace Erp\Bundle\ReportBundle\Controller;
 
+use Erp\Bundle\ReportBundle\Authorization\ProjectBoqReportAuthorization;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Project Boq Report Api Controller
@@ -16,10 +18,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ProjectBoqReportApiQueryController
 {
-    /*
-2_2d6m1egnbuhw0cgk888owwskk0w4c0wg0oksow8ogg4www0co8
-26ijx5m68clc4kcs08ckcckwo8k4ow8og4cow4wcwgoowwk40k
- */
+    use ReportGranterTrait;
 
     /**
      * @var \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqReportQuery
@@ -52,6 +51,11 @@ class ProjectBoqReportApiQueryController
     protected $excelReport;
 
     /**
+     * @var ProjectBoqReportAuthorization
+     */
+    protected $authorization;
+
+    /**
      * ProjectBoqReportApiQueryController constructor.
      * @param \Erp\Bundle\ReportBundle\Domain\CQRS\ProjectBoqReportQuery $domainQuery
      */
@@ -61,7 +65,8 @@ class ProjectBoqReportApiQueryController
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
-        ProjectBoqExcelReportHelper $excelReport
+        ProjectBoqExcelReportHelper $excelReport,
+        ProjectBoqReportAuthorization $authorization
     ) {
         $this->domainQuery = $domainQuery;
         $this->settingQuery = $settingQuery;
@@ -69,6 +74,9 @@ class ProjectBoqReportApiQueryController
         $this->templating = $templating;
         $this->pdfService = $pdfService;
         $this->excelReport = $excelReport;
+        $this->authorization = $authorization;
+
+        $this->grant($this->authorization->access());
     }
 
     /**
@@ -105,6 +113,8 @@ class ProjectBoqReportApiQueryController
 
         switch (strtolower($format)) {
             case 'pdf':
+                $this->grant($this->authorization->pdf());
+
                 $view = $this->templating->render('@ErpReport/pdf/project-boq-report.pdf.twig', [
                     'profile' => $profile,
                     'model' => $data,
@@ -117,6 +127,8 @@ class ProjectBoqReportApiQueryController
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
                 break;
             case 'xlsx':
+                $this->grant($this->authorization->excel());
+
                 $qs = $request->getQueryParams();
                 $withFormular = empty($qs['raw']);
 
@@ -125,6 +137,8 @@ class ProjectBoqReportApiQueryController
                 $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
                 break;
+            default:
+                throw new BadRequestHttpException("Unsupported '{$format}' format.");
         }
     }
 }
