@@ -161,10 +161,10 @@ class PersonRawReportApiQueryController
                 $sheet->setCellValue('AB9', 'บัญชีธนาคาร1');
                 $sheet->setCellValue('AB10', 'เลขที่');
                 $sheet->setCellValue('AC10', 'ชื่อ');
-                $sheet->setCellValue('AC10', 'ประเภท');
-                $sheet->setCellValue('AD10', 'ธนาคาร');
-                $sheet->setCellValue('AE10', 'สาขา');
-                $sheet->setCellValue('AF9', 'บัญชีธนาคาร2');
+                $sheet->setCellValue('AD10', 'ประเภท');
+                $sheet->setCellValue('AE10', 'ธนาคาร');
+                $sheet->setCellValue('AF10', 'สาขา');
+                $sheet->setCellValue('AG9', 'บัญชีธนาคาร2');
                 $sheet->setCellValue('AG10', 'เลขที่');
                 $sheet->setCellValue('AH10', 'ชื่อ');
                 $sheet->setCellValue('AI10', 'ประเภท');
