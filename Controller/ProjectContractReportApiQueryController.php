@@ -100,6 +100,8 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractDeliverySummaryExportAction(ServerRequestInterface $request, $id, $idBoq, string $format)
     {
+        $this->grant($this->authorization->reportDeliveryNote());
+
         $data = $this->domainQuery->projectContractSummaryEach($id, $idBoq);
 
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
@@ -133,6 +135,8 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractBillingSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
+        $this->grant($this->authorization->reportBillingNote());
+
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function ($item) {
             return 'billingnote' === $item['dtype'] || 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
         }));
@@ -197,6 +201,8 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractTaxInvoiceSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
+        $this->grant($this->authorization->reportTaxInvoice());
+
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function ($item) {
             return 'taxinvoice' === $item['dtype'] || 'revenue' === $item['dtype'];
         }));
@@ -232,6 +238,8 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractRevenueSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
+        $this->grant($this->authorization->reportRevenue());
+
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function ($item) {
             return 'revenue' === $item['dtype'];
         }));
@@ -272,6 +280,8 @@ class ProjectContractReportApiQueryController
      */
     public function projectContractProjectSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, $format)
     {
+        $this->grant($this->authorization->reportAll());
+
         $data = array_values(array_filter($this->domainQuery->projectContractSummaryEach($id, $idBoq), function ($item) {
             return 'revenue' === $item['dtype'] && $item['approved'] == 1;
         }));

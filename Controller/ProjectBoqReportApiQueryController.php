@@ -104,6 +104,8 @@ class ProjectBoqReportApiQueryController
      */
     public function projectBoqSummaryExportAction(ServerRequestInterface $request, $id, $idBoq, string $format)
     {
+        $this->grant($this->authorization->reportAll());
+
         $data = $this->domainQuery->projectBoqSummaryEach($id, $idBoq);
         $profile = $this->settingQuery->findOneByCode('profile')->getValue();
         $logo = null;

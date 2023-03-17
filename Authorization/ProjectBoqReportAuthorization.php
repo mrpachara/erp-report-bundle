@@ -12,4 +12,9 @@ class ProjectBoqReportAuthorization extends AbstractReportAuthorization
         return parent::access(...$args) &&
             $this->authorizationChecker->isGranted('ROLE_REPORT_MT_PJ_PU');
     }
+
+    public function reportAll(...$args): bool
+    {
+        return $this->authorizationChecker->isGranted('ROLE_REPORT_MT_PJ_PU_ALL');
+    }
 }
