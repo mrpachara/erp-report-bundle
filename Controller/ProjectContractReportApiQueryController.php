@@ -47,6 +47,11 @@ class ProjectContractReportApiQueryController
     protected $pdfService = null;
 
     /**
+     * @var ProjectContractExcelReportHelper
+     */
+    protected $excelReport;
+
+    /**
      * @var ProjectContractReportAuthorization
      */
     protected $authorization;
@@ -61,6 +66,7 @@ class ProjectContractReportApiQueryController
         \Erp\Bundle\CoreBundle\Domain\CQRS\TempFileItemQuery $fileQuery,
         \Twig_Environment $templating,
         \Erp\Bundle\DocumentBundle\Service\PDFService $pdfService,
+        ProjectContractExcelReportHelper $excelReport,
         ProjectContractReportAuthorization $authorization
     ) {
         $this->domainQuery = $domainQuery;
@@ -68,6 +74,7 @@ class ProjectContractReportApiQueryController
         $this->fileQuery = $fileQuery;
         $this->templating = $templating;
         $this->pdfService = $pdfService;
+        $this->excelReport = $excelReport;
         $this->authorization = $authorization;
 
         $this->grant($this->authorization->access());
@@ -125,6 +132,15 @@ class ProjectContractReportApiQueryController
                 });
 
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            case 'xlsx':
+                $this->grant($this->authorization->excel());
+
+                $tempFile = $this->excelReport->reportExcel($data, 'รายงานประมาณการส่งมอบงาน', 'DN', $fileName);
+
+                $response = new BinaryFileResponse($tempFile);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
+                return $response;
+                break;
             default:
                 throw new BadRequestHttpException("Unsupported '{$format}' format.");
         }
@@ -166,28 +182,9 @@ class ProjectContractReportApiQueryController
             case 'xlsx':
                 $this->grant($this->authorization->excel());
 
-                $spreadsheet = new Spreadsheet();
-                $sheet = $spreadsheet->getActiveSheet();
+                $tempFile = $this->excelReport->reportExcel($data, 'รายงานประมาณการวางบิล/แจ้งหนี้', 'BN', $fileName);
 
-
-
-
-
-
-
-
-                // Create your Office 2007 Excel (XLSX Format)
-                $writer = new Xlsx($spreadsheet);
-                $writer->setPreCalculateFormulas(false);
-
-                // Create a Temporary file in the system
-                $fileName = 'RP-MT-CI-Quantity-PR_rev.2.1.0_' . date('Ymd_His', time()) . '.xlsx';
-                $temp_file = tempnam(sys_get_temp_dir(), $fileName);
-
-                // Create the excel file in the tmp directory of the system
-                $writer->save($temp_file);
-
-                $response = new BinaryFileResponse($temp_file);
+                $response = new BinaryFileResponse($tempFile);
                 $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
                 return $response;
                 break;
@@ -228,6 +225,15 @@ class ProjectContractReportApiQueryController
                 });
 
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            case 'xlsx':
+                $this->grant($this->authorization->excel());
+
+                $tempFile = $this->excelReport->reportExcel($data, 'รายงานประมาณการใบเสร็จรับเงิน/ใบกำกับภาษี', 'TI', $fileName);
+
+                $response = new BinaryFileResponse($tempFile);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
+                return $response;
+                break;
             default:
                 throw new BadRequestHttpException("Unsupported '{$format}' format.");
         }
@@ -270,6 +276,15 @@ class ProjectContractReportApiQueryController
                 });
 
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            case 'xlsx':
+                $this->grant($this->authorization->excel());
+
+                $tempFile = $this->excelReport->reportExcel($data, 'รายงานประมาณการทำรับ', 'RV', $fileName);
+
+                $response = new BinaryFileResponse($tempFile);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
+                return $response;
+                break;
             default:
                 throw new BadRequestHttpException("Unsupported '{$format}' format.");
         }
@@ -312,6 +327,15 @@ class ProjectContractReportApiQueryController
                 });
 
                 return new \TFox\MpdfPortBundle\Response\PDFResponse($output);
+            case 'xlsx':
+                $this->grant($this->authorization->excel());
+
+                $tempFile = $this->excelReport->reportExcel($data, 'รายงานสรุปรับ', 'ALL', $fileName);
+
+                $response = new BinaryFileResponse($tempFile);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, null === $fileName ? $response->getFile()->getFilename() : $fileName);
+                return $response;
+                break;
             default:
                 throw new BadRequestHttpException("Unsupported '{$format}' format.");
         }
