@@ -97,16 +97,21 @@ class PurchaseFinanceReportQueryService implements QueryInterface
         $filterDetail = [];
         $qb = $this->createQueryBuilder('_entity');
         if (!empty($filter['start'])) {
+            $startDate = new \DateTimeImmutable($filter['start']);
             $qb
                 ->andWhere('_entity.tstmp >= :startDate')
-                ->setParameter('startDate', new \DateTimeImmutable($filter['start']));
-            $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
+                ->setParameter('startDate', $startDate);
+            $filterDetail['start'] = $startDate;
         }
         if (!empty($filter['end'])) {
+            $endDate = new \DateTimeImmutable($filter['end']);
             $qb
-                ->andWhere('_entity.tstmp <= :endDate')
-                ->setParameter('endDate', new \DateTimeImmutable($filter['end']));
-            $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
+                ->andWhere('_entity.tstmp < :endDate')
+                ->setParameter(
+                    'endDate',
+                    $endDate->modify('+1 day')
+                );
+            $filterDetail['end'] = $endDate;
         }
         // TODO for approved, the previous document must be reappeared again
         // NOTE how does unapproved mean?
@@ -175,6 +180,23 @@ class PurchaseFinanceReportQueryService implements QueryInterface
                 ->andWhere('_entity.payTerm = :payTerm')
                 ->setParameter('payTerm', $filter['payTerm']);
             $filterDetail['payTerm'] = $filter['payTerm'];
+        }
+        if (!empty($filter['startDue'])) {
+            $startDueDate = new \DateTimeImmutable($filter['startDue']);
+            $qb
+                ->andWhere('_entity.dueDate >= :startDueDate')
+                ->setParameter('startDueDate', $startDueDate);
+            $filterDetail['startDue'] = $startDueDate;
+        }
+        if (!empty($filter['endDue'])) {
+            $endDueDate = new \DateTimeImmutable($filter['endDue']);
+            $qb
+                ->andWhere('_entity.dueDate < :endDueDate')
+                ->setParameter(
+                    'endDueDate',
+                    $endDueDate->modify('+1 day')
+                );
+            $filterDetail['endDue'] = $endDueDate;
         }
 
         return array_map(function ($data) {

@@ -90,16 +90,21 @@ class IncomeFinanceReportQueryService implements QueryInterface
         $filterDetail = [];
         $qb = $this->createQueryBuilder('_entity');
         if (!empty($filter['start'])) {
+            $startDate = new \DateTimeImmutable($filter['start']);
             $qb
                 ->andWhere('_entity.tstmp >= :startDate')
-                ->setParameter('startDate', new \DateTimeImmutable($filter['start']));
-            $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
+                ->setParameter('startDate', $startDate);
+            $filterDetail['start'] = $startDate;
         }
         if (!empty($filter['end'])) {
+            $endDate = new \DateTimeImmutable($filter['end']);
             $qb
-                ->andWhere('_entity.tstmp <= :endDate')
-                ->setParameter('endDate', new \DateTimeImmutable($filter['end']));
-            $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
+                ->andWhere('_entity.tstmp < :endDate')
+                ->setParameter(
+                    'endDate',
+                    $endDate->modify('+1 day')
+                );
+            $filterDetail['end'] = $endDate;
         }
         // TODO for approved, the previous document must be reappeared again
         // NOTE how does unapproved mean?
@@ -151,11 +156,22 @@ class IncomeFinanceReportQueryService implements QueryInterface
                 ->setParameter('retentionFactor', $filter['retentionFactor']);
             $filterDetail['retentionFactor'] = $filter['retentionFactor'];
         }
-        if (array_key_exists('paymentDate', $filter)) {
+        if (!empty($filter['startPayment'])) {
+            $startPaymentDate = new \DateTimeImmutable($filter['startPayment']);
             $qb
-                ->andWhere('_entity.paymentDate = :paymentDate')
-                ->setParameter('paymentDate', $filter['paymentDate']);
-            $filterDetail['paymentDate'] = $filter['paymentDate'];
+                ->andWhere('_entity.paymentDate >= :startPaymentDate')
+                ->setParameter('startPaymentDate', $startPaymentDate);
+            $filterDetail['startPayment'] = $startPaymentDate;
+        }
+        if (!empty($filter['endPayment'])) {
+            $endPaymentDate = new \DateTimeImmutable($filter['endPayment']);
+            $qb
+                ->andWhere('_entity.paymentDate < :endPaymentDate')
+                ->setParameter(
+                    'endPaymentDate',
+                    $endPaymentDate->modify('+1 day')
+                );
+            $filterDetail['endPayment'] = $endPaymentDate;
         }
 
         return array_map(function ($data) {

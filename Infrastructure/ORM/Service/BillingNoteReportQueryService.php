@@ -79,16 +79,21 @@ class BillingNoteReportQueryService implements QueryInterface
         $filterDetail = [];
         $qb = $this->billingNoteQueryBuilder('_entity');
         if (!empty($filter['start'])) {
+            $startDate = new \DateTimeImmutable($filter['start']);
             $qb
                 ->andWhere('_entity.tstmp >= :startDate')
-                ->setParameter('startDate', new \DateTimeImmutable($filter['start']));
-            $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
+                ->setParameter('startDate', $startDate);
+            $filterDetail['start'] = $startDate;
         }
         if (!empty($filter['end'])) {
+            $endDate = new \DateTimeImmutable($filter['end']);
             $qb
-                ->andWhere('_entity.tstmp <= :endDate')
-                ->setParameter('endDate', new \DateTimeImmutable($filter['end']));
-            $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
+                ->andWhere('_entity.tstmp < :endDate')
+                ->setParameter(
+                    'endDate',
+                    $endDate->modify('+1 day')
+                );
+            $filterDetail['end'] = $endDate;
         }
         if (array_key_exists('approved', $filter)) {
             $qb

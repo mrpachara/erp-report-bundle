@@ -31,8 +31,7 @@ class RetentionBillingNoteReportQueryService implements QueryInterface
     function __construct(
         \symfony\Bridge\Doctrine\RegistryInterface $doctrine,
         \Erp\Bundle\DocumentBundle\Infrastructure\ORM\Service\DocumentQueryService $queryService
-        )
-    {
+    ) {
         $this->repository = $doctrine->getRepository('ErpDocumentBundle:BillingNote');
         $this->queryService = $queryService;
 
@@ -47,23 +46,22 @@ class RetentionBillingNoteReportQueryService implements QueryInterface
     {
         $qb = $this->repository->createQueryBuilder($alias);
         $qb
-        ->select("{$alias}.code AS code")
-        ->addSelect("{$alias}.id AS id")
-        ->addSelect("{$alias}.approved AS approved")
-        ->addSelect("{$alias}_requester.code AS requester")
-        ->addSelect("{$alias}_project.code AS project")
-        ->addSelect("{$alias}_boq.name AS boq")
-        ->addSelect("{$alias}.retentionFactor AS retentionFactor")
-        ->addSelect("{$alias}.retention AS retention")
-        ->addSelect("{$alias}.retentionCost AS retentionCost")
-        ->addSelect("{$alias}.retentionPayTotal AS retentionPayTotal")
-        ->addSelect("{$alias}.docTotal AS docTotal")
-        ->leftJoin("{$alias}.project","{$alias}_project")
-        ->leftJoin("{$alias}.requester","{$alias}_requester")
-        ->leftJoin("{$alias}.boq","{$alias}_boq")
+            ->select("{$alias}.code AS code")
+            ->addSelect("{$alias}.id AS id")
+            ->addSelect("{$alias}.approved AS approved")
+            ->addSelect("{$alias}_requester.code AS requester")
+            ->addSelect("{$alias}_project.code AS project")
+            ->addSelect("{$alias}_boq.name AS boq")
+            ->addSelect("{$alias}.retentionFactor AS retentionFactor")
+            ->addSelect("{$alias}.retention AS retention")
+            ->addSelect("{$alias}.retentionCost AS retentionCost")
+            ->addSelect("{$alias}.retentionPayTotal AS retentionPayTotal")
+            ->addSelect("{$alias}.docTotal AS docTotal")
+            ->leftJoin("{$alias}.project", "{$alias}_project")
+            ->leftJoin("{$alias}.requester", "{$alias}_requester")
+            ->leftJoin("{$alias}.boq", "{$alias}_boq")
 
-        ->groupBy("{$alias}")
-        ;
+            ->groupBy("{$alias}");
 
         return $this->queryService->assignAliveDocumentQuery($qb, $alias);
     }
@@ -72,58 +70,54 @@ class RetentionBillingNoteReportQueryService implements QueryInterface
     {
         $filterDetail = [];
         $qb = $this->retentionBillingNoteQueryBuilder('_entity');
-        if(!empty($filter['start'])) {
+        if (!empty($filter['start'])) {
+            $startDate = new \DateTimeImmutable($filter['start']);
             $qb
-            ->andWhere('_entity.tstmp >= :startDate')
-            ->setParameter('startDate', new \DateTimeImmutable($filter['start']))
-            ;
-            $filterDetail['start'] = new \DateTimeImmutable($filter['start']);
+                ->andWhere('_entity.tstmp >= :startDate')
+                ->setParameter('startDate', $startDate);
+            $filterDetail['start'] = $startDate;
         }
-        if(!empty($filter['end'])) {
+        if (!empty($filter['end'])) {
+            $endDate = new \DateTimeImmutable($filter['end']);
             $qb
-            ->andWhere('_entity.tstmp <= :endDate')
-            ->setParameter('endDate', new \DateTimeImmutable($filter['end']))
-            ;
-            $filterDetail['end'] = new \DateTimeImmutable($filter['end']);
+                ->andWhere('_entity.tstmp < :endDate')
+                ->setParameter(
+                    'endDate',
+                    $endDate->modify('+1 day')
+                );
+            $filterDetail['end'] = $endDate;
         }
-        if(array_key_exists('approved', $filter)) {
+        if (array_key_exists('approved', $filter)) {
             $qb
-            ->andWhere('_entity.approved = :approved')
-            ->setParameter('approved', $filter['approved'])
-            ;
+                ->andWhere('_entity.approved = :approved')
+                ->setParameter('approved', $filter['approved']);
             $filterDetail['approved'] = $filter['approved'];
         }
-        if(!empty($filter['requester'])) {
+        if (!empty($filter['requester'])) {
             $qb
-            ->andWhere('_entity_requester = :requester')
-            ->setParameter('requester', $filter['requester'])
-            ;
+                ->andWhere('_entity_requester = :requester')
+                ->setParameter('requester', $filter['requester']);
             $filterDetail['requester'] = $this->employeeRepos->find($filter['requester']);
         }
-        if(!empty($filter['project'])) {
+        if (!empty($filter['project'])) {
             $qb
-            ->andWhere('_entity_project = :project')
-            ->setParameter('project', $filter['project'])
-            ;
+                ->andWhere('_entity_project = :project')
+                ->setParameter('project', $filter['project']);
             $filterDetail['project'] = $this->projectRepos->find($filter['project']);
         }
-        if(!empty($filter['boq'])) {
+        if (!empty($filter['boq'])) {
             $qb
-            ->andWhere('_entity_boq = :boq')
-            ->setParameter('boq', $filter['boq'])
-            ;
+                ->andWhere('_entity_boq = :boq')
+                ->setParameter('boq', $filter['boq']);
             $filterDetail['boq'] = $this->boqRepos->find($filter['boq']);
         }
-        if(array_key_exists('retentionFactor', $filter)) {
+        if (array_key_exists('retentionFactor', $filter)) {
             $qb
-            ->andWhere('_entity.retentionFactor = :retentionFactor')
-            ->setParameter('retentionFactor', $filter['retentionFactor'])
-            ;
+                ->andWhere('_entity.retentionFactor = :retentionFactor')
+                ->setParameter('retentionFactor', $filter['retentionFactor']);
             $filterDetail['retentionFactor'] = $filter['retentionFactor'];
         }
 
         return $qb->getQuery()->getArrayResult();
-
     }
-
 }
